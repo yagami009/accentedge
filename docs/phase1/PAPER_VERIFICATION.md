@@ -16,7 +16,7 @@ Source: https://arxiv.org/html/2510.10785
 
 **Important**: The paper's actual factorization is $z_c = z_{c1} + z_{c2}$, not the four independent factors the prompt assumes. $z_{c2}$ is NOT preserved during conversion — it is recomputed from denoised $\hat{z}_{c1}$ and encoder features.
 
-Frame rate: 20 ms per frame (50 fps).
+Frame rate: 12.5 ms per frame (80 fps).
 Content dimensionality: 8-dim quantized vectors.
 Codebook size: 1024, codebook dim: 8 (verified from upstream FACodec config).
 

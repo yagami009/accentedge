@@ -16,8 +16,8 @@
 | Residual codebooks | 3 codebooks, size 1024, dim 8 | UPSTREAM_VERIFIED |
 | Content extract API | model.encoder(waveform) → z, then model.quantizer(z, waveform, n_c=2) → codes | UPSTREAM_VERIFIED |
 | Decode API | model.decoder(z) → waveform | UPSTREAM_VERIFIED |
-| Reconstruction tested | Yes, 10 L2-ARCTIC clips | RUNTIME_VERIFIED |
-| Reconstruction quality | Duration preserved (ratio 0.99), but ECAPA identity sim 0.05-0.24 | PARTIALLY_CONFIRMED |
+| Reconstruction tested | Yes, 10 L2-ARCTIC clips | DIAGNOSTIC_ONLY |
+| Reconstruction quality | Duration preserved (ratio 0.99), but ECAPA identity sim 0.05-0.24 | INVALIDATED_BY_ADAPTER_BUG — results corroborate broken speaker pathway (0.05–0.24 expected from severe speaker-path failure). Results will be re-evaluated after adapter fix. A large jump from 0.05–0.24 range would confirm the diagnosis. HEURISTIC EXPECTATION (not threshold): post-fix reconstruction should enter high same-speaker region. Acceptance will be calibrated against same-speaker/impostor ECAPA distributions. |
 
 ### Verified API
 
