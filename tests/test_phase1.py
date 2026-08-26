@@ -98,6 +98,16 @@ class TestDenoiser:
 
 class TestCodecInterface:
     def test_interfaces(self):
-        from accentedge.codec.interfaces import FactorizedLatents, FactorizedSpeechCodec
-        latents = FactorizedLatents(zc1=torch.randn(2, 8, 20), zc2=torch.randn(2, 8, 20))
-        assert latents.zc1.shape == (2, 8, 20)
+        from accentedge.codec.interfaces import FactorizedLatents
+        latents = FactorizedLatents(
+            content=torch.randn(2, 8, 20),
+            content_zc1=torch.randint(0, 1024, (2, 1, 20)),
+            content_zc2=torch.randn(2, 8, 20),
+            prosody=torch.randint(0, 1024, (2, 1, 20)),
+            timbre=torch.randn(2, 256),
+        )
+        assert latents.content.shape == (2, 8, 20)
+        assert latents.content_zc1.shape == (2, 1, 20)
+        assert latents.content_zc2.shape == (2, 8, 20)
+        assert latents.prosody.shape == (2, 1, 20)
+        assert latents.timbre.shape == (2, 256)
