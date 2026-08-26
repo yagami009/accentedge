@@ -61,8 +61,13 @@ for fname in test_samples:
     wav_24k = torchaudio.functional.resample(wav, sr, 24000)
     wav_in = wav_24k.unsqueeze(0)
 
-    # Encode
-    z_c, z_p, z_t, z_r = model["quantizer"](wav_in.float(), wav_in.float(), n_c=2)
+    # Encode - use forward_v2 which accepts just waveform + n_c
+    result = model["quantizer"].forward_v2(wav_in.float(), wav_in.float(), n_c=2, return_codes=True)
+    if isinstance(result, tuple) and len(result) >= 4:
+        z_c, z_p, z_t, z_r = result[:4]
+        codes = result[4] if len(result) > 4 else None
+    else:
+        print(f"  Unexpected result type: {type(result)}"); sys.exit(1)
     print(f"  {os.path.basename(fname)}: z_c={z_c.shape}, z_p={z_p.shape}, z_r={z_r.shape}")
 
     # Decode: upstream uses z = z_c + z_p + z_r, then decoder()
