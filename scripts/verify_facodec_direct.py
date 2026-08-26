@@ -38,6 +38,7 @@ if 'audiotools' not in sys.modules:
     mock_ml = types.ModuleType('audiotools.ml')
     mock_ml.BaseModel = type('BaseModel', (), {'INTERN': [], 'EXTERN': []})()
     mock_audio.ml = mock_ml
+    mock_audio.AudioSignal = type('AudioSignal', (), {})
     sys.modules['audiotools'] = mock_audio
     sys.modules['audiotools.ml'] = mock_ml
 

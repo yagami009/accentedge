@@ -6,27 +6,24 @@ _Last updated: 2026-08-26_
 
 | Milestone | Status | Details |
 |-----------|--------|---------|
-| **FACodec reconstruction** | 🔄 READY | Script `verify_facodec_direct.py` uses FAC-FACodec's proven init path |
+| **FACodec reconstruction** | 🔄 READY | `scripts/verify_facodec_direct.py` ready for Colab T4 |
 | **Module structure** | ✅ Done | phase1/ (diffusion, denoiser, strength), evaluation/ (acoustic, content, identity, phonemes) |
-| **Adapter (FACodecAdapter)** | ✅ Done | Uses Amphion's FACodec, timbre as FiLM conditioning |
-| **Reconstruction gate** | 🔄 READY | `scripts/verify_facodec_direct.py` → Colab T4 |
+| **Adapter (FACodecAdapter)** | ⚠️ Needs fix | Using Amphion FACodec; needs decoder.inference API |
+| **Reconstruction gate** | 🔄 READY | Script tests encode→decode round-trip with mel L1 metric |
 
 ## What Just Changed
 
-- **`verify_facodec_direct.py`** — New script that tests FACodec round-trip reconstruction
-  - Uses FAC-FACodec's proven `init_facodec_models()` pattern
-  - Downloads LibriSpeech test-clean, encodes → decodes, computes SNR
-  - Gate: all SNR > 5dB
+- **`verify_facodec_direct.py`** — New verification script
+  - Uses upstream FAcodec (same path as FAC-FACodec training)
+  - Mock audiotools (unavailable on Colab)
+  - Downloads LibriSpeech test-clean, encodes → decodes, computes mel L1
+  - Gate: all mel L1 < 0.15
 
-- **`FACodecAdapter`** — Refactored to use Amphion's bundled FACodec
-  - Handles the API differences between Amphion and upstream FAcodec
-  - Timbre passed as FiLM conditioning to decoder
-
-- **Repo cleanup** — Removed 1.5GB checkpoint blobs from git history
+- **Repo cleanup** — Removed 1.5GB checkpoint blobs from git history (repo now 75KB)
 
 ## Next Steps
 
-1. Run `colab run scripts/verify_facodec_direct.py --gpu T4`
-2. Verify SNR > 5dB on all test samples
-3. If SNR passes: mark reconstruction gate as ✅
-4. If SNR fails: investigate adapter reconstruction formula
+1. Run `colab run scripts/verify_facodec_direct.py --gpu T4` to verify reconstruction
+2. Fix FACodecAdapter decode to use `decoder.inference()` API
+3. Run tiny native-latent overfit
+4. Run Indian-English inference through Phase 1 pipeline
