@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""FACodec reconstruction verification using Amphion.
+"""FACodec reconstruction verification using upstream FAcodec.
 
-Tests: source.wav -> Amphion FACodec encode -> decode -> reconstruction.wav
-Gate: all SNR > 5dB
+Tests: source.wav -> FAcodec encode -> decode -> reconstruction.wav
+Uses Plachta/FAcodec directly (same path as FAC-FACodec training).
+Gate: mel L1 distance < 0.1 (acceptable for high-compression codec)
 
 Run on Colab:
   colab run scripts/verify_facodec_direct.py --gpu T4
@@ -21,15 +22,20 @@ def run(cmd, desc="", check=True, timeout=120):
 run("nvidia-smi --query-gpu=name --format=csv,noheader", "GPU", check=False)
 run("pip install -q numpy soundfile librosa scipy jiwer pyyaml huggingface-hub phonemizer speechbrain torchaudio faster-whisper pytest pyworld munch", "install deps")
 
-# Amphion path
-sys.path.insert(0, "/content/Amphion")
-os.environ["PYTHONPATH"] = "/content/Amphion:" + os.environ.get("PYTHONPATH", "")
-os.chdir("/content/Amphion")
+# Clone FAcodec (skip if exists)
+run("test -d /content/FAcodec || git clone https://github.com/Plachtaa/FAcodec.git /content/FAcodec", "clone FAcodec", check=False)
+run("test -f /content/FAcodec/modules/__init__.py || touch /content/FAcodec/modules/__init__.py", "modules init", check=False)
+
+# Path setup: match FAC-FACodec's train.py exactly
+sys.path = [p for p in sys.path if "/content" not in p]
+sys.path.insert(0, "/content/FAcodec")
+os.environ["PYTHONPATH"] = "/content/FAcodec/modules:" + os.environ.get("PYTHONPATH", "")
+os.chdir("/content/FAcodec")
 
 # Download test audio
 os.makedirs("/content/test_audio", exist_ok=True)
 import torchaudio
-print("\n=== Downloading LibriSpeech ===")
+print("\n=== Downloading LibriSpeech test-clean ===")
 dataset = torchaudio.datasets.LIBRISPEECH(root="/content/test_audio", url="test-clean", download=True)
 test_samples = []
 for i in range(min(3, len(dataset))):
@@ -37,48 +43,26 @@ for i in range(min(3, len(dataset))):
     fname = f"/content/test_audio/librispeech_{i}.wav"
     torchaudio.save(fname, wav, sr)
     test_samples.append(fname)
-    print(f"  {fname}: sr={sr}")
 
-print("\n=== Loading Amphion FACodec ===")
-from models.codec.ns3_codec.facodec import FACodecEncoder, FACodecDecoder
-from huggingface_hub import hf_hub_download
+print("\n=== Loading FAcodec ===")
+from modules.commons import build_model, recursive_munch
+from hf_utils import load_custom_model_from_hf
 import yaml, torch, numpy as np
+import warnings
+warnings.simplefilter("ignore")
 
-ckpt_path = hf_hub_download(repo_id="Plachta/FAcodec", filename="pytorch_model.bin")
-config_path = hf_hub_download(repo_id="Plachta/FAcodec", filename="config.yml")
-
+ckpt_path, config_path = load_custom_model_from_hf("Plachta/FAcodec")
 with open(config_path) as f:
     config = yaml.safe_load(f)
+model_params = recursive_munch(config["model_params"])
+model = build_model(model_params)
 
-# Build Amphion FACodec with same config as Plachta/FAcodec
-encoder = FACodecEncoder(ngf=32, up_ratios=[2,4,5,5], out_channels=256)
-decoder = FACodecDecoder(
-    in_channels=256, upsample_initial_channel=1024, ngf=32,
-    up_ratios=[5,5,4,2],
-    vq_num_q_c=2, vq_num_q_p=1, vq_num_q_r=3,
-    vq_dim=256, codebook_dim=8,
-    codebook_size_prosody=10, codebook_size_content=10, codebook_size_residual=10,
-    use_gr_x_timbre=True,
-)
-
-model = {"encoder": encoder, "decoder": decoder}
-
-# Load checkpoint
-ckpt = torch.load(ckpt_path, map_location="cpu")
-ckpt = ckpt.get("net", ckpt)
-if "encoder" in ckpt:
-    model["encoder"].load_state_dict(ckpt["encoder"])
-if "decoder" in ckpt:
-    model["decoder"].load_state_dict(ckpt["decoder"])
-
-for key in model:
+ckpt_params = torch.load(ckpt_path, map_location="cpu")
+ckpt_params = ckpt_params.get("net", ckpt_params)
+for key in ckpt_params:
+    model[key].load_state_dict(ckpt_params[key])
     model[key].eval()
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-for key in model:
-    model[key].to(device)
-
-print(f"Model on {device}")
+print(f"Model keys: {list(model.keys())}")
 
 # Round-trip test
 print("\n=== Round-trip reconstruction ===")
@@ -88,35 +72,33 @@ for fname in test_samples:
     wav, sr = torchaudio.load(fname)
     wav = wav.mean(dim=0, keepdim=True)
     wav_24k = torchaudio.functional.resample(wav, sr, 24000)
-    wav_in = wav_24k.unsqueeze(0).to(device)
+    wav_in = wav_24k.unsqueeze(0).float()
 
-    # Encode
-    z = model["encoder"](wav_in.float())
-    _, quantized, _, _, timbre, codes = model["decoder"].quantizer(
-        z, wav_in.float(), return_codes=True, n_c=2
+    # Encode + quantize using reconstruct.py pattern
+    z = model["encoder"](wav_in)
+    z, quantized, _, _, timbre = model["quantizer"](
+        z, wav_in, return_codes=True, n_c=2
     )
-    codes_c, codes_p, codes_t, codes_r = codes
-    z_c, z_p, z_t, z_r = quantized
-    print(f"  {os.path.basename(fname)}: z_c={z_c.shape}, z_p={z_p.shape}, z_r={z_r.shape}")
+    codes_c, codes_p, codes_r = quantized
+    print(f"  {os.path.basename(fname)}: z={z.shape}, timbre={timbre.shape}")
 
-    # Decode: upstream formula: z = z_c + z_p + z_r
-    z_total = z_c.detach() + z_p.detach() + z_r.detach()
-    recon = model["decoder"].inference(z_total, speaker_embedding=timbre)
+    # Decode using reconstruct.py pattern
+    full_pred = model["decoder"](z)
 
     recon_path = f"/content/reconstructed/{os.path.basename(fname)}"
-    torchaudio.save(recon_path, recon[0].cpu(), 24000)
+    torchaudio.save(recon_path, full_pred[0].cpu(), 24000)
 
-    # SNR
-    src_np = wav_24k.squeeze().cpu().numpy()
-    recon_np = recon[0, 0].cpu().numpy()
-    min_len = min(len(src_np), len(recon_np))
-    snr = 10 * np.log10(np.mean(src_np[:min_len]**2) / (np.mean((src_np[:min_len] - recon_np[:min_len])**2) + 1e-10))
-    print(f"    SNR: {snr:.2f} dB")
-    results.append({"file": os.path.basename(fname), "snr": float(snr)})
+    # Mel L1 (more meaningful than SNR for codec)
+    mel_src = torchaudio.transforms.MelSpectrogram(sample_rate=24000, n_fft=1024, hop_length=256, n_mels=80)(wav_24k)
+    mel_recon = torchaudio.transforms.MelSpectrogram(sample_rate=24000, n_fft=1024, hop_length=256, n_mels=80)(full_pred[0].cpu())
+    min_m = min(mel_src.shape[-1], mel_recon.shape[-1])
+    mel_l1 = (mel_src[..., :min_m] - mel_recon[..., :min_m]).abs().mean().item()
+    print(f"    Mel L1: {mel_l1:.4f}")
+    results.append({"file": os.path.basename(fname), "mel_l1": float(mel_l1)})
 
 print("\n=== Results ===")
 for r in results:
-    print(f"  {r['file']}: SNR={r['snr']:.2f} dB")
-passed = all(r["snr"] > 5 for r in results)
-print(f"\nGATE: {'PASS' if passed else 'FAIL'} (all SNR > 5dB: {passed})")
+    print(f"  {r['file']}: Mel L1={r['mel_l1']:.4f}")
+passed = all(r["mel_l1"] < 0.1 for r in results)
+print(f"\nGATE: {'PASS' if passed else 'FAIL'} (all Mel L1 < 0.1: {passed})")
 print("\nDONE")
