@@ -12,7 +12,7 @@ def run(cmd, desc="", check=True, timeout=120):
     return r
 
 run("nvidia-smi --query-gpu=name --format=csv,noheader", "GPU", check=False)
-run("pip install -q numpy soundfile librosa scipy jiwer pyyaml huggingface-hub phonemizer speechbrain torchaudio faster-whisper pytest pyworld munch audiotools", "install deps")
+run("pip install -q numpy soundfile librosa scipy jiwer pyyaml huggingface-hub phonemizer speechbrain torchaudio faster-whisper pytest pyworld munch", "install deps")
 run("test -d /content/FAcodec || git clone https://github.com/Plachtaa/FAcodec.git /content/FAcodec", "clone FAcodec", check=False)
 run("test -f /content/FAcodec/modules/__init__.py || touch /content/FAcodec/modules/__init__.py", "modules init", check=False)
 
