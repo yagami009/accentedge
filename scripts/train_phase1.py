@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Colab Phase 1 training — runs from /content/accentedge."""
+"""Phase 1 denoiser training smoke test for Colab."""
 import sys, os, subprocess, torch
 import torch.nn.functional as F
 
