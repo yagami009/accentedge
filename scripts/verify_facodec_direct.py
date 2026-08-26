@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """Direct FACodec reconstruction test using upstream FAcodec.
 
@@ -23,10 +24,13 @@ run("pip install -q numpy soundfile librosa scipy jiwer pyyaml huggingface-hub p
 
 # Clone FAcodec (skip if exists)
 run("test -d /content/FAcodec || git clone https://github.com/Plachtaa/FAcodec.git /content/FAcodec", "clone FAcodec", check=False)
+run("test -f /content/FAcodec/modules/__init__.py || touch /content/FAcodec/modules/__init__.py", "create modules __init__", check=False)
 
-# Path setup
+# Path setup: match FAC-FACodec's train.py exactly
+# Path setup: FAcodec parent dir in sys.path so `from modules.X import ...` works
 sys.path.insert(0, "/content/FAcodec")
 os.environ["PYTHONPATH"] = "/content/FAcodec:" + os.environ.get("PYTHONPATH", "")
+run("test -f /content/FAcodec/modules/__init__.py || touch /content/FAcodec/modules/__init__.py", "create modules __init__", check=False)
 os.chdir("/content/FAcodec")
 
 # Download test audio
@@ -45,50 +49,65 @@ for i in range(min(3, len(dataset))):
 print("\n=== Loading FAcodec ===")
 from modules.commons import build_model, recursive_munch
 from hf_utils import load_custom_model_from_hf
+import yaml
 
-ckpt_path, config_path = load_custom_model_from_hf("Plachta/FAcodec")
+ckpt_path = load_custom_model_from_hf("Plachta/FAcodec")
+if isinstance(ckpt_path, tuple):
+    ckpt_path = ckpt_path[0]
+
+config_path = "/root/.cache/huggingface/hub/models--Plachta--FAcodec/snapshots/a8e5a0a769c9f2da1d283e30ec3be9a21bad0b93/config.yml"
 with open(config_path) as f:
     config = yaml.safe_load(f)
 
-model_params = recursive_munch(config["model_params"])
+model_params = recursive_munch(config.get("model_params", config.get("model", {})))
 model = build_model(model_params)
 
-ckpt = torch.load(ckpt_path, map_location="cpu")
-ckpt = ckpt.get("net", ckpt)
-for key in ckpt:
-    model[key].load_state_dict(ckpt[key])
-_ = [model[key].eval().cuda() for key in model]
+ckpt_params = torch.load(ckpt_path, map_location="cpu")
+ckpt_params = ckpt_params.get("net", ckpt_params)
+for key in ckpt_params:
+    model[key].load_state_dict(ckpt_params[key])
+for key in model:
+    model[key].eval().cuda()
 
 print("  FAcodec loaded successfully")
-print(f"  Keys: {list(model.keys())}")
 
-# Test reconstruction
-print("\n=== Testing Reconstruction ===")
+print("\n=== Reconstruction Verification ===")
 os.makedirs("/content/reconstructed", exist_ok=True)
 results = []
 
 for fname, transcript in test_samples:
+    # Load and resample to 24kHz
     wav, sr = torchaudio.load(fname)
-    wav = wav.mean(dim=0, keepdim=True)  # mono
+    wav = wav.mean(dim=0, keepdim=True)
     wav_24k = torchaudio.functional.resample(wav, sr, 24000)
 
-    # Encode (same as upstream reconstruct.py)
+    # Encode (upstream formula)
     z = model["encoder"](wav_24k[None, ...].cuda().float())
-    z, quantized, commit_loss, codebook_loss, timbre = model["quantizer"](z, wav_24k[None, ...].cuda().float(), n_c=2)
+    _, quantized, commit_loss, codebook_loss, timbre, codes = model["quantizer"](
+        z, wav_24k[None, ...].cuda().float(), return_codes=True, n_c=2
+    )
+    codes_c, codes_p, codes_t, codes_r = codes
+    z_c, z_p, z_t, z_r = quantized
 
-    # z is z_c (combined zc1+zc2)
-    # Decode (same as upstream: model.decoder(z))
-    recon = model["decoder"](z)
+    print(f"\n  {os.path.basename(fname)}:")
+    print(f"    z_c shape: {z_c.shape}")
+    print(f"    z_p shape: {z_p.shape}")
+    print(f"    z_r shape: {z_r.shape}")
+    print(f"    timbre shape: {timbre.shape}")
+
+    # Decode (upstream formula: z = z_p + z_c + z_r, then decoder.inference)
+    recon = model["decoder"].inference(z_p.detach() + z_c.detach() + z_r.detach(), speaker_embedding=timbre)
 
     recon_path = f"/content/reconstructed/{os.path.basename(fname)}"
     torchaudio.save(recon_path, recon[0].cpu(), 24000)
+    print(f"    Saved: {recon_path}")
 
     # SNR
     src_np = wav_24k.squeeze().cpu().numpy()
     recon_np = recon[0, 0].cpu().numpy()
     min_len = min(len(src_np), len(recon_np))
     snr = 10 * np.log10(np.mean(src_np[:min_len]**2) / (np.mean((src_np[:min_len] - recon_np[:min_len])**2) + 1e-10))
-    print(f"  {os.path.basename(fname)}: SNR={snr:.2f} dB")
+    print(f"    SNR: {snr:.2f} dB")
     results.append({"file": os.path.basename(fname), "snr": float(snr)})
 
 print("\n=== Results ===")
