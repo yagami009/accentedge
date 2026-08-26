@@ -59,6 +59,36 @@ except ImportError:
 # Format: list of IPA symbols in a stable order — index is the ID for storage
 # (NOT necessarily matching the model's token IDs, which are mapped at runtime).
 
+# ---------------------------------------------------------------------------
+# Vocabulary size contract
+# ---------------------------------------------------------------------------
+#
+# The FAC-FACodec denoiser (DenoisingTransformerModel) uses a phoneme
+# embedding table with 393 rows (phone_vocab_size=393, padding_idx=392).
+# This 393-row table is the *embedding capacity* of the denoiser -- it
+# accommodates a multilingual phoneme symbol set (eSpeak-ng IPA output
+# with stress markers/diacritics across languages lands in roughly that
+# range).
+#
+# AccentEdge Phase 1 is English-only (LJSpeech), so we only use a small
+# subset of those 393 possible symbols.  The pipeline produces IDs in the
+# compact range 0..92, all of which are well within the denoiser's
+# 0..392 embedding index space.  The remaining rows (93..391) are unused --
+# they simply never receive gradient updates during training.  This is safe
+# and intentional; it preserves the denoiser architecture from the paper
+# while keeping our pipeline focused on English phonemes.
+#
+# IMPORTANT: The denoiser uses padding_idx=392 (always-zeroed embedding
+# row).  The pipeline's semantic padding is ID 1 (the "sp" silence
+# symbol).  These serve different purposes:
+#   - padding_idx=392: PyTorch embedding padding row (never addressed)
+#   - pad_id=1: pipeline output for silence/no-phoneme frames (active)
+#
+# All phone IDs produced by this pipeline must satisfy: 0 <= id < 393
+# ---------------------------------------------------------------------------
+
+PHONE_VOCAB_SIZE = 393  # Denoiser embedding table size -- must match DenoisingTransformerModel
+
 # eSpeak-ng phoneset — subset of IPA used by the phonemizer.
 # Order matches a compact, contiguous 0..N-1 ID space.
 _PHONEME_LIST: List[str] = [
@@ -76,7 +106,7 @@ _PHONEME_LIST: List[str] = [
     'ɑ̃', 'ɛ̃', 'ɔ̃', 'õ', 'ɜ̃',
     # Vowels — long / tense
     'aː', 'eː', 'iː', 'oː', 'uː',
-    'ɑː', 'ɔː', 'ɜː', 'ɛː', 'ɜː',
+    'ɑː', 'ɔː', 'ɜː', 'ɛː',
     # Vowels — r-coloured
     'ɚ', 'ɝ', 'ɞ',
     # Consonants — plosives

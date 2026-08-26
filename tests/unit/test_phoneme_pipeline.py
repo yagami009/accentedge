@@ -54,6 +54,112 @@ class TestInit:
 # Tests: phones_to_frames
 # ---------------------------------------------------------------------------
 
+
+
+# ---------------------------------------------------------------------------
+# Tests: phone vocab size contract
+# ---------------------------------------------------------------------------
+
+class TestPhoneVocabContract:
+    """Verify the phone vocabulary size contract between PhonemePipeline
+    and the DenoisingTransformerModel."""
+
+    def test_phone_vocab_size_is_393(self):
+        """PHONE_VOCAB_SIZE must be 393 to match the denoiser embedding table."""
+        from accentedge.phase1.phoneme_pipeline import PHONE_VOCAB_SIZE
+        assert PHONE_VOCAB_SIZE == 393
+
+    def test_denoiser_default_vocab_size_is_393(self):
+        """DenoisingTransformerModel default phone_vocab_size must be 393."""
+        from accentedge.phase1.denoiser import DenoisingTransformerModel
+        import inspect
+        sig = inspect.signature(DenoisingTransformerModel.__init__)
+        assert sig.parameters['phone_vocab_size'].default == 393
+
+    def test_all_pipeline_ids_below_393(self):
+        """Every ID produced by the pipeline must be < 393."""
+        from accentedge.phase1.phoneme_pipeline import _PHONEME_TO_ID, PHONE_VOCAB_SIZE
+        for phone, idx in _PHONEME_TO_ID.items():
+            assert idx < PHONE_VOCAB_SIZE, (
+                f"Phone '{phone}' has ID {idx}, which is >= PHONE_VOCAB_SIZE ({PHONE_VOCAB_SIZE})"
+            )
+
+    def test_no_duplicate_phoneme_symbols(self):
+        """The vocabulary must not contain duplicate symbols."""
+        from accentedge.phase1.phoneme_pipeline import _PHONEME_LIST
+        seen = set()
+        for phone in _PHONEME_LIST:
+            assert phone not in seen, f"Duplicate phoneme symbol: '{phone}'"
+            seen.add(phone)
+
+    def test_pipeline_pad_id_is_not_denoiser_padding_idx(self):
+        """The pipeline's semantic pad_id (1='sp') differs from the denoiser's
+        PyTorch padding_idx (392). These serve different purposes."""
+        from accentedge.phase1.phoneme_pipeline import PAD_ID, PHONE_VOCAB_SIZE
+        from accentedge.phase1.denoiser import DenoisingTransformerModel
+        import inspect
+        denoiser_padding = inspect.signature(
+            DenoisingTransformerModel.__init__
+        ).parameters['phone_pad_id'].default
+        # Pipeline pad_id should be an active phoneme symbol (sp=1)
+        assert PAD_ID == 1
+        # Denoiser padding_idx should be the last row (392)
+        assert denoiser_padding == PHONE_VOCAB_SIZE - 1
+
+    def test_phoneme_list_count(self):
+        """The active English phoneme list should have 93 entries."""
+        from accentedge.phase1.phoneme_pipeline import _PHONEME_LIST
+        assert len(_PHONEME_LIST) == 93
+
+    def test_id_range_within_embedding_space(self):
+        """All pipeline IDs must fit in the denoiser's embedding index space."""
+        from accentedge.phase1.phoneme_pipeline import _PHONEME_TO_ID, PHONE_VOCAB_SIZE
+        ids = set(_PHONEME_TO_ID.values())
+        max_id = max(ids)
+        min_id = min(ids)
+        assert min_id >= 0
+        assert max_id < PHONE_VOCAB_SIZE
+
+    def test_no_id_collisions(self):
+        """Every phoneme symbol must map to a unique ID."""
+        from accentedge.phase1.phoneme_pipeline import _PHONEME_TO_ID
+        symbols_by_id = {}
+        for symbol, idx in _PHONEME_TO_ID.items():
+            assert idx not in symbols_by_id, (
+                f"ID collision at {idx}: '{symbol}' and '{symbols_by_id[idx]}'"
+            )
+            symbols_by_id[idx] = symbol
+
+
+# ---------------------------------------------------------------------------
+# Tests: __init__ and attributes
+# ---------------------------------------------------------------------------
+
+class TestInit:
+    def test_frame_rate_is_80fps(self):
+        from accentedge.phase1.phoneme_pipeline import PhonemePipeline
+        p = PhonemePipeline(device="cpu")
+        assert p.frame_rate == 80
+        assert p.frame_rate_hz == 80.0
+
+    def test_default_sample_rate(self):
+        from accentedge.phase1.phoneme_pipeline import PhonemePipeline
+        p = PhonemePipeline(device="cpu")
+        assert p.sample_rate == 24000
+
+    def test_custom_phone_vocab(self):
+        from accentedge.phase1.phoneme_pipeline import PhonemePipeline
+        vocab = {"<pad>": 0, "a": 1, "b": 2}
+        p = PhonemePipeline(device="cpu", phone_vocab=vocab)
+        assert p.phone_to_id == vocab
+        assert p.pad_id == 0
+
+
+# ---------------------------------------------------------------------------
+# Tests: phones_to_frames
+# ---------------------------------------------------------------------------
+
+
 class TestPhonesToFrames:
     def test_correct_frame_count_for_1s_audio(self, phone_pipeline):
         """1 second at 24kHz = 80 frames at 80fps."""

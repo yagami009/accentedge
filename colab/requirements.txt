@@ -1,0 +1,40 @@
+# AccentEdge Colab — pip dependencies for Gates 1-5
+# Colab pre-installs torch, torchaudio (CUDA), numpy, matplotlib
+
+# Core runtime
+torch>=2.2
+numpy>=1.24
+scipy>=1.11
+soundfile>=0.12
+librosa>=0.10
+
+# Speech / audio models
+transformers>=4.35
+speechbrain>=0.5.16
+faster-whisper>=1.0
+phonemizer>=3.0
+
+# HuggingFace hub (for FAcodec checkpoint download)
+huggingface-hub>=0.20
+
+# Config / serialization
+pyyaml>=6.0
+munch
+
+# Numeric / ML utilities
+einops>=0.7
+pyworld
+
+# Testing
+pytest>=8.0
+
+# Visualization
+matplotlib>=3.7
+plotly>=5.15
+
+# Notebook helpers
+ipython
+ipykernel<7.0
+
+# Note: espeak-ng is a SYSTEM package (apt-get install espeak-ng), not pip.
+# Gate 3 notebooks install it via !apt-get install -y espeak-ng.
