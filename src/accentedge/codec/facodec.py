@@ -39,7 +39,7 @@ _FACODEC_REPO = _FACODEC_REPO.resolve()
 if str(_FACODEC_REPO) not in sys.path:
     sys.path.insert(0, str(_FACODEC_REPO))
 
-from codec.interfaces import FactorizedLatents, FactorizedSpeechCodec
+from accentedge.codec.interfaces import FactorizedLatents, FactorizedSpeechCodec
 
 
 class FACodecAdapter(nn.Module, FactorizedSpeechCodec):
