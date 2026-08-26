@@ -1,6 +1,8 @@
+
 """Phase 1 — FACodec adapter (using upstream FAcodec directly).
 
 Wraps Plachta/FAcodec as AccentEdge's frozen codec backend.
+
 Uses the exact upstream FAcodec pattern from reconstruct.py:
   1. encoder(wav) -> z
   2. quantizer(z, wav, n_c=2) -> z_q, [z_c, z_p, z_r], commitment_loss, codebook_loss, timbre
@@ -19,12 +21,10 @@ Checkpoint: Plachta/FAcodec (HuggingFace)
 """
 from __future__ import annotations
 
-import os
 import sys
 import hashlib
 import warnings
 from pathlib import Path
-from typing import Optional
 
 import torch
 import torch.nn as nn
@@ -40,7 +40,9 @@ from accentedge.codec.interfaces import FactorizedLatents, FactorizedSpeechCodec
 class FACodecAdapter(FactorizedSpeechCodec):
     """FACodec codec adapter using upstream FAcodec directly.
 
-    Uses the exact upstream FAcodec pattern from reconstruct.py.
+    The quantizer bakes prosody + content + residual + timbre into z_q.
+    For reconstruction we pass z_q directly to decoder.
+    For accent conversion we extract individual factors from z_q and reconstruct.
     """
 
     sample_rate: int = 24000
@@ -71,9 +73,6 @@ class FACodecAdapter(FactorizedSpeechCodec):
         ckpt = ckpt.get("net", ckpt)
         for key in ckpt:
             self.model[key].load_state_dict(ckpt[key])
-            self.model[key].eval()
-
-        for key in self.model:
             self.model[key].eval().to(self.device)
         for key in self.model:
             for param in self.model[key].parameters():
@@ -82,38 +81,56 @@ class FACodecAdapter(FactorizedSpeechCodec):
         self._ckpt_hash = hashlib.sha256(open(ckpt_path, "rb").read()).hexdigest()[:16]
 
     @torch.no_grad()
-    def encode(self, waveform: torch.Tensor):
+    def encode(self, waveform: torch.Tensor) -> FactorizedLatents:
         if waveform.dim() == 1:
             waveform = waveform.unsqueeze(0)
 
-        # Resample to 24kHz if needed
-        wav = waveform.float()
-        if wav.shape[-1] > 100000:  # likely 16kHz -> resample up
-            wav = torchaudio.functional.resample(wav, 16000, 24000)
-        wav_in = wav.unsqueeze(0).to(self.device)
+        wav_24k = torchaudio.functional.resample(waveform, waveform.shape[-1] / 24000 if waveform.shape[-1] > 100000 else 16000, 24000)
+        wav_in = wav_24k.unsqueeze(0).float().to(self.device)
 
         # Upstream FAcodec pattern: encoder -> quantizer
         # quantizer returns: z_q, [z_c, z_p, z_r], commitment_loss, codebook_loss, timbre
         z = self.model["encoder"](wav_in)
-        z_q, quantized_list, commitment_loss, codebook_loss, timbre = self.model["quantizer"](
+        z, quantized_list, commitment_loss, codebook_loss, timbre = self.model["quantizer"](
             z, wav_in, n_c=2
         )
         z_c, z_p, z_r = quantized_list
 
         return FactorizedLatents(
-            content=z_c,
-            content_zc1=z_c,
-            content_zc2=None,
-            prosody=z_p,
-            detail=z_r,
-            timbre=timbre,
+            content=z,              # full quantized z (content + prosody + residual)
+            content_zc1=z_c,        # content codebook 1
+            content_zc2=None,       # content codebook 2 (predicted by diffusion)
+            prosody=z_p,            # prosody codebook
+            detail=z_r,             # acoustic detail codebooks
+            timbre=timbre,          # speaker embedding (dim=1024)
             metadata={"sample_rate": self.sample_rate, "ckpt_hash": self._ckpt_hash},
         )
 
     @torch.no_grad()
     def decode(self, latents: FactorizedLatents) -> torch.Tensor:
-        # Upstream pattern: decoder receives z_q directly (timbre baked into z by quantizer)
+        # Upstream pattern: decoder receives z directly (timbre baked into z by quantizer)
         waveform = self.model["decoder"](latents.content.to(self.device))
+        return waveform.cpu()
+
+    def decode_from_factors(self, z_c, z_p, z_r, timbre=None) -> torch.Tensor:
+        """Reconstruct z from individual factors (for accent conversion).
+
+        For reconstruction: z_q = z_c + z_p + z_r (timbre already baked in by quantizer)
+        For accent conversion: we need to also apply timbre conditioning via timbre_linear
+        """
+        # Reconstruct z from factors
+        z = z_c.detach() + z_p.detach() + z_r.detach()
+
+        if timbre is not None:
+            # Apply timbre conditioning (same as decoder.inference)
+            style = self.model["decoder"].timbre_linear(timbre).unsqueeze(2)
+            gamma, beta = style.chunk(2, 1)
+            z = z.transpose(1, 2)
+            z = self.model["decoder"].timbre_norm(z)
+            z = z.transpose(1, 2)
+            z = z * gamma + beta
+
+        waveform = self.model["decoder"].model(z)
         return waveform.cpu()
 
     def freeze(self) -> None:
