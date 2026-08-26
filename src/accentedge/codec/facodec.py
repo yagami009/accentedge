@@ -47,8 +47,8 @@ class FACodecAdapter(FactorizedSpeechCodec):
     """FACodec codec adapter using Amphion's bundled implementation.
 
     Uses upstream FAcodec pattern: encoder -> quantizer -> decoder
-    The quantizer internally combines content, prosody, residual, and timbre.
-    The decoder receives the combined z directly (no manual summing).
+    The quantizer returns z (combined), quantized_list, commitment_loss, codebook_loss, timbre.
+    The decoder receives z directly (no manual summing).
     """
 
     sample_rate: int = 24000
@@ -70,17 +70,17 @@ class FACodecAdapter(FactorizedSpeechCodec):
         encoder = FACodecEncoder(
             ngf=model_params.get("ngf", 32),
             up_ratios=tuple(model_params.get("up_ratios", [2, 4, 5, 5])),
-            out_channels=model_params.get("out_channels", 256),
+            out_channels=model_params.get("out_channels", 1024),
         )
         decoder = FACodecDecoder(
             in_channels=model_params.get("decoder_in_channels", 256),
-            upsample_initial_channel=model_params.get("decoder_upsample_initial_channel", 1024),
+            upsample_initial_channel=model_params.get("decoder_upsample_initial_channel", 1536),
             ngf=model_params.get("decoder_ngf", 32),
             up_ratios=tuple(model_params.get("decoder_up_ratios", [5, 5, 4, 2])),
             vq_num_q_c=model_params.get("vq_num_q_c", 2),
             vq_num_q_p=model_params.get("vq_num_q_p", 1),
             vq_num_q_r=model_params.get("vq_num_q_r", 3),
-            vq_dim=model_params.get("vq_dim", 1024),
+            vq_dim=model_params.get("vq_dim", 256),
             codebook_dim=model_params.get("codebook_dim", 8),
             codebook_size_prosody=model_params.get("codebook_size_prosody", 1024),
             codebook_size_content=model_params.get("codebook_size_content", 1024),
@@ -142,6 +142,7 @@ class FACodecAdapter(FactorizedSpeechCodec):
     @torch.no_grad()
     def decode(self, latents: FactorizedLatents) -> torch.Tensor:
         # Upstream pattern: decoder receives z directly (timbre baked into z by quantizer)
+        # Note: latents.content here is actually the full quantized z (content + prosody + residual)
         waveform = self.model["decoder"](latents.content.to(self.device))
         return waveform.cpu()
 

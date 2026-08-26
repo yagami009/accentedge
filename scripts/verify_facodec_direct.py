@@ -32,15 +32,20 @@ sys.path.insert(0, "/content/FAcodec")
 os.environ["PYTHONPATH"] = "/content/FAcodec/modules:" + os.environ.get("PYTHONPATH", "")
 os.chdir("/content/FAcodec")
 
-# Mock audiotools if not available (dac/__init__.py imports it)
+# Mock audiotools if not available (FAcodec/dac/__init__.py imports it)
 if 'audiotools' not in sys.modules:
     mock_audio = types.ModuleType('audiotools')
     mock_ml = types.ModuleType('audiotools.ml')
     mock_ml.BaseModel = type('BaseModel', (), {'INTERN': [], 'EXTERN': []})()
     mock_audio.ml = mock_ml
     mock_audio.AudioSignal = type('AudioSignal', (), {})
+    mock_audio.STFTParams = type('STFTParams', (), {})
+    mock_core = types.ModuleType('audiotools.core')
+    mock_core.util = types.ModuleType('audiotools.core.util')
     sys.modules['audiotools'] = mock_audio
     sys.modules['audiotools.ml'] = mock_ml
+    sys.modules['audiotools.core'] = mock_core
+    sys.modules['audiotools.core.util'] = mock_core.util
 
 # Download test audio
 os.makedirs("/content/test_audio", exist_ok=True)
