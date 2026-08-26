@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "accentedge"
+version = "0.1.0-phase1"
+description = "Phase 1: FAC-FACodec reimplementation — offline pronunciation normalization baseline"
+requires-python = ">=3.11"
+dependencies = [
+    "torch>=2.2",
+    "numpy>=1.24",
+    "soundfile>=0.12",
+    "librosa>=0.10",
+    "scipy>=1.11",
+    "jiwer>=3.0",
+    "pyyaml>=6.0",
+    "einops>=0.7",
+    "huggingface-hub>=0.20",
+    "phonemizer>=3.0",
+    "speechbrain>=0.5.16",
+    "faster-whisper>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
