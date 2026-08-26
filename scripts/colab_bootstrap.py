@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Colab Phase 1 bootstrap — clones repo and runs tests."""
+"""Colab Phase 1 bootstrap — clones repo from GitHub and runs tests."""
 import subprocess, sys, os
 
 SRC = "/content/accentedge/src/accentedge"
@@ -15,26 +15,32 @@ def run(cmd, desc="", check=True, timeout=120):
         sys.exit(1)
     return r
 
-# Check GPU
-run("nvidia-smi --query-gpu=name,memory.total --format=csv,noheader", "GPU check", check=False)
+# 1. GPU check
+run("nvidia-smi --query-gpu=name,memory.total --format=csv,noheader", "GPU", check=False)
 
-# Install deps (skip torch — Colab has it)
+# 2. Install deps (skip torch — Colab preinstalls CUDA torch)
 run("pip install -q numpy soundfile librosa scipy jiwer pyyaml einops huggingface-hub phonemizer speechbrain faster-whisper pytest", "install deps")
 
-# Clone FAC-FACodec
+# 3. Clone FAC-FACodec
 run("git clone --depth 1 https://github.com/Claussss/FAC-FACodec.git /content/FAC-FACodec", "clone FAC-FACodec")
 
-# Clone accentedge from GitHub
+# 4. Clone accentedge from GitHub
 run("git clone https://github.com/yagami009/accentedge.git /content/accentedge", "clone accentedge")
 
-# Set PYTHONPATH
-os.environ["PYTHONPATH"] = "/content/FAC-FACodec:/content/accentedge/src:" + os.environ.get("PYTHONPATH", "")
+# 5. Set PYTHONPATH
+os.environ["PYTHONPATH"] = "/content/FAC-FACodec:/content/accentedge/src"
 with open("/content/colab_env.sh", "w") as f:
     f.write("export AMPHION_PATH=/content/Amphion\n")
     f.write("export PYTHONPATH=/content/FAC-FACodec:/content/accentedge/src:$PYTHONPATH\n")
 
-# Run Phase 1 tests
+# 6. Run Phase 1 tests
 os.chdir("/content/accentedge")
-r = run("python3 -m pytest tests/test_phase1.py -v --tb=short 2>&1", "run Phase 1 tests", timeout=120)
-
-print("\n=== Bootstrap complete ===")
+print("\n=== Running Phase 1 tests ===")
+r = subprocess.run(
+    ["python3", "-m", "pytest", "tests/test_phase1.py", "-v", "--tb=short"],
+    capture_output=True, text=True, timeout=120
+)
+print(r.stdout[-3000:])
+if r.stderr:
+    print("STDERR:", r.stderr[-2000:])
+sys.exit(r.returncode)
