@@ -125,27 +125,42 @@ class FACodecAdapter(FactorizedSpeechCodec):
         z = self.model["encoder"](wav_in)
 
         if self._timbre_norm:
-            # forward_v2: returns (z_q, quantized=[z_p, z_c, z_r], losses, timbre)
-            # z_q already has timbre conditioning baked in via LayerNorm modulation.
-            z_q, quantized_list, commitment_loss, codebook_loss, timbre = self.model["quantizer"](
-                z, wav_in, n_c=2
-            )
+            # forward_v2: returns (z_q, quantized=[z_p, z_c, z_r], losses, timbre, content_all_quant)
+            # z_c is the FULL content sum (zc1 + zc2), not individual codebooks.
+            # content_all_quant[i] = individual codebook output for content codebook i.
+            result = self.model["quantizer"](z, wav_in, n_c=2)
+            z_q = result[0]
+            quantized_list = result[1]
+            commitment_loss = result[2]
+            codebook_loss = result[3]
+            timbre = result[4]
+            content_all_quant = result[5]
+
             z_p, z_c, z_r = quantized_list
-            # No separate z_t in timbre_norm mode; timbre is in z_q directly.
+            # z_c = zc1 + zc2 + ... (sum of all content codebooks)
+            zc1 = content_all_quant[0]  # first content codebook = primary phonetic content
+            zc2 = content_all_quant[1]  # second content codebook = finer content detail
             z_t = None
         else:
-            # forward: returns (z_q, quantized=[z_c, z_p, z_t, z_r], losses, timbre)
-            z_q, quantized_list, commitment_loss, codebook_loss, timbre = self.model["quantizer"](
-                z, wav_in, n_c=2
-            )
+            # forward: returns (z_q, quantized=[z_c, z_p, z_t, z_r], losses, timbre, content_all_quant)
+            result = self.model["quantizer"](z, wav_in, n_c=2)
+            z_q = result[0]
+            quantized_list = result[1]
+            commitment_loss = result[2]
+            codebook_loss = result[3]
+            timbre = result[4]
+            content_all_quant = result[5]
+
             z_c, z_p, z_t, z_r = quantized_list
+            zc1 = content_all_quant[0]
+            zc2 = content_all_quant[1]
 
         # z_q is the timbre-conditioned quantized latent — this is exactly what the
         # decoder expects for faithful round-trip reconstruction.
         return FactorizedLatents(
             content=z_q,           # [B, C, T] — timbre-conditioned z for decoder input
-            content_zc1=z_c,      # [B, 1, T] — content codebook indices
-            content_zc2=None,      # not exposed by the upstream quantizer
+            content_zc1=zc1,      # [B, 1, T] — FIRST content codebook (primary phonetic)
+            content_zc2=zc2,      # [B, 1, T] — SECOND content codebook (finer detail)
             prosody=z_p,           # [B, 1, T] — prosody codebook indices
             detail=z_r,            # [B, K, T] — residual detail codebook indices
             timbre=timbre,        # [B, D] — raw StyleEncoder output (gamma/beta source)
@@ -155,7 +170,9 @@ class FACodecAdapter(FactorizedSpeechCodec):
                 "timbre_norm": self._timbre_norm,
                 # expose raw factors for accent conversion downstream
                 "z_t": z_t,        # None when timbre_norm=True
-                "z_c": z_c,
+                "z_c_sum": z_c,    # FULL content sum (zc1 + zc2 + ...) for reference only
+                "zc1": zc1,        # individual first content codebook
+                "zc2": zc2,        # individual second content codebook
                 "z_p": z_p,
                 "z_r": z_r,
                 "commitment_loss": commitment_loss,
