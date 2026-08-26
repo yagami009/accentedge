@@ -1,4 +1,4 @@
-"""Phase 1 — FACodec adapter.
+"""Phase 1 — FACodec adapter (using standalone Plachta/FAcodec).
 
 Wraps Plachta/FAcodec (NaturalSpeech 3 factorized codec) as AccentEdge's
 frozen codec backend. The codec is frozen after initialization.
@@ -32,183 +32,160 @@ import yaml
 
 warnings.simplefilter("ignore")
 
-# Add Amphion path for FACodec models
-_AMPHION_PATH = os.environ.get("AMPHION_PATH", str(Path(__file__).resolve().parents[5] / "Amphion"))
-if os.path.exists(_AMPHION_PATH):
-    sys.path.append(_AMPHION_PATH)
+# Path to standalone FAcodec repo (verified working)
+_FACODEC_REPO = Path(__file__).resolve().parents[3] / ".." / "FAcodec"
+_FACODEC_REPO = _FACODEC_REPO.resolve()
+
+if str(_FACODEC_REPO) not in sys.path:
+    sys.path.insert(0, str(_FACODEC_REPO))
 
 from codec.interfaces import FactorizedLatents, FactorizedSpeechCodec
 
 
-def _load_facodec_from_hf(repo_id: str = "Plachta/FAcodec"):
-    """Load FACodec encoder, quantizer, decoder from HuggingFace Hub."""
-    from huggingface_hub import hf_hub_download
+class FACodecAdapter(nn.Module, FactorizedSpeechCodec):
+    """Wraps Plachta/FAcodec as AccentEdge's frozen codec.
 
-    ckpt_path = hf_hub_download(repo_id=repo_id, filename="facodec.pt")
-    config_path = hf_hub_download(repo_id=repo_id, filename="config.yaml")
-
-    with open(config_path) as f:
-        config = yaml.safe_load(f)
-    model_params = config.get("model_params", config.get("model", {}))
-
-    # Import Amphion FACodec
-    try:
-        from models.codec.ns3_codec import FACodecEncoder, FACodecDecoder
-    except ImportError:
-        raise ImportError(
-            "Cannot import FACodecEncoder/FACodecDecoder from Amphion. "
-            "Clone Amphion: git clone https://github.com/open-mmlab/Amphion.git"
-        )
-
-    encoder = FACodecEncoder(**model_params.get("DAC", {}))
-    decoder = FACodecDecoder(**model_params.get("DAC", {}))
-
-    ckpt = torch.load(ckpt_path, map_location="cpu")
-    if "net" in ckpt:
-        ckpt = ckpt["net"]
-
-    encoder.load_state_dict(ckpt.get("encoder", {}), strict=False)
-    decoder.load_state_dict(ckpt.get("decoder", {}), strict=False)
-    quantizer_state = ckpt.get("quantizer", {})
-
-    return encoder, decoder, quantizer_state, model_params
-
-
-class FACodecAdapter(FactorizedSpeechCodec):
-    """AccentEdge wrapper for Plachta/FAcodec.
-
-    Frozen by default. Provides FactorizedLatents with all factors.
+    Usage:
+        adapter = FACodecAdapter(device="cpu")
+        latents = adapter.encode(waveform)
+        recon = adapter.decode(latents)
     """
 
-    sample_rate = 24000
+    sample_rate: int = 24000
 
-    def __init__(self, device: str = "cpu"):
+    def __init__(self, device: str = "cpu", facodec_ckpt: str = "Plachta/FAcodec"):
+        super().__init__()
         self.device = torch.device(device)
-        encoder, decoder, quantizer_state, model_params = _load_facodec_from_hf()
-        self.encoder = encoder.to(self.device).eval()
-        self.decoder = decoder.to(self.device).eval()
-        self._quantizer_state = quantizer_state
+
+        # Import FAcodec modules
+        from modules.commons import build_model, recursive_munch
+        from hf_utils import load_custom_model_from_hf
+
+        ckpt_path, config_path = load_custom_model_from_hf(facodec_ckpt)
+        with open(config_path) as f:
+            config = yaml.safe_load(f)
+
+        model_params = recursive_munch(config.get("model_params", config.get("model", {})))
+        self.model = build_model(model_params)
+
+        ckpt_params = torch.load(ckpt_path, map_location="cpu")
+        for key in ckpt_params:
+            self.model[key].load_state_dict(ckpt_params[key])
+
+        # Move all sub-models to device
+        for key in self.model:
+            self.model[key].eval().to(self.device)
 
         # Freeze all parameters
-        for param in self.encoder.parameters():
-            param.requires_grad = False
-        for param in self.decoder.parameters():
-            param.requires_grad = False
+        if True:  # freeze_codec flag
+            for key in self.model:
+                for param in self.model[key].parameters():
+                    param.requires_grad = False
 
-        # Model dimensions from config
-        self.dim = model_params.get("DAC", {}).get("encoder_dim", 64)
-        self._verify_frozen()
+        # Cache config
+        self._config_hash = hashlib.sha256(
+            yaml.dump(model_params).encode()
+        ).hexdigest()[:16]
 
-    def _verify_frozen(self):
-        for name, param in self.encoder.named_parameters():
-            assert not param.requires_grad, f"Encoder parameter {name} is trainable!"
-        for name, param in self.decoder.named_parameters():
-            assert not param.requires_grad, f"Decoder parameter {name} is trainable!"
+        self._ckpt_hash = hashlib.sha256(
+            open(ckpt_path, "rb").read()
+        ).hexdigest()[:16]
 
+    # ──────────────────────────────────────────────────────────────────────────
+    # Encode / decode
+    # ──────────────────────────────────────────────────────────────────────────
+
+    @torch.no_grad()
     def encode(self, waveform: torch.Tensor) -> FactorizedLatents:
         """Encode waveform → factorized latents.
 
         Args:
-            waveform: [B, T] float32, mono, 24kHz
+            waveform: [B, T] float32, range [-1, 1], sample_rate=24000
 
         Returns:
-            FactorizedLatents with all factors extracted
+            FactorizedLatents with content (zc1 continuous), prosody, timbre
         """
-        assert waveform.dim() == 2, f"Expected [B, T], got {waveform.shape}"
-        waveform = waveform.to(self.device)
+        if waveform.dim() == 1:
+            waveform = waveform.unsqueeze(0)
 
-        with torch.no_grad():
-            z = self.encoder(waveform)
-            z_out, quantized, commitment_loss, codebook_loss, timbre, codes = \
-                self.decoder.quantizer(z, waveform, n_c=2, return_codes=True)
-
-        # codes[0] = prosody indices [B, 1, T]
-        # codes[1] = content indices [B, 2, T] (2 codebooks for zc1)
-        # quantized[0] = z_p [B, D, T]
-        # quantized[1] = z_c [B, D, T]
-        # quantized[2] = z_t [B, D, T]
-        # quantized[3] = z_r [B, D, T]
-
-        # Extract content codebook indices
-        content_codes = codes[1]  # [B, 2, T] — zc1 and zc2 code indices
-        prosody_codes = codes[0]  # [B, 1, T]
-        # Timbre is already a vector [B, D]
-
-        return FactorizedLatents(
-            content=quantized[1],       # z_c [B, D, T] — content quantized
-            content_zc1=content_codes[:, 0:1, :],  # zc1 code indices [B, 1, T]
-            content_zc2=content_codes[:, 1:2, :],  # zc2 code indices [B, 1, T]
-            prosody=prosody_codes,       # [B, 1, T]
-            detail=quantized[3],         # z_r [B, D, T] — residual detail
-            timbre=timbre,               # [B, D] — global timbre
-            metadata={
-                "codes_prosody": codes[0].cpu(),
-                "codes_content": codes[1].cpu(),
-                "codes_acoustic": codes[2].cpu() if len(codes) > 2 else None,
-            }
+        z = self.model.encoder(waveform[None, ...].to(self.device).float())
+        _, quantized, _, _, timbre, codes = self.model.quantizer(
+            z, waveform[None, ...].to(self.device).float(), return_codes=True, n_c=2
         )
 
+        # codes: [codes_c, codes_p, codes_t, codes_r]
+        # quantized: [z_c, z_p, z_t, z_r]
+        codes_c, codes_p, codes_t, codes_r = codes
+        z_c, z_p, z_t, z_r = quantized
+
+        # z_c is [z_c1 + z_c2]; we need z_c1 separately
+        # The quantizer returns the combined content; split into codebooks
+        # codes_c[0] = zc1 indices, codes_c[1] = zc2 indices
+        return FactorizedLatents(
+            content=z_c,  # combined content [B, D, T]
+            content_zc1=codes_c[0] if isinstance(codes_c, (list, tuple)) else codes_c,
+            content_zc2=codes_c[1] if isinstance(codes_c, (list, tuple)) and len(codes_c) > 1 else None,
+            prosody=codes_p,
+            detail=codes_r,
+            timbre=timbre,
+            metadata={
+                "sample_rate": self.sample_rate,
+                "codec_hash": self._ckpt_hash,
+                "config_hash": self._config_hash,
+                "source_shape": list(waveform.shape),
+            },
+        )
+
+    @torch.no_grad()
     def decode(self, latents: FactorizedLatents) -> torch.Tensor:
         """Decode factorized latents → waveform.
 
-        Reconstructs the quantized sum from available factors,
-        then passes through the decoder.
+        Reconstructs from content + prosody + timbre.
+        zc2 is zeroed (not available during conversion in Phase 1).
         """
-        # Reconstruct the quantized z that the decoder expects
-        z = latents.content  # [B, D, T]
-
-        if latents.prosody is not None:
-            # Need to get prosody quantized vector from codebook indices
-            prosody_indices = latents.prosody  # [B, 1, T]
-            z_p = self._codes_to_vector(prosody_indices, quantizer_idx=0, layer=0)
-            z = z + z_p
-
-        if latents.detail is not None:
-            z_r = latents.detail  # [B, D, T]
-            z = z + z_r
-
-        with torch.no_grad():
-            waveform = self.decoder(z.to(self.device))
-        return waveform.cpu()
-
-    def _codes_to_vector(self, code_indices: torch.Tensor, quantizer_idx: int, layer: int = 0) -> torch.Tensor:
-        """Convert codebook indices to continuous vectors via the codebook."""
-        codebook = self.decoder.quantizer[quantizer_idx].layers[layer].codebook.weight
-        # code_indices: [B, K, T] → [B, T, K]
-        indices = code_indices.squeeze(1).long() if code_indices.dim() == 3 else code_indices.long()
-        vectors = F.embedding(indices, codebook)  # [B, T, D]
-        # Transpose to [B, D, T]
-        return vectors.transpose(1, 2)
-
-    def decode_from_codes(self, content_codes: torch.Tensor,
-                          prosody_codes: Optional[torch.Tensor] = None,
-                          timbre: Optional[torch.Tensor] = None) -> torch.Tensor:
-        """Decode from raw codebook indices (for denoised zc1).
-
-        Args:
-            content_codes: [B, 1, T] zc1 codebook indices
-            prosody_codes: [B, 1, T] prosody codebook indices (source, preserved)
-            timbre: [B, D] global timbre (source, preserved)
-        """
-        # Convert zc1 codes → continuous vectors
-        z_c1 = self._codes_to_vector(content_codes, quantizer_idx=1, layer=0)  # [B, D, T]
-
-        # zc2 stays zeroed (will be predicted or use source)
-        z_c = z_c1  # [B, D, T]
+        # Convert zc1 codes to continuous vectors
+        z_c = self._codes_to_vector(latents.content_zc1, quantizer_idx=1, layer=0)  # [B, D, T]
 
         z = z_c
-        if prosody_codes is not None:
-            z_p = self._codes_to_vector(prosody_codes, quantizer_idx=0, layer=0)
+        if latents.prosody is not None:
+            z_p = self._codes_to_vector(latents.prosody, quantizer_idx=0, layer=0)
             z = z + z_p
 
-        # Timbre: if not provided, use zero (unconditional)
-        # In Phase 1, timbre is always preserved from source
+        # Timbre: add if available
+        if latents.timbre is not None:
+            # Timbre is a global vector [B, D]; expand to sequence
+            # In the full codec, timbre conditions the decoder
+            # For Phase 1, we add it as a mean offset
+            timbre_mean = latents.timbre.mean(dim=-1, keepdim=True).unsqueeze(-1)  # [B, D, 1]
+            z = z + timbre_mean
 
         with torch.no_grad():
-            waveform = self.decoder(z.to(self.device))
+            waveform = self.model.decoder(z.to(self.device))
         return waveform.cpu()
 
+    def _codes_to_vector(self, code_indices, quantizer_idx: int = 0, layer: int = 0) -> torch.Tensor:
+        """Convert codebook indices to continuous latent vectors."""
+        codebook = self.model.quantizer[quantizer_idx].layers[layer].codebook.weight
+        z = torch.nn.functional.embedding(code_indices.squeeze(0), codebook)
+        z = z.transpose(1, 2).unsqueeze(0)  # [B, D, T]
+        # Apply output projection if present
+        if hasattr(self.model.quantizer[quantizer_idx].layers[layer], 'out_proj'):
+            z = self.model.quantizer[quantizer_idx].layers[layer].out_proj(z)
+        return z
+
+    @torch.no_grad()
     def reconstruction(self, waveform: torch.Tensor) -> torch.Tensor:
         """Baseline: encode → decode without modification."""
         latents = self.encode(waveform)
         return self.decode(latents)
+
+    def freeze(self) -> None:
+        """Assert all codec parameters are frozen."""
+        frozen = True
+        for key in self.model:
+            for param in self.model[key].parameters():
+                if param.requires_grad:
+                    frozen = False
+                    print(f"WARNING: {key} parameter still requires_grad!")
+        assert frozen, "FACodec parameters must be frozen in Phase 1"
+        print("FACodec: all parameters frozen ✓")
