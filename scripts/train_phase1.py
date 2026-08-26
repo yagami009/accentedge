@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 """Phase 1 denoiser training smoke test for Colab."""
-import sys, os, subprocess, torch
-import torch.nn.functional as F
+import subprocess, sys, os
 
-# Set up environment
-os.environ["PYTHONPATH"] = "/content/FAC-FACodec:/content/accentedge/src:" + os.environ.get("PYTHONPATH", "")
 os.chdir("/content/accentedge")
+os.environ["PYTHONPATH"] = "/content/FAC-FACodec:/content/accentedge/src:" + os.environ.get("PYTHONPATH", "")
 
 # Install package
 r = subprocess.run([sys.executable, "-m", "pip", "install", "-e", "."], capture_output=True, text=True)
@@ -14,14 +12,17 @@ if r.returncode != 0:
     sys.exit(1)
 print("Package installed")
 
+import torch
+import torch.nn.functional as F
+
 from accentedge.phase1.denoiser import DenoisingTransformerModel
 from accentedge.phase1.diffusion import compute_noise_schedule, q_sample
 
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+DEVICE = "cuda"
 print(f"Device: {DEVICE}")
 print(f"Torch: {torch.__version__}")
 
-# Small model for smoke test
+# Small model
 model = DenoisingTransformerModel(
     d_model=64, nhead=4, num_layers=2, d_ff=128,
     phone_vocab_size=393, facodec_dim=8
