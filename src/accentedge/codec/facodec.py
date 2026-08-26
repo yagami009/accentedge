@@ -5,11 +5,11 @@ AccentEdge's frozen codec backend.
 
 Key verified facts:
   - Sample rate: 24000 Hz
-  - Content: zc1 (2 codebooks, dim=8) + zc2 (predicted after denoising)
+  - Content: zc (2 codebooks, dim=8) + zc2 (predicted)
   - Prosody: zp (1 codebook, dim=8)
   - Acoustic detail: zr (3 codebooks, dim=8)
-  - Timbre: spk_embs (single vector per utterance, dim=256)
-  - Frame rate: 50 fps (hop_length=300 at 24kHz)
+  - Timbre: speaker_embedding (dim=256 or 1024)
+  - Frame rate: 50 fps (hop_length=240 at 24kHz)
 
 Upstream: https://github.com/open-mmlab/Amphion
 Checkpoint: Plachta/FAcodec (HuggingFace)
@@ -58,15 +58,28 @@ class FACodecAdapter(nn.Module, FactorizedSpeechCodec):
         with open(config_path) as f:
             config = yaml.safe_load(f)
 
+        # Use Amphion's bundled FACodec (proven working)
+        from models.codec.ns3_codec.facodec import FACodecEncoder, FACodecDecoder
         model_params = config.get("model_params", config.get("model", {}))
 
-        # Build encoder
-        encoder = FACodecEncoder(ngf=32, up_ratios=[2, 4, 5, 5], out_channels=256)
+        encoder = FACodecEncoder(
+            ngf=model_params.get("ngf", 32),
+            up_ratios=tuple(model_params.get("up_ratios", [2, 4, 5, 5])),
+            out_channels=model_params.get("out_channels", 256),
+        )
         decoder = FACodecDecoder(
-            in_channels=256, upsample_initial_channel=1024, ngf=32,
-            up_ratios=[5, 5, 4, 2], vq_num_q_c=2, vq_num_q_p=1, vq_num_q_r=3,
-            vq_dim=256, codebook_dim=8,
-            codebook_size_prosody=10, codebook_size_content=10, codebook_size_residual=10,
+            in_channels=model_params.get("decoder_in_channels", 256),
+            upsample_initial_channel=model_params.get("decoder_upsample_initial_channel", 1024),
+            ngf=model_params.get("decoder_ngf", 32),
+            up_ratios=tuple(model_params.get("decoder_up_ratios", [5, 5, 4, 2])),
+            vq_num_q_c=model_params.get("vq_num_q_c", 2),
+            vq_num_q_p=model_params.get("vq_num_q_p", 1),
+            vq_num_q_r=model_params.get("vq_num_q_r", 3),
+            vq_dim=model_params.get("vq_dim", 256),
+            codebook_dim=model_params.get("codebook_dim", 8),
+            codebook_size_prosody=model_params.get("codebook_size_prosody", 1024),
+            codebook_size_content=model_params.get("codebook_size_content", 1024),
+            codebook_size_residual=model_params.get("codebook_size_residual", 1024),
             use_gr_x_timbre=True,
         )
 
