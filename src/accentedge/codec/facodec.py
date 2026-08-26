@@ -1,7 +1,10 @@
-"""Phase 1 — FACodec adapter (using Amphion's bundled FACodec).
+"""Phase 1 — FACodec adapter (using upstream FAcodec directly).
 
-Wraps Amphion's ns3_codec FACodecEncoder + FACodecDecoder as
-AccentEdge's frozen codec backend.
+Wraps Plachta/FAcodec as AccentEdge's frozen codec backend.
+Uses the exact upstream FAcodec pattern from reconstruct.py:
+  1. encoder(wav) -> z
+  2. quantizer(z, wav, n_c=2) -> z_q, [z_c, z_p, z_r], commitment_loss, codebook_loss, timbre
+  3. decoder(z_q) -> waveform
 
 Key verified facts:
   - Sample rate: 24000 Hz
@@ -11,7 +14,7 @@ Key verified facts:
   - Timbre: speaker_embedding (dim=1024)
   - Frame rate: 50 fps (hop_length=240 at 24kHz)
 
-Upstream: https://github.com/open-mmlab/Amphion
+Upstream: https://github.com/Plachtaa/FAcodec
 Checkpoint: Plachta/FAcodec (HuggingFace)
 """
 from __future__ import annotations
@@ -31,24 +34,13 @@ import yaml
 
 warnings.simplefilter("ignore")
 
-# Add Amphion to path
-_AMPHION_PATH = Path(__file__).resolve().parents[3] / ".." / "Amphion"
-_AMPHION_PATH = _AMPHION_PATH.resolve()
-if str(_AMPHION_PATH) not in sys.path:
-    sys.path.insert(0, str(_AMPHION_PATH))
-
 from accentedge.codec.interfaces import FactorizedLatents, FactorizedSpeechCodec
-
-from models.codec.ns3_codec.facodec import FACodecEncoder, FACodecDecoder
-from huggingface_hub import hf_hub_download
 
 
 class FACodecAdapter(FactorizedSpeechCodec):
-    """FACodec codec adapter using Amphion's bundled implementation.
+    """FACodec codec adapter using upstream FAcodec directly.
 
-    Uses upstream FAcodec pattern: encoder -> quantizer -> decoder
-    The quantizer returns z (combined), quantized_list, commitment_loss, codebook_loss, timbre.
-    The decoder receives z directly (no manual summing).
+    Uses the exact upstream FAcodec pattern from reconstruct.py.
     """
 
     sample_rate: int = 24000
@@ -57,52 +49,29 @@ class FACodecAdapter(FactorizedSpeechCodec):
         self.device = torch.device(device)
         self.facodec_ckpt = facodec_ckpt
 
-        # Download checkpoint
-        ckpt_path, config_path = hf_hub_download(
-            repo_id=facodec_ckpt, filename="pytorch_model.bin"
-        )
+        # Setup FAcodec path (FAC-FACodec pattern)
+        _facodec_path = Path(__file__).resolve().parents[4] / "FAcodec"
+        if _facodec_path.exists() and str(_facodec_path) not in sys.path:
+            sys.path.insert(0, str(_facodec_path))
+
+        _facodec_modules = _facodec_path / "modules"
+        if _facodec_modules.exists() and str(_facodec_modules) not in sys.path:
+            sys.path.insert(0, str(_facodec_modules))
+
+        from modules.commons import build_model, recursive_munch
+        from hf_utils import load_custom_model_from_hf
+
+        ckpt_path, config_path = load_custom_model_from_hf(facodec_ckpt)
         with open(config_path) as f:
             config = yaml.safe_load(f)
+        model_params = recursive_munch(config["model_params"])
+        self.model = build_model(model_params)
 
-        model_params = config.get("model_params", config.get("model", {}))
-
-        # Build encoder and decoder from Amphion
-        encoder = FACodecEncoder(
-            ngf=model_params.get("ngf", 32),
-            up_ratios=tuple(model_params.get("up_ratios", [2, 4, 5, 5])),
-            out_channels=model_params.get("out_channels", 1024),
-        )
-        decoder = FACodecDecoder(
-            in_channels=model_params.get("decoder_in_channels", 256),
-            upsample_initial_channel=model_params.get("decoder_upsample_initial_channel", 1536),
-            ngf=model_params.get("decoder_ngf", 32),
-            up_ratios=tuple(model_params.get("decoder_up_ratios", [5, 5, 4, 2])),
-            vq_num_q_c=model_params.get("vq_num_q_c", 2),
-            vq_num_q_p=model_params.get("vq_num_q_p", 1),
-            vq_num_q_r=model_params.get("vq_num_q_r", 3),
-            vq_dim=model_params.get("vq_dim", 256),
-            codebook_dim=model_params.get("codebook_dim", 8),
-            codebook_size_prosody=model_params.get("codebook_size_prosody", 1024),
-            codebook_size_content=model_params.get("codebook_size_content", 1024),
-            codebook_size_residual=model_params.get("codebook_size_residual", 1024),
-            use_gr_x_timbre=True,
-        )
-
-        self.model = {"encoder": encoder, "decoder": decoder}
-
-        # Load checkpoint
         ckpt = torch.load(ckpt_path, map_location="cpu")
         ckpt = ckpt.get("net", ckpt)
-        if "encoder" in ckpt:
-            self.model["encoder"].load_state_dict(ckpt["encoder"])
-        if "decoder" in ckpt:
-            self.model["decoder"].load_state_dict(ckpt["decoder"])
-        for key in self.model:
-            if key not in ckpt:
-                for alt_key in ckpt:
-                    if key.lower() in alt_key.lower():
-                        self.model[key].load_state_dict(ckpt[alt_key])
-                        break
+        for key in ckpt:
+            self.model[key].load_state_dict(ckpt[key])
+            self.model[key].eval()
 
         for key in self.model:
             self.model[key].eval().to(self.device)
@@ -117,16 +86,18 @@ class FACodecAdapter(FactorizedSpeechCodec):
         if waveform.dim() == 1:
             waveform = waveform.unsqueeze(0)
 
-        wav_24k = torchaudio.functional.resample(waveform, 16000, 24000)
-        wav_in = wav_24k.unsqueeze(0).float().to(self.device)
+        # Resample to 24kHz if needed
+        wav = waveform.float()
+        if wav.shape[-1] > 100000:  # likely 16kHz -> resample up
+            wav = torchaudio.functional.resample(wav, 16000, 24000)
+        wav_in = wav.unsqueeze(0).to(self.device)
 
         # Upstream FAcodec pattern: encoder -> quantizer
-        # quantizer returns: z, quantized_list, commitment_loss, codebook_loss, timbre
+        # quantizer returns: z_q, [z_c, z_p, z_r], commitment_loss, codebook_loss, timbre
         z = self.model["encoder"](wav_in)
-        z, quantized_list, commitment_loss, codebook_loss, timbre = self.model["quantizer"](
+        z_q, quantized_list, commitment_loss, codebook_loss, timbre = self.model["quantizer"](
             z, wav_in, n_c=2
         )
-        # quantized_list = [z_c, z_p, z_r]
         z_c, z_p, z_r = quantized_list
 
         return FactorizedLatents(
@@ -141,8 +112,7 @@ class FACodecAdapter(FactorizedSpeechCodec):
 
     @torch.no_grad()
     def decode(self, latents: FactorizedLatents) -> torch.Tensor:
-        # Upstream pattern: decoder receives z directly (timbre baked into z by quantizer)
-        # Note: latents.content here is actually the full quantized z (content + prosody + residual)
+        # Upstream pattern: decoder receives z_q directly (timbre baked into z by quantizer)
         waveform = self.model["decoder"](latents.content.to(self.device))
         return waveform.cpu()
 
