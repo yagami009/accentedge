@@ -5,10 +5,10 @@ AccentEdge's frozen codec backend.
 
 Key verified facts:
   - Sample rate: 24000 Hz
-  - Content: zc (2 codebooks, dim=8) + zc2 (predicted)
+  - Content: zc (2 codebooks, dim=8)
   - Prosody: zp (1 codebook, dim=8)
   - Acoustic detail: zr (3 codebooks, dim=8)
-  - Timbre: speaker_embedding (dim=256 or 1024)
+  - Timbre: speaker_embedding (dim=1024)
   - Frame rate: 50 fps (hop_length=240 at 24kHz)
 
 Upstream: https://github.com/open-mmlab/Amphion
@@ -39,29 +39,34 @@ if str(_AMPHION_PATH) not in sys.path:
 
 from accentedge.codec.interfaces import FactorizedLatents, FactorizedSpeechCodec
 
+from models.codec.ns3_codec.facodec import FACodecEncoder, FACodecDecoder
+from huggingface_hub import hf_hub_download
 
-class FACodecAdapter(nn.Module, FactorizedSpeechCodec):
-    """Wraps Amphion's FACodec as AccentEdge's frozen codec."""
+
+class FACodecAdapter(FactorizedSpeechCodec):
+    """FACodec codec adapter using Amphion's bundled implementation.
+
+    Uses upstream FAcodec pattern: encoder -> quantizer -> decoder
+    The quantizer internally combines content, prosody, residual, and timbre.
+    The decoder receives the combined z directly (no manual summing).
+    """
 
     sample_rate: int = 24000
 
     def __init__(self, device: str = "cpu", facodec_ckpt: str = "Plachta/FAcodec"):
-        super().__init__()
         self.device = torch.device(device)
+        self.facodec_ckpt = facodec_ckpt
 
-        from models.codec.ns3_codec.facodec import FACodecEncoder, FACodecDecoder
-        from huggingface_hub import hf_hub_download
-
-        ckpt_path = hf_hub_download(repo_id=facodec_ckpt, filename="pytorch_model.bin")
-        config_path = hf_hub_download(repo_id=facodec_ckpt, filename="config.yml")
-
+        # Download checkpoint
+        ckpt_path, config_path = hf_hub_download(
+            repo_id=facodec_ckpt, filename="pytorch_model.bin"
+        )
         with open(config_path) as f:
             config = yaml.safe_load(f)
 
-        # Use Amphion's bundled FACodec (proven working)
-        from models.codec.ns3_codec.facodec import FACodecEncoder, FACodecDecoder
         model_params = config.get("model_params", config.get("model", {}))
 
+        # Build encoder and decoder from Amphion
         encoder = FACodecEncoder(
             ngf=model_params.get("ngf", 32),
             up_ratios=tuple(model_params.get("up_ratios", [2, 4, 5, 5])),
@@ -75,7 +80,7 @@ class FACodecAdapter(nn.Module, FactorizedSpeechCodec):
             vq_num_q_c=model_params.get("vq_num_q_c", 2),
             vq_num_q_p=model_params.get("vq_num_q_p", 1),
             vq_num_q_r=model_params.get("vq_num_q_r", 3),
-            vq_dim=model_params.get("vq_dim", 256),
+            vq_dim=model_params.get("vq_dim", 1024),
             codebook_dim=model_params.get("codebook_dim", 8),
             codebook_size_prosody=model_params.get("codebook_size_prosody", 1024),
             codebook_size_content=model_params.get("codebook_size_content", 1024),
@@ -112,60 +117,33 @@ class FACodecAdapter(nn.Module, FactorizedSpeechCodec):
         if waveform.dim() == 1:
             waveform = waveform.unsqueeze(0)
 
-        z = self.model["encoder"](waveform[None, ...].to(self.device).float())
-        _, quantized, _, _, timbre, codes = self.model["decoder"](
-            z, waveform[None, ...].to(self.device).float(), return_codes=True, n_c=2
-        )
+        wav_24k = torchaudio.functional.resample(waveform, 16000, 24000)
+        wav_in = wav_24k.unsqueeze(0).float().to(self.device)
 
-        codes_c, codes_p, codes_t, codes_r = codes
-        z_c, z_p, z_t, z_r = quantized
+        # Upstream FAcodec pattern: encoder -> quantizer
+        # quantizer returns: z, quantized_list, commitment_loss, codebook_loss, timbre
+        z = self.model["encoder"](wav_in)
+        z, quantized_list, commitment_loss, codebook_loss, timbre = self.model["quantizer"](
+            z, wav_in, n_c=2
+        )
+        # quantized_list = [z_c, z_p, z_r]
+        z_c, z_p, z_r = quantized_list
 
         return FactorizedLatents(
             content=z_c,
-            content_zc1=codes_c[0] if isinstance(codes_c, (list, tuple)) else codes_c,
-            content_zc2=codes_c[1] if isinstance(codes_c, (list, tuple)) and len(codes_c) > 1 else None,
-            prosody=codes_p,
-            detail=codes_r,
+            content_zc1=z_c,
+            content_zc2=None,
+            prosody=z_p,
+            detail=z_r,
             timbre=timbre,
             metadata={"sample_rate": self.sample_rate, "ckpt_hash": self._ckpt_hash},
         )
 
     @torch.no_grad()
     def decode(self, latents: FactorizedLatents) -> torch.Tensor:
-        # Reconstruct all factors
-        z_c1 = self._codes_to_vector(latents.content_zc1, quantizer_idx=1, layer=0)
-        z_c = z_c1
-        if latents.content_zc2 is not None:
-            z_c2 = self._codes_to_vector(latents.content_zc2, quantizer_idx=1, layer=1)
-            z_c = z_c + z_c2
-
-        z_p = 0.0
-        if latents.prosody is not None:
-            z_p = self._codes_to_vector(latents.prosody, quantizer_idx=0, layer=0)
-
-        z_r = 0.0
-        if latents.detail is not None:
-            for k in range(latents.detail.shape[1]):
-                z_r += self._codes_to_vector(latents.detail[:, k:k+1, :], quantizer_idx=2, layer=k)
-
-        z = z_c + z_p + z_r
-
-        speaker_embedding = latents.timbre if latents.timbre is not None else torch.zeros(
-            z.shape[0], 256, device=z.device, dtype=z.dtype
-        )
-
-        waveform = self.model["decoder"].inference(
-            z.to(self.device), speaker_embedding=speaker_embedding.to(self.device)
-        )
+        # Upstream pattern: decoder receives z directly (timbre baked into z by quantizer)
+        waveform = self.model["decoder"](latents.content.to(self.device))
         return waveform.cpu()
-
-    def _codes_to_vector(self, code_indices, quantizer_idx: int = 0, layer: int = 0) -> torch.Tensor:
-        codebook = self.model["decoder"].quantizer[quantizer_idx].layers[layer].codebook.weight
-        z = torch.nn.functional.embedding(code_indices.squeeze(0), codebook)
-        z = z.transpose(1, 2).unsqueeze(0)
-        if hasattr(self.model["decoder"].quantizer[quantizer_idx].layers[layer], "out_proj"):
-            z = self.model["decoder"].quantizer[quantizer_idx].layers[layer].out_proj(z)
-        return z
 
     def freeze(self) -> None:
         frozen = True

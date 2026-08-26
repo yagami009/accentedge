@@ -84,16 +84,14 @@ for fname in test_samples:
     wav_24k = torchaudio.functional.resample(wav, sr, 24000)
     wav_in = wav_24k.unsqueeze(0).float()
 
-    # Encode + quantize using upstream pattern
+    # Encode + quantize using upstream pattern (5 return values)
     z = model["encoder"](wav_in)
-    z, quantized, commitment_loss, codebook_loss, timbre, codes = model["quantizer"](
+    z, quantized, commitment_loss, codebook_loss, timbre = model["quantizer"](
         z, wav_in, n_c=2
     )
-    # quantized = [z_c, z_p, z_r] (content, prosody, residual)
-    z_c, z_p, z_r = quantized
-    print(f"  {os.path.basename(fname)}: z={z.shape}, z_c={z_c.shape}, z_p={z_p.shape}, z_r={z_r.shape}, timbre={timbre.shape}")
+    print(f"  {os.path.basename(fname)}: z={z.shape}, timbre={timbre.shape}")
 
-    # Decode: upstream uses model.decoder(z) directly
+    # Decode: upstream uses model.decoder(z) directly (timbre baked into z)
     full_pred = model["decoder"](z)
 
     recon_path = f"/content/reconstructed/{os.path.basename(fname)}"
