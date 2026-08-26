@@ -140,27 +140,46 @@ class FACodecAdapter(nn.Module, FactorizedSpeechCodec):
     def decode(self, latents: FactorizedLatents) -> torch.Tensor:
         """Decode factorized latents → waveform.
 
-        Reconstructs from content + prosody + timbre.
-        zc2 is zeroed (not available during conversion in Phase 1).
+        Reconstructs from content + prosody + residual + timbre,
+        matching the upstream FACodec reconstruction formula:
+          z = z_p + z_c + z_r
+          speaker_embedding → timbre_linear → FiLM conditioning
+          waveform = decoder.inference(z, speaker_embedding)
         """
-        # Convert zc1 codes to continuous vectors
-        z_c = self._codes_to_vector(latents.content_zc1, quantizer_idx=1, layer=0)  # [B, D, T]
+        # Reconstruct content from zc1 (and zc2 if available)
+        z_c1 = self._codes_to_vector(latents.content_zc1, quantizer_idx=1, layer=0)
+        z_c = z_c1
+        if latents.content_zc2 is not None:
+            z_c2 = self._codes_to_vector(latents.content_zc2, quantizer_idx=1, layer=1)
+            z_c = z_c + z_c2
 
-        z = z_c
+        # Reconstruct prosody
         if latents.prosody is not None:
             z_p = self._codes_to_vector(latents.prosody, quantizer_idx=0, layer=0)
-            z = z + z_p
+        else:
+            z_p = 0.0
 
-        # Timbre: add if available
-        if latents.timbre is not None:
-            # Timbre is a global vector [B, D]; expand to sequence
-            # In the full codec, timbre conditions the decoder
-            # For Phase 1, we add it as a mean offset
-            timbre_mean = latents.timbre.mean(dim=-1, keepdim=True).unsqueeze(-1)  # [B, D, 1]
-            z = z + timbre_mean
+        # Reconstruct residual
+        if latents.detail is not None:
+            # detail is [B, K, T] with K=3 residual quantizers
+            z_r = 0.0
+            for k in range(latents.detail.shape[1]):
+                z_r += self._codes_to_vector(latents.detail[:, k:k+1, :], quantizer_idx=2, layer=k)
+        else:
+            z_r = 0.0
+
+        # Sum all factors → [B, D, T]
+        z = z_c + z_p + z_r
+
+        # Timbre: pass as speaker_embedding to decoder's FiLM conditioning
+        # This matches upstream: timbre_linear(spk_emb) → gamma, beta → FiLM
+        # NOT a mean offset on the latent
+        speaker_embedding = latents.timbre if latents.timbre is not None else torch.zeros(
+            z.shape[0], 256, device=z.device, dtype=z.dtype
+        )
 
         with torch.no_grad():
-            waveform = self.model.decoder(z.to(self.device))
+            waveform = self.model.inference(z.to(self.device), speaker_embedding=speaker_embedding.to(self.device))
         return waveform.cpu()
 
     def _codes_to_vector(self, code_indices, quantizer_idx: int = 0, layer: int = 0) -> torch.Tensor:

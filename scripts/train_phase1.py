@@ -4,13 +4,7 @@ import subprocess, sys, os
 
 os.chdir("/content/accentedge")
 os.environ["PYTHONPATH"] = "/content/FAC-FACodec:/content/accentedge/src:" + os.environ.get("PYTHONPATH", "")
-
-# Install package
-r = subprocess.run([sys.executable, "-m", "pip", "install", "-e", "."], capture_output=True, text=True)
-if r.returncode != 0:
-    print("pip install failed:", r.stderr[:200])
-    sys.exit(1)
-print("Package installed")
+sys.path.insert(0, "/content/accentedge/src")
 
 import torch
 import torch.nn.functional as F
@@ -22,7 +16,7 @@ DEVICE = "cuda"
 print(f"Device: {DEVICE}")
 print(f"Torch: {torch.__version__}")
 
-# Small model
+# Small model for smoke test
 model = DenoisingTransformerModel(
     d_model=64, nhead=4, num_layers=2, d_ff=128,
     phone_vocab_size=393, facodec_dim=8
