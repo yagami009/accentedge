@@ -1,13 +1,5 @@
-
 #!/usr/bin/env python3
-"""Direct FACodec reconstruction test using upstream FAcodec.
-
-Tests: source.wav -> upstream FAcodec encode -> decode -> reconstruction.wav
-Uses Plachta/FAcodec directly (same path as FAC-FACodec training).
-
-Run on Colab:
-  colab run scripts/verify_facodec_direct.py --gpu T4
-"""
+"""Direct FACodec reconstruction test using FAC-FACodec pattern."""
 import subprocess, sys, os
 
 def run(cmd, desc="", check=True, timeout=120):
@@ -21,87 +13,64 @@ def run(cmd, desc="", check=True, timeout=120):
 
 run("nvidia-smi --query-gpu=name --format=csv,noheader", "GPU", check=False)
 run("pip install -q numpy soundfile librosa scipy jiwer pyyaml huggingface-hub phonemizer speechbrain torchaudio faster-whisper pytest pyworld munch", "install deps")
-
-# Clone FAcodec (skip if exists)
 run("test -d /content/FAcodec || git clone https://github.com/Plachtaa/FAcodec.git /content/FAcodec", "clone FAcodec", check=False)
-run("test -f /content/FAcodec/modules/__init__.py || touch /content/FAcodec/modules/__init__.py", "create modules __init__", check=False)
+run("test -f /content/FAcodec/modules/__init__.py || touch /content/FAcodec/modules/__init__.py", "modules init", check=False)
 
-# Path setup: match FAC-FACodec's train.py exactly
-# Path setup: FAcodec must shadow Amphion in sys.path
-sys.path = [p for p in sys.path if '/content/Amphion' not in p]
+sys.path = [p for p in sys.path if "/content" not in p]
 sys.path.insert(0, "/content/FAcodec")
-os.environ["PYTHONPATH"] = "/content/FAcodec:" + os.environ.get("PYTHONPATH", "").replace("/content/Amphion:", "").replace(":/content/Amphion", "")
-run("test -f /content/FAcodec/modules/__init__.py || touch /content/FAcodec/modules/__init__.py", "create modules __init__", check=False)
+os.environ["PYTHONPATH"] = "/content/FAcodec:" + os.environ.get("PYTHONPATH", "")
 os.chdir("/content/FAcodec")
 
-# Download test audio
 os.makedirs("/content/test_audio", exist_ok=True)
 import torchaudio
-print("\n=== Downloading LibriSpeech test-clean ===")
+print("\n=== Downloading LibriSpeech ===")
 dataset = torchaudio.datasets.LIBRISPEECH(root="/content/test_audio", url="test-clean", download=True)
 test_samples = []
 for i in range(min(3, len(dataset))):
-    wav, sr, transcript, sid, cid, uid = dataset[i]
+    wav, sr, tr, sid, cid, uid = dataset[i]
     fname = f"/content/test_audio/librispeech_{i}.wav"
     torchaudio.save(fname, wav, sr)
-    test_samples.append((fname, transcript))
-    print(f"  {fname}: sr={sr}, text='{transcript[:60]}...'")
+    test_samples.append(fname)
+    print(f"  {fname}: sr={sr}")
 
 print("\n=== Loading FAcodec ===")
 from modules.commons import build_model, recursive_munch
 from hf_utils import load_custom_model_from_hf
-import yaml
+import yaml, torch, numpy as np, soundfile as sf
+import warnings
+warnings.simplefilter("ignore")
 
-ckpt_path = load_custom_model_from_hf("Plachta/FAcodec")
-if isinstance(ckpt_path, tuple):
-    ckpt_path = ckpt_path[0]
-
-config_path = "/root/.cache/huggingface/hub/models--Plachta--FAcodec/snapshots/a8e5a0a769c9f2da1d283e30ec3be9a21bad0b93/config.yml"
+ckpt_path, config_path = load_custom_model_from_hf("Plachta/FAcodec")
 with open(config_path) as f:
     config = yaml.safe_load(f)
-
 model_params = recursive_munch(config.get("model_params", config.get("model", {})))
 model = build_model(model_params)
+ckpt = torch.load(ckpt_path, map_location="cpu")
+for key in ckpt:
+    model[key].load_state_dict(ckpt[key])
+    model[key].eval()
+print(f"Model keys: {list(model.keys())}")
 
-ckpt_params = torch.load(ckpt_path, map_location="cpu")
-ckpt_params = ckpt_params.get("net", ckpt_params)
-for key in ckpt_params:
-    model[key].load_state_dict(ckpt_params[key])
-for key in model:
-    model[key].eval().cuda()
-
-print("  FAcodec loaded successfully")
-
-print("\n=== Reconstruction Verification ===")
+# Round-trip test
+print("\n=== Round-trip reconstruction ===")
 os.makedirs("/content/reconstructed", exist_ok=True)
 results = []
-
-for fname, transcript in test_samples:
-    # Load and resample to 24kHz
+for fname in test_samples:
     wav, sr = torchaudio.load(fname)
     wav = wav.mean(dim=0, keepdim=True)
     wav_24k = torchaudio.functional.resample(wav, sr, 24000)
+    wav_in = wav_24k.unsqueeze(0)
 
-    # Encode (upstream formula)
-    z = model["encoder"](wav_24k[None, ...].cuda().float())
-    _, quantized, commit_loss, codebook_loss, timbre, codes = model["quantizer"](
-        z, wav_24k[None, ...].cuda().float(), return_codes=True, n_c=2
-    )
-    codes_c, codes_p, codes_t, codes_r = codes
-    z_c, z_p, z_t, z_r = quantized
+    # Encode
+    z_c, z_p, z_t, z_r = model["quantizer"](wav_in.float(), wav_in.float(), n_c=2)
+    print(f"  {os.path.basename(fname)}: z_c={z_c.shape}, z_p={z_p.shape}, z_r={z_r.shape}")
 
-    print(f"\n  {os.path.basename(fname)}:")
-    print(f"    z_c shape: {z_c.shape}")
-    print(f"    z_p shape: {z_p.shape}")
-    print(f"    z_r shape: {z_r.shape}")
-    print(f"    timbre shape: {timbre.shape}")
-
-    # Decode (upstream formula: z = z_p + z_c + z_r, then decoder.inference)
-    recon = model["decoder"].inference(z_p.detach() + z_c.detach() + z_r.detach(), speaker_embedding=timbre)
+    # Decode: upstream uses z = z_c + z_p + z_r, then decoder()
+    z_total = z_c.detach() + z_p.detach() + z_r.detach()
+    recon = model["decoder"](z_total)
 
     recon_path = f"/content/reconstructed/{os.path.basename(fname)}"
     torchaudio.save(recon_path, recon[0].cpu(), 24000)
-    print(f"    Saved: {recon_path}")
 
     # SNR
     src_np = wav_24k.squeeze().cpu().numpy()
