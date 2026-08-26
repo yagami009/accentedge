@@ -27,9 +27,10 @@ run("test -d /content/FAcodec || git clone https://github.com/Plachtaa/FAcodec.g
 run("test -f /content/FAcodec/modules/__init__.py || touch /content/FAcodec/modules/__init__.py", "create modules __init__", check=False)
 
 # Path setup: match FAC-FACodec's train.py exactly
-# Path setup: FAcodec parent dir in sys.path so `from modules.X import ...` works
+# Path setup: FAcodec must shadow Amphion in sys.path
+sys.path = [p for p in sys.path if '/content/Amphion' not in p]
 sys.path.insert(0, "/content/FAcodec")
-os.environ["PYTHONPATH"] = "/content/FAcodec:" + os.environ.get("PYTHONPATH", "")
+os.environ["PYTHONPATH"] = "/content/FAcodec:" + os.environ.get("PYTHONPATH", "").replace("/content/Amphion:", "").replace(":/content/Amphion", "")
 run("test -f /content/FAcodec/modules/__init__.py || touch /content/FAcodec/modules/__init__.py", "create modules __init__", check=False)
 os.chdir("/content/FAcodec")
 
