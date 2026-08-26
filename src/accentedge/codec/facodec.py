@@ -39,6 +39,11 @@ _FACODEC_REPO = _FACODEC_REPO.resolve()
 if str(_FACODEC_REPO) not in sys.path:
     sys.path.insert(0, str(_FACODEC_REPO))
 
+# Also add modules/ subdir for `from modules.commons import ...`
+_modules_dir = _FACODEC_REPO / "modules"
+if str(_modules_dir) not in sys.path:
+    sys.path.insert(0, str(_modules_dir))
+
 from accentedge.codec.interfaces import FactorizedLatents, FactorizedSpeechCodec
 
 
