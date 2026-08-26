@@ -7,3 +7,4 @@ artifacts/
 *.wav
 *.safetensors
 .DS_Store
+checkpoints/
