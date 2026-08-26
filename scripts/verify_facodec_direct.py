@@ -19,7 +19,7 @@ def run(cmd, desc="", check=True, timeout=120):
     return r
 
 run("nvidia-smi --query-gpu=name --format=csv,noheader", "GPU", check=False)
-run("pip install -q numpy soundfile librosa scipy jiwer pyyaml huggingface-hub phonemizer speechbrain torchaudio faster-whisper pytest", "install deps")
+run("pip install -q numpy soundfile librosa scipy jiwer pyyaml huggingface-hub phonemizer speechbrain torchaudio faster-whisper pytest pyworld", "install deps")
 run("test -d /content/Amphion || git clone --depth 1 https://github.com/open-mmlab/Amphion.git /content/Amphion", "clone Amphion", check=False)
 
 os.environ["PYTHONPATH"] = "/content/Amphion:" + os.environ.get("PYTHONPATH", "")
@@ -45,7 +45,7 @@ print("  Amphion FACodec imported")
 
 print("\n=== Loading Plachta/FAcodec checkpoint ===")
 ckpt_path = hf_hub_download(repo_id="Plachta/FAcodec", filename="pytorch_model.bin")
-config_path = hf_hub_download(repo_id="Plachta/FAcodec", filename="config.yaml")
+config_path = hf_hub_download(repo_id="Plachta/FAcodec", filename="config.yml")
 print(f"  Checkpoint: {ckpt_path}")
 print(f"  Config: {config_path}")
 

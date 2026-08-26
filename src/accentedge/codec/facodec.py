@@ -53,7 +53,7 @@ class FACodecAdapter(nn.Module, FactorizedSpeechCodec):
         from huggingface_hub import hf_hub_download
 
         ckpt_path = hf_hub_download(repo_id=facodec_ckpt, filename="pytorch_model.bin")
-        config_path = hf_hub_download(repo_id=facodec_ckpt, filename="config.yaml")
+        config_path = hf_hub_download(repo_id=facodec_ckpt, filename="config.yml")
 
         with open(config_path) as f:
             config = yaml.safe_load(f)
