@@ -8,3 +8,4 @@ artifacts/
 *.safetensors
 .DS_Store
 checkpoints/
+.claude/

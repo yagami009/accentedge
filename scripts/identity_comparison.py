@@ -1,674 +1,931 @@
 #!/usr/bin/env python3
 """
-Identity Comparison: Native vs Indian English FACodec Reconstruction Quality
+Identity Comparison — Calibrated Identity Preservation: Native vs Indian English
 
-Measures calibrated ECAPA-TDNN identity distributions and compares
-native (LibriSpeech) vs Indian (L2-ARCTIC) English reconstruction fidelity.
+Paper-faithful calibration methodology:
+  1. SAME-SPEAKER reference (within-speaker variation):
+     For each speaker, compare utterance A vs utterance B.
+     Defines "same speaker under natural variation" for our ECAPA checkpoint.
 
-Outputs: artifacts/identity_comparison.json
+  2. DIFFERENT-SPEAKER reference (impostor floor):
+     Speaker A vs Speaker B (different speakers).
+     Defines the impostor floor.
+
+  3. RECONSTRUCTION reference:
+     source vs FACodec reconstruction for BOTH native and Indian.
+     Tells us how much reconstruction itself changes identity.
+
+KEY COMPARISON (not arbitrary thresholds):
+  How far did reconstruction move relative to our same-speaker ↔ different-speaker span?
+  • shift_over_span  = reconstruction_shift / same_speaker_span
+  • shift_over_impostor = reconstruction_shift / impostor_distance
+  • preservation_ratio  = recon_median / same_speaker_median
+
+  This avoids the old SECS-threshold mistake.
+
+PRESERVED LEGACY METRIC:
+  Old mean SECS (0.05–0.24 range) is computed but labeled:
+  DIAGNOSTIC_ONLY / BROKEN ADAPTER / NOT VALID FACODEC PERFORMANCE
+
+Corpora:
+  - Native:   CMU ARCTIC (matched prompts with L2-ARCTIC)
+  - Indian:   L2-ARCTIC (Hindi-Indian speakers)
+
+Outputs: artifacts/identity_comparison/
+  same_speaker_dist.json, different_speaker_dist.json,
+  reconstruction_dist.json, summary.json
 """
 from __future__ import annotations
 
 import json
 import os
 import sys
-import subprocess
-import types
 import warnings
+import argparse
+import time
 from pathlib import Path
 from datetime import datetime
+from typing import Optional
+
+import numpy as np
+import torch
+import soundfile as sf
+import librosa
+import yaml
+import types
 
 warnings.filterwarnings("ignore")
 
-# ─── Config ───────────────────────────────────────────────────────────────────
-OUT_JSON    = Path("artifacts/identity_comparison.json")
-FACODEC_DIR = Path("/Users/ayushmh/FAcodec")
-NATIVE_N    = 8          # utterances per group for ID distributions
-RECON_N     = 4          # utterances for reconstruction arm
-SEED        = 42
+# ═══════════════════════════════════════════════════════════════════════════════
+# Configuration
+# ═══════════════════════════════════════════════════════════════════════════════
 
-# ─── Step 1: Bootstrap environment ──────────────────────────────────────────
-def _run(cmd: str, desc: str = "", check: bool = True, timeout: int = 300):
-    print(f"\n>>> {desc or cmd[:80]}")
-    r = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=timeout)
-    if r.stdout.strip():
-        print(r.stdout.strip()[:600])
-    if check and r.returncode != 0:
-        print(f"[WARN] FAILED: {r.stderr[:400]}")
-        return False
-    return True
+class Config:
+    """All tunables in one place."""
 
-def bootstrap():
-    pkgs = [
-        "numpy", "soundfile", "scipy", "jiwer",
-        "torch", "torchaudio", "librosa",
-        "speechbrain", "huggingface_hub",
-        "faster-whisper", "phonemizer",
-    ]
-    for pkg in pkgs:
-        try:
-            __import__(pkg.replace("-", "_").replace(".", "_"))
-        except ImportError:
-            _run(f"pip install -q {pkg}", f"install {pkg}", check=False, timeout=180)
+    output_dir: Path = Path("artifacts/identity_comparison")
+    facodec_dir: Path = Path("/Users/ayushmh/FAcodec")
+    facodec_ckpt: str = "Plachta/FAcodec"
+    device: str = "cpu"
+    n_pairs_ref: int = 40          # pairs for each reference distribution
+    n_recon: int = 8               # utterances per corpus for reconstruction arm
+    seed: int = 42
+    target_sr: int = 24000
+    # Dataset identifiers
+    l2arctic_hf_id: str = "osCa/L2-ARCTIC"
+    cmu_arctic_hf_id: str = "cmu_arctic"
+    # Gate 2 thresholds (used by gate2_identity.py as well)
+    gate2_max_shift_over_span: float = 0.25
+    gate2_min_preservation: float = 0.85
 
-    # Clone L2-ARCTIC dataset from HuggingFace if not present
-    l2arctic_dir = Path("/tmp/l2_arctic_data")
-    if not l2arctic_dir.exists():
-        _run(
-            "pip install -q datasets",
-            "install datasets",
-            check=False,
-            timeout=120,
-        )
-        try:
-            from datasets import load_dataset
-            print("\n>>> Downloading L2-ARCTIC from HuggingFace …")
-            ds = load_dataset("os Ca/L2-ARCTIC", split="train", trust_remote_code=True)
-            l2arctic_dir.mkdir(parents=True, exist_ok=True)
-            ds.save_to_disk(str(l2arctic_dir))
-            print(f"L2-ARCTIC saved to {l2arctic_dir}")
-        except Exception as e:
-            print(f"[WARN] Could not download L2-ARCTIC: {e}")
 
-    return l2arctic_dir
+cfg = Config()
 
-print("=" * 70)
-print("AccentEdge Identity Comparison — Native vs Indian English FACodec")
-print("=" * 70)
-print(f"Timestamp: {datetime.now().isoformat()}")
-print(f"FAcodec dir: {FACODEC_DIR} ({'FOUND' if FACODEC_DIR.exists() else 'MISSING'})")
-l2arctic_dir = bootstrap()
+# ═══════════════════════════════════════════════════════════════════════════════
+# Mock audiotools (required before FAcodec imports — prevents metaclass conflict)
+# ═══════════════════════════════════════════════════════════════════════════════
 
-# ─── Step 2: Mock audiotools (required before FAcodec imports) ───────────────
 def _make_mock(name: str):
     m = types.ModuleType(name)
     m.__path__ = []
     m.__package__ = name
     return m
 
-mock_audio = _make_mock("audiotools")
-mock_ml    = _make_mock("audiotools.ml")
-mock_ml.BaseModel = type("BaseModel", (), {"INTERN": [], "EXTERN": []})
-mock_audio.ml = mock_ml
-mock_audio.AudioSignal = type("AudioSignal", (), {})
-mock_audio.STFTParams = type("STFTParams", (), {})
-mock_core  = _make_mock("audiotools.core")
-mock_core.util = _make_mock("audiotools.core.util")
-sys.modules["audiotools"]        = mock_audio
-sys.modules["audiotools.ml"]     = mock_ml
-sys.modules["audiotools.core"]   = mock_core
-sys.modules["audiotools.core.util"] = mock_core.util
 
-# ─── Step 3: Patch FAcodec quantizer to always return timbre ─────────────────
-# The upstream quantizer only returns timbre when n_c > 0.
-# AccentEdge timbre path (FactorizedSpeechCodec interface) requires timbre tensor.
-# Monkey-patch AFTER import so all downstream code gets the fix.
-print("\n>>> Patching FAcodec quantizer for timbre path …")
+def install_mocks():
+    mock_audio = _make_mock("audiotools")
+    mock_ml = _make_mock("audiotools.ml")
+    mock_ml.BaseModel = type("BaseModel", (), {"INTERN": [], "EXTERN": []})
+    mock_audio.ml = mock_ml
+    mock_audio.AudioSignal = type("AudioSignal", (), {})
+    mock_audio.STFTParams = type("STFTParams", (), {})
+    mock_core = _make_mock("audiotools.core")
+    mock_core.util = _make_mock("audiotools.core.util")
+    sys.modules["audiotools"] = mock_audio
+    sys.modules["audiotools.ml"] = mock_ml
+    sys.modules["audiotools.core"] = mock_core
+    sys.modules["audiotools.core.util"] = mock_core.util
 
-sys.path.insert(0, str(FACODEC_DIR))
-sys.path.insert(0, str(FACODEC_DIR / "modules"))
 
-from modules.commons import build_model, recursive_munch
-from hf_utils import load_custom_model_from_hf
+install_mocks()
 
-ckpt_path, config_path = load_custom_model_from_hf("Plachta/FAcodec")
-with open(config_path) as f:
-    config = yaml_safe_load(f) if "yaml_safe_load" in dir() else __import__("yaml").safe_load(f)
-model_params = recursive_munch(config["model_params"])
-_model_unpatched = build_model(model_params)
+# ═══════════════════════════════════════════════════════════════════════════════
+# ECAPA-TDNN Speaker Embedding
+# ═══════════════════════════════════════════════════════════════════════════════
 
-ckpt = torch.load(ckpt_path, map_location="cpu")
-ckpt = ckpt.get("net", ckpt)
-for key in _model_unpatched:
-    _model_unpatched[key].load_state_dict(ckpt[key])
-    _model_unpatched[key].eval()
+class ECAPAEmbedding:
+    """ECAPA-TDNN speaker embedding via SpeechBrain spkrec-ecapa-voxceleb."""
 
-import torch.nn as nn
-_orig_forward = None
-
-for name, mod in _model_unpatched["quantizer"].named_modules():
-    if "VectorQuantized" in type(mod).__name__ or "VQ" in type(mod).__name__:
-        _orig_forward = mod.forward
-        break
-
-if _orig_forward is None:
-    print("[NOTE] VectorQuantized module not found by traversal — attempting direct attr")
-    qmod = _model_unpatched["quantizer"]
-    # Try to find the VQ sub-module
-    for child in qmod.modules():
-        name = type(child).__name__
-        if "VectorQuant" in name or name == "VectorQuantized2":
-            _orig_forward = child.forward
-            break
-
-# Rebuild quantizer forward that always returns timbre
-class TimbreAwareQuantizer(nn.Module):
-    """
-    Wraps the FAcodec quantizer to always return timbre.
-    Fixes the timbre=None path that breaks FactorizedSpeechCodec interface.
-    """
-    def __init__(self, inner):
-        super().__init__()
-        self.inner = inner
-        # Copy over all original attributes
-        for k, v in inner.__dict__.items():
-            setattr(self, k, v)
-
-    def forward(self, z, wav, n_c=2):
-        result = self.inner.forward(z, wav, n_c=n_c)
-        if len(result) == 5:
-            z_q, quantized_list, commitment_loss, codebook_loss, timbre = result
-            if timbre is None:
-                # Build timbre from waveform using style encoder
-                from modules.style_encoder import StyleEncoder
-                style = StyleEncoder()
-                style.eval()
-                with torch.no_grad():
-                    timbre = style(wav).detach()
-                result = (z_q, quantized_list, commitment_loss, codebook_loss, timbre)
-        return result
-
-if _orig_forward is not None:
-    _model_unpatched["quantizer"] = TimbreAwareQuantizer(_model_unpatched["quantizer"])
-    print("  Patched quantizer → timbre path ENABLED")
-else:
-    print("[WARN] Could not patch quantizer — timbre may be None; results will note this")
-
-# Attach to module dict for downstream use
-_model_unpatched.to("cpu")
-for p in _model_unpatched["quantizer"].parameters():
-    p.requires_grad = False
-
-# ─── Step 4: Helper: load a waveform ────────────────────────────────────────
-import soundfile as sf
-import numpy as np
-import torch
-import librosa  # used in load_wav, facodec_reconstruct, and dataset resampling
-
-def load_wav(path: str | Path, target_sr: int = 24000) -> np.ndarray:
-    """Load audio file, resample to target_sr."""
-    data, sr = sf.read(str(path))
-    if data.ndim > 1:
-        data = data.mean(axis=1)
-    if sr != target_sr:
-        import librosa
-        data = librosa.resample(data, orig_sr=sr, target_sr=target_sr)
-    return data.astype(np.float32)
-
-# ─── Step 5: FACodec round-trip ─────────────────────────────────────────────
-def facodec_reconstruct(wav_np: np.ndarray, model) -> np.ndarray:
-    """
-    Encode → decode a waveform through FAcodec. Returns reconstruction.
-
-    Expected input: float32 numpy array at 24 kHz (already loaded/converted).
-    """
-    wav_t = torch.from_numpy(wav_np).float()
-    if wav_t.dim() == 1:
-        wav_t = wav_t.unsqueeze(0)   # [1, T]
-
-    with torch.no_grad():
-        z = model["encoder"](wav_t)
-        z_q, quantized_list, commitment_loss, codebook_loss, timbre = model["quantizer"](
-            z, wav_t, n_c=2
+    def __init__(self, device: str = "cpu"):
+        from speechbrain.pretrained import EncoderClassifier
+        self.classifier = EncoderClassifier.from_hparams(
+            source="speechbrain/spkrec-ecapa-voxceleb",
+            savedir="/tmp/spkrec_ecapa",
+            run_opts={"device": device},
         )
-        recon = model["decoder"](z_q)
-    return recon.squeeze(0).numpy()
+        self.device = device
 
-# ─── Step 6: ECAPA-TDNN speaker embeddings ────────────────────────────────────
-print("\n>>> Loading ECAPA-TDNN (speechbrain/spkrec-ecapa-voxceleb) …")
-from speechbrain.pretrained import EncoderClassifier
-ecapa = EncoderClassifier.from_hparams(
-    source="speechbrain/spkrec-ecapa-voxceleb",
-    savedir="/tmp/spkrec_ecapa",
-    run_opts={"device": "cpu"},
-)
+    @torch.no_grad()
+    def __call__(self, wav: np.ndarray, sr: int = 24000) -> np.ndarray:
+        """L2-normalized ECAPA-TDNN embedding for a waveform."""
+        if wav.ndim > 1:
+            wav = wav.mean(axis=1)
+        wav_t = torch.from_numpy(wav).float().unsqueeze(0)
+        emb = self.classifier.encode_batch(wav_t)
+        emb = emb / emb.norm(dim=-1, keepdim=True)
+        return emb.squeeze().cpu().numpy()
 
-@torch.no_grad()
-def speaker_embedding(wav: np.ndarray, sr: int = 24000) -> np.ndarray:
-    """L2-normalized ECAPA-TDNN embedding."""
-    emb = ecapa.encode_batch(torch.from_numpy(wav).float().unsqueeze(0))
-    return (emb / emb.norm(dim=-1, keepdim=True)).squeeze().numpy()
+    @staticmethod
+    def cosine_sim(a: np.ndarray, b: np.ndarray) -> float:
+        """Cosine similarity between two L2-normalized embeddings."""
+        return float(np.dot(a, b))
 
-def cosine_sim(a: np.ndarray, b: np.ndarray) -> float:
-    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-8))
 
-# ─── Step 7: Load datasets ───────────────────────────────────────────────────
-print("\n>>> Loading datasets …")
+# ═══════════════════════════════════════════════════════════════════════════════
+# FACodec Loading (upstream pattern, matches verify_facodec_direct.py)
+# ════════════════════��══════════════════════════════════════════════════════════
 
-# --- Native English: LibriSpeech test-clean via torchaudio ---
-native_wavs = []
-try:
-    import torchaudio
-    import tempfile
+class FACodecModel:
+    """Loaded FAcodec with encode / decode / reconstruct."""
 
-    libri_dir = Path("/tmp/librispeech_test")
-    libri_dir.mkdir(exist_ok=True)
-    dataset = torchaudio.datasets.LIBRISPEECH(
-        root=str(libri_dir.parent),
-        url="test-clean",
-        download=True,
-    )
-    np.random.seed(SEED)
-    indices = np.random.choice(len(dataset), size=min(NATIVE_N * 2, len(dataset)), replace=False)
+    def __init__(self, facodec_dir: Path, ckpt_name: str, device: str = "cpu"):
+        self.device = torch.device(device)
 
-    for idx in indices[:NATIVE_N * 2]:
-        try:
-            wav, sr = dataset[idx]
-            wav = wav.squeeze().numpy()
-            # Save to temp file for soundfile re-load (normalised path)
-            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
-                tmp = f.name
-            torchaudio.save(tmp, torch.from_numpy(wav).unsqueeze(0), sr)
-            wav_24k = load_wav(tmp, target_sr=24000)
-            os.unlink(tmp)
-            native_wavs.append(wav_24k)
-            print(f"  LibriSpeech [{idx}] sr={sr}Hz  len={len(wav_24k)/24000:.1f}s")
-        except Exception as e:
-            print(f"  [WARN] Skipping LibriSpeech[{idx}]: {e}")
-        if len(native_wavs) >= NATIVE_N * 2:
-            break
-except Exception as e:
-    print(f"[ERROR] Could not load LibriSpeech: {e}")
+        # Ensure FAcodec is on sys.path
+        if str(facodec_dir) not in sys.path:
+            sys.path.insert(0, str(facodec_dir))
+        modules_dir = facodec_dir / "modules"
+        if modules_dir.exists() and str(modules_dir) not in sys.path:
+            sys.path.insert(0, str(modules_dir))
 
-print(f"  Native English: {len(native_wavs)} utterances loaded")
+        from modules.commons import build_model, recursive_munch
+        from hf_utils import load_custom_model_from_hf
 
-# --- Indian English: L2-ARCTIC via HuggingFace datasets ---
-indian_wavs = []
-speaker_ids = []
+        ckpt_path, config_path = load_custom_model_from_hf(ckpt_name)
+        with open(config_path) as f:
+            config = yaml.safe_load(f)
+        mp = recursive_munch(config["model_params"])
+        self.model = build_model(mp)
 
-try:
-    from datasets import load_dataset
-    ds = load_dataset("osCa/L2-ARCTIC", split="train", trust_remote_code=True)
+        ckpt = torch.load(ckpt_path, map_location="cpu")
+        ckpt = ckpt.get("net", ckpt)
+        for key in ckpt:
+            self.model[key].load_state_dict(ckpt[key])
+            self.model[key].eval().to(self.device)
+            for p in self.model[key].parameters():
+                p.requires_grad = False
 
-    # L2-ARCTIC structure: each row has audio['path'], speaker_id, sentence_id, transcription
-    # Select 2 speakers, 4 utterances each
-    available_speakers = list(set(ds["speaker_id"]))
-    np.random.seed(SEED)
-    np.random.shuffle(available_speakers)
+    @torch.no_grad()
+    def encode(self, wav_np: np.ndarray):
+        """Encode -> (z_q, quantized_list, timbre)."""
+        wav_t = torch.from_numpy(wav_np).float()
+        if wav_t.dim() == 1:
+            wav_t = wav_t.unsqueeze(0)
+        wav_in = wav_t.unsqueeze(0).to(self.device)
 
-    # Pick Indian speakers — L2-ARCTIC speakers are tagged by language background
-    # All L2-ARCTIC speakers are non-native English (Indian, Korean, etc.)
-    indian_speakers = [s for s in available_speakers if s.startswith("HI")][:2]  # Hindi-Indian
+        z = self.model["encoder"](wav_in)
+        z_q, quantized_list, _, _, timbre = self.model["quantizer"](
+            z, wav_in, n_c=2
+        )
+        return z_q, quantized_list, timbre
 
-    if not indian_speakers:
-        # Fall back to any non-native speaker
-        indian_speakers = available_speakers[:2]
+    @torch.no_grad()
+    def decode(self, z_q) -> np.ndarray:
+        """Decode quantized z -> numpy waveform."""
+        recon = self.model["decoder"](z_q.to(self.device))
+        return recon.squeeze().cpu().numpy()
 
-    print(f"  L2-ARCTIC speakers: {indian_speakers}")
+    @torch.no_grad()
+    def reconstruct(self, wav_np: np.ndarray) -> np.ndarray:
+        """Full encode -> decode round-trip."""
+        z_q, _, _ = self.encode(wav_np)
+        return self.decode(z_q)
 
-    for spk in indian_speakers:
-        spk_rows = [r for r in ds if r["speaker_id"] == spk]
-        for row in spk_rows[:RECON_N + 2]:
-            try:
-                audio_arr = row["audio"]["array"]
-                audio_sr  = row["audio"]["sampling_rate"]
-                wav_24k   = librosa.resample(audio_arr, orig_sr=audio_sr, target_sr=24000).astype(np.float32)
-                indian_wavs.append(wav_24k)
-                speaker_ids.append(spk)
-                print(f"  L2-ARCTIC [{spk}]  len={len(wav_24k)/24000:.1f}s  trans={row.get('transcription','')[:50]}")
-            except Exception as e:
-                print(f"  [WARN] Skipping L2-ARCTIC[{spk}]: {e}")
-            if len([w for w, s in zip(indian_wavs, speaker_ids) if s == spk]) >= RECON_N + 2:
-                break
 
-except Exception as e:
-    print(f"[ERROR] Could not load L2-ARCTIC: {e}")
+# ═══════════════════════════════════════════════════════════════════════════════
+# Dataset Loading
+# ═══════════════════════════════════════════════════════════════════════════════
 
-# Fallback: generate synthetic test signals if datasets unavailable
-if len(native_wavs) < 4:
-    print("\n[WARN] Using synthetic fallback signals (LibriSpeech unavailable)")
-    np.random.seed(SEED)
-    sr = 24000
-    native_wavs = [
-        np.sin(2 * np.pi * 220 * np.linspace(0, 3, 3 * sr)).astype(np.float32)
-        for _ in range(6)
-    ]
-    # Add noise to differentiate
-    for i in range(len(native_wavs)):
-        noise = np.random.randn(len(native_wavs[i])).astype(np.float32) * 0.01
-        native_wavs[i] = native_wavs[i] + noise
+def _resample(wav: np.ndarray, orig_sr: int, target_sr: int) -> np.ndarray:
+    return librosa.resample(
+        np.asarray(wav, dtype=np.float32), orig_sr=orig_sr, target_sr=target_sr
+    ).astype(np.float32)
 
-if len(indian_wavs) < 4:
-    print("\n[WARN] Using synthetic fallback signals (L2-ARCTIC unavailable)")
-    np.random.seed(SEED + 1)
-    sr = 24000
-    indian_wavs = [
-        np.sin(2 * np.pi * 196 * np.linspace(0, 3, 3 * sr)).astype(np.float32)
-        for _ in range(6)
-    ]
-    for i in range(len(indian_wavs)):
-        noise = np.random.randn(len(indian_wavs[i])).astype(np.float32) * 0.01
-        indian_wavs[i] = indian_wavs[i] + noise
 
-print(f"\n  Final native_wavs: {len(native_wavs)}, indian_wavs: {len(indian_wavs)}")
+class Utt:
+    """Lightweight utterance container."""
+    __slots__ = ("path", "speaker_id", "sentence_id", "text", "wav", "sr", "corpus")
 
-# ─── Step 8: Build identity distributions ───────────────────────────────────
-print("\n>>> Building identity distributions …")
+    def __init__(self, path, speaker_id, sentence_id, text, wav, sr, corpus):
+        self.path = path
+        self.speaker_id = speaker_id
+        self.sentence_id = sentence_id
+        self.text = text
+        self.wav = wav
+        self.sr = sr
+        self.corpus = corpus
 
-def same_speaker_sims(wavs: list[np.ndarray], n_pairs: int = 30) -> list[float]:
-    """Cosine sims for different utterances from the same speaker."""
-    sims = []
-    for i in range(len(wavs)):
-        for j in range(i + 1, len(wavs)):
-            if len(sims) >= n_pairs:
-                break
-            sims.append(cosine_sim(speaker_embedding(wavs[i]), speaker_embedding(wavs[j])))
-        if len(sims) >= n_pairs:
-            break
-    return sims
 
-def impostor_sims(wavs_a: list[np.ndarray], wavs_b: list[np.ndarray],
-                  n_pairs: int = 30) -> list[float]:
-    """Cosine sims across different speakers."""
-    sims = []
-    for a in wavs_a:
-        for b in wavs_b:
-            sims.append(cosine_sim(speaker_embedding(a), speaker_embedding(b)))
-            if len(sims) >= n_pairs:
-                break
-        if len(sims) >= n_pairs:
-            break
-    return sims
+def load_cmu_arctic(cfg: Config) -> list[Utt]:
+    """Load CMU ARCTIC (native English reference corpus).
 
-# For native: we have utterances from multiple speakers in LibriSpeech
-# For L2-ARCTIC: each "speaker" is a different L2 speaker
-# Same-speaker: pairs within native_wavs (LibriSpeech speakers)
-# Impostor: native vs indian
+    Speakers: slt, bdl, rms, clb, jmk, awb, ksp
+    Uses matched prompts from the CMU ARCTIC sentence set.
+    """
+    utterances: list[Utt] = []
 
-native_same  = same_speaker_sims(native_wavs, n_pairs=30)
-native_impostor = impostor_sims(native_wavs, indian_wavs, n_pairs=30)
-indian_same  = same_speaker_sims(indian_wavs, n_pairs=30)
-
-print(f"  Native same-speaker sims:      n={len(native_same)}  "
-      f"mean={np.mean(native_same):.4f}  median={np.median(native_same):.4f}")
-print(f"  Native impostor sims:          n={len(native_impostor)}  "
-      f"mean={np.mean(native_impostor):.4f}  median={np.median(native_impostor):.4f}")
-print(f"  Indian same-speaker sims:     n={len(indian_same)}  "
-      f"mean={np.mean(indian_same):.4f}  median={np.median(indian_same):.4f}")
-
-# ─── Step 9: FACodec reconstructions ─────────────────────────────────────────
-print("\n>>> Running FACodec reconstructions …")
-
-def batch_reconstruct(wavs: list[np.ndarray], label: str) -> list[tuple[np.ndarray, np.ndarray]]:
-    """Reconstruct each waveform; return list of (original, reconstruction)."""
-    results = []
-    for i, wav in enumerate(wavs):
-        try:
-            recon = facodec_reconstruct(wav, _model_unpatched)
-            results.append((wav, recon))
-            duration_ratio = len(recon) / max(len(wav), 1)
-            print(f"  [{label}] {i+1}/{len(wavs)}  "
-                  f"src_dur={len(wav)/24000:.2f}s  "
-                  f"recon_dur={len(recon)/24000:.2f}s  "
-                  f"ratio={duration_ratio:.4f}")
-        except Exception as e:
-            print(f"  [WARN] [{label}] Failed reconstruct {i}: {e}")
-    return results
-
-native_recons   = batch_reconstruct(native_wavs[:RECON_N], "NATIVE")
-indian_recons  = batch_reconstruct(indian_wavs[:RECON_N], "INDIAN")
-
-# ─── Step 10: Reconstruction identity distributions ───────────────────────────
-print("\n>>> Computing reconstruction identity metrics …")
-
-def recon_sims(recons: list[tuple[np.ndarray, np.ndarray]], label: str) -> list[float]:
-    sims = []
-    for orig, recon in recons:
-        try:
-            s = cosine_sim(speaker_embedding(orig), speaker_embedding(recon))
-            sims.append(s)
-        except Exception as e:
-            print(f"  [WARN] [{label}] Embedding failed: {e}")
-    return sims
-
-native_recon_sims  = recon_sims(native_recons,  "NATIVE")
-indian_recon_sims = recon_sims(indian_recons, "INDIAN")
-
-print(f"  Native reconstruction sims:    n={len(native_recon_sims)}  "
-      f"mean={np.mean(native_recon_sims):.4f}")
-print(f"  Indian reconstruction sims:    n={len(indian_recon_sims)}  "
-      f"mean={np.mean(indian_recon_sims):.4f}")
-
-# ─── Step 11: ID_norm computation ───────────────────────────────────────────
-# For native: use native_same vs native_impostor
-# For Indian: use indian_same vs cross-impostor (indian vs native)
-indian_impostor = impostor_sims(indian_wavs, native_wavs, n_pairs=30)
-
-def compute_id_norm(recon_sims: list[float],
-                    same_median: float,
-                    impostor_median: float) -> float | None:
-    """ID_norm = (score - impostor_median) / (same_median - impostor_median)"""
-    if same_median <= impostor_median:
-        return None
-    score = np.median(recon_sims) if recon_sims else None
-    if score is None:
-        return None
-    return float((score - impostor_median) / (same_median - impostor_median))
-
-native_same_median   = np.median(native_same)
-native_imp_median    = np.median(native_impostor)
-indian_same_median  = np.median(indian_same)
-indian_imp_median   = np.median(indian_impostor)
-
-native_id_norm  = compute_id_norm(native_recon_sims,  native_same_median,  native_imp_median)
-indian_id_norm  = compute_id_norm(indian_recon_sims,   indian_same_median, indian_imp_median)
-identity_gap    = (native_id_norm or 0) - (indian_id_norm or 0)
-
-print(f"\n  Native ID_norm:  {native_id_norm}")
-print(f"  Indian ID_norm:  {indian_id_norm}")
-print(f"  Identity gap:    {identity_gap}")
-
-# ─── Step 12: WER via faster-whisper ────────────────────────────────────────
-print("\n>>> Loading faster-whisper (small model) …")
-
-whisper_available = False
-try:
-    from faster_whisper import WhisperModel
-    whisper_model = WhisperModel("small", device="cpu", compute_type="int8")
-    whisper_available = True
-    print("  faster-whisper loaded")
-except Exception as e:
-    print(f"  [WARN] faster-whisper unavailable: {e}")
-    print("  Skipping WER — set WER is not critical for identity comparison")
-
-def transcribe(wav: np.ndarray, sr: int = 24000) -> str:
-    """Transcribe a waveform using faster-whisper."""
-    if not whisper_available:
-        return ""
-    import tempfile
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
-        tmp = f.name
-    sf.write(tmp, wav, sr)
+    # Method 1: HuggingFace
     try:
-        segments, _ = whisper_model.transcribe(tmp, language="en")
-        text = " ".join(seg.text for seg in segments).strip()
-    finally:
-        os.unlink(tmp)
+        from datasets import load_dataset
+        print("  Loading CMU ARCTIC from HuggingFace...")
+        ds = load_dataset(cfg.cmu_arctic_hf_id, split="train", trust_remote_code=True)
+
+        speakers = sorted(set(ds["speaker_id"]))
+        np.random.seed(cfg.seed)
+        np.random.shuffle(speakers)
+        chosen = speakers[:4]
+
+        for spk in chosen:
+            rows = [r for r in ds if r["speaker_id"] == spk]
+            np.random.shuffle(rows)
+            for row in rows[: cfg.n_recon + 4]:
+                arr = row["audio"]["array"]
+                sr = row["audio"]["sampling_rate"]
+                wav = _resample(arr, sr, cfg.target_sr)
+                utterances.append(Utt(
+                    path=row.get("path", ""),
+                    speaker_id=spk,
+                    sentence_id=row.get("sentence_id", row.get("id", "")),
+                    text=row.get("text", row.get("transcription", "")),
+                    wav=wav, sr=cfg.target_sr, corpus="native",
+                ))
+        print(f"  CMU ARCTIC (HF): {len(utterances)} utterances from speakers {chosen}")
+        return utterances
+    except Exception as e:
+        print(f"  [WARN] HF CMU ARCTIC failed: {e}")
+
+    # Method 2: torchaudio
+    try:
+        import torchaudio
+        import tempfile
+
+        print("  Loading CMU ARCTIC via torchaudio...")
+        arctic_root = Path("/tmp/cmu_arctic")
+        arctic_root.mkdir(exist_ok=True)
+
+        speakers = ["slt", "bdl", "rms", "clb"]
+        for spk in speakers:
+            try:
+                ds = torchaudio.datasets.CMU_ARCTIC(
+                    root=str(arctic_root), speaker=spk, download=True,
+                )
+                idxs = np.random.choice(
+                    len(ds), size=min(cfg.n_recon + 4, len(ds)), replace=False,
+                )
+                for idx in idxs:
+                    wav, sr, transcript = ds[idx]
+                    wav_np = wav.squeeze().numpy()
+                    if sr != cfg.target_sr:
+                        wav_np = _resample(wav_np, sr, cfg.target_sr)
+                    utterances.append(Utt(
+                        path=f"cmu_arctic/{spk}/{idx}",
+                        speaker_id=spk,
+                        sentence_id=str(idx),
+                        text=transcript,
+                        wav=wav_np, sr=cfg.target_sr, corpus="native",
+                    ))
+            except Exception as e2:
+                print(f"  [WARN] Speaker {spk} failed: {e2}")
+        print(f"  CMU ARCTIC (torchaudio): {len(utterances)} utterances")
+        return utterances
+    except Exception as e:
+        print(f"  [ERROR] All CMU ARCTIC loading methods failed: {e}")
+        return utterances
+
+
+def load_l2_arctic(cfg: Config) -> list[Utt]:
+    """Load L2-ARCTIC (Indian English speakers).
+
+    Hindi-Indian speakers have IDs starting with 'HI'.
+    L2-ARCTIC shares the CMU ARCTIC prompt set.
+    """
+    utterances: list[Utt] = []
+
+    try:
+        from datasets import load_dataset
+        print("  Loading L2-ARCTIC from HuggingFace...")
+        ds = load_dataset(cfg.l2arctic_hf_id, split="train", trust_remote_code=True)
+
+        all_speakers = sorted(set(ds["speaker_id"]))
+        np.random.seed(cfg.seed)
+        np.random.shuffle(all_speakers)
+
+        indian = [s for s in all_speakers if s.startswith("HI")]
+        if not indian:
+            print(f"  [WARN] No HI-prefixed speakers. Available: {all_speakers[:10]}")
+            indian = all_speakers[:4]
+        chosen = indian[:4]
+        print(f"  L2-ARCTIC Indian speakers: {chosen}")
+
+        for spk in chosen:
+            rows = [r for r in ds if r["speaker_id"] == spk]
+            np.random.shuffle(rows)
+            for row in rows[: cfg.n_recon + 4]:
+                try:
+                    arr = row["audio"]["array"]
+                    sr = row["audio"]["sampling_rate"]
+                    wav = _resample(arr, sr, cfg.target_sr)
+                    utterances.append(Utt(
+                        path=row.get("path", ""),
+                        speaker_id=spk,
+                        sentence_id=row.get("sentence_id", row.get("id", "")),
+                        text=row.get("transcription", row.get("text", "")),
+                        wav=wav, sr=cfg.target_sr, corpus="indian",
+                    ))
+                except Exception as e2:
+                    print(f"  [WARN] Skip {spk} row: {e2}")
+        print(f"  L2-ARCTIC: {len(utterances)} utterances")
+        return utterances
+    except Exception as e:
+        print(f"  [ERROR] L2-ARCTIC loading failed: {e}")
+        return utterances
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Three-Reference Calibration Methodology
+# ═════════════════════════════════════��══════════════════════════════════════════
+
+def build_speaker_groups(utterances: list[Utt]) -> dict[str, list[Utt]]:
+    """Group utterances by speaker_id."""
+    groups: dict[str, list[Utt]] = {}
+    for u in utterances:
+        groups.setdefault(u.speaker_id, []).append(u)
+    return groups
+
+
+def compute_same_speaker_distribution(
+    utterances: list[Utt],
+    extractor: ECAPAEmbedding,
+    n_pairs: int = 40,
+) -> dict:
+    """
+    SAME-SPEAKER reference: within-speaker variation.
+    For each speaker, compare utterance A vs utterance B.
+    """
+    groups = build_speaker_groups(utterances)
+    pairs = []
+    for spk, utts in groups.items():
+        if len(utts) < 2:
+            continue
+        for i in range(len(utts)):
+            for j in range(i + 1, len(utts)):
+                sim = extractor.cosine_sim(
+                    extractor(utts[i].wav, utts[i].sr),
+                    extractor(utts[j].wav, utts[j].sr),
+                )
+                pairs.append({
+                    "speaker": spk,
+                    "utt_a": utts[i].sentence_id,
+                    "utt_b": utts[j].sentence_id,
+                    "cosine_sim": sim,
+                })
+                if len(pairs) >= n_pairs:
+                    break
+            if len(pairs) >= n_pairs:
+                break
+
+    sims = [p["cosine_sim"] for p in pairs]
+    return {
+        "method": "within_speaker_pairs",
+        "corpus": utterances[0].corpus if utterances else "unknown",
+        "pairs": pairs,
+        "summary": _summary_stats(sims),
+    }
+
+
+def compute_different_speaker_distribution(
+    group_a: list[Utt],
+    group_b: list[Utt],
+    extractor: ECAPAEmbedding,
+    n_pairs: int = 40,
+    label: str = "",
+) -> dict:
+    """
+    DIFFERENT-SPEAKER reference: impostor floor.
+    Speaker A (from group_a) vs Speaker B (from group_b).
+    Speakers must be different.
+    """
+    # Pre-compute embeddings
+    emb_a = [(u, extractor(u.wav, u.sr)) for u in group_a]
+    emb_b = [(u, extractor(u.wav, u.sr)) for u in group_b]
+
+    pairs = []
+    rng = np.random.RandomState(cfg.seed)
+    for u_a, e_a in emb_a:
+        candidates = [(u_b, e_b) for u_b, e_b in emb_b if u_b.speaker_id != u_a.speaker_id]
+        if not candidates:
+            continue
+        for u_b, e_b in rng.permutation(candidates):
+            sim = extractor.cosine_sim(e_a, e_b)
+            pairs.append({
+                "speaker_a": u_a.speaker_id,
+                "speaker_b": u_b.speaker_id,
+                "utt_a": u_a.sentence_id,
+                "utt_b": u_b.sentence_id,
+                "cosine_sim": sim,
+            })
+            if len(pairs) >= n_pairs:
+                break
+        if len(pairs) >= n_pairs:
+            break
+
+    sims = [p["cosine_sim"] for p in pairs]
+    return {
+        "method": "cross_speaker_pairs",
+        "label": label,
+        "pairs": pairs,
+        "summary": _summary_stats(sims),
+    }
+
+
+def compute_reconstruction_distribution(
+    originals: list[Utt],
+    reconstructions: list[np.ndarray],
+    extractor: ECAPAEmbedding,
+    corpus: str = "",
+) -> dict:
+    """
+    RECONSTRUCTION reference: source vs FACodec reconstruction.
+    """
+    pairs = []
+    for orig, recon in zip(originals, reconstructions):
+        try:
+            sim = extractor.cosine_sim(
+                extractor(orig.wav, orig.sr),
+                extractor(recon, orig.sr),
+            )
+            pairs.append({
+                "sentence_id": orig.sentence_id,
+                "speaker": orig.speaker_id,
+                "cosine_sim": sim,
+            })
+        except Exception as e:
+            print(f"  [WARN] Embedding failed for {orig.sentence_id}: {e}")
+
+    sims = [p["cosine_sim"] for p in pairs]
+    return {
+        "method": "source_vs_reconstruction",
+        "corpus": corpus,
+        "pairs": pairs,
+        "summary": _summary_stats(sims),
+    }
+
+
+def _summary_stats(values: list[float]) -> dict:
+    if not values:
+        return {"n": 0, "mean": 0.0, "median": 0.0, "std": 0.0,
+                "min": 0.0, "max": 0.0}
+    return {
+        "n": len(values),
+        "mean": float(np.mean(values)),
+        "median": float(np.median(values)),
+        "std": float(np.std(values)),
+        "min": float(np.min(values)),
+        "max": float(np.max(values)),
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Calibration — Key Comparisons
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def calibrate_corpus(
+    same_spk: dict,
+    impostor: dict,
+    recon: dict,
+    legacy_secs: Optional[float] = None,
+) -> dict:
+    """
+    Core calibration: express reconstruction shift relative to the
+    same-speaker ↔ different-speaker span.
+
+    Returns a dict with all calibrated metrics and a grade.
+    """
+    ss_med = same_spk["summary"]["median"]
+    imp_med = impostor["summary"]["median"]
+    recon_med = recon["summary"]["median"]
+
+    span = ss_med - imp_med                  # natural variation range
+    shift = ss_med - recon_med               # how far reconstruction moved
+    imp_dist = recon_med - imp_med           # how far above impostor floor
+
+    shift_over_span = shift / span if span > 1e-9 else float("nan")
+    shift_over_impostor = shift / imp_dist if imp_dist > 1e-9 else float("nan")
+    preservation = recon_med / ss_med if ss_med > 1e-9 else float("nan")
+
+    # Grading
+    if not np.isnan(shift_over_span) and shift_over_span < 0.15 and preservation > 0.85:
+        grade = "EXCELLENT"
+    elif not np.isnan(shift_over_span) and shift_over_span < 0.30 and preservation > 0.70:
+        grade = "PASS"
+    elif not np.isnan(shift_over_span) and shift_over_span < 0.50 and preservation > 0.50:
+        grade = "MARGINAL"
+    else:
+        grade = "FAIL"
+
+    return {
+        "same_speaker_median": float(ss_med),
+        "impostor_median": float(imp_med),
+        "recon_median": float(recon_med),
+        "same_speaker_span": float(span),
+        "reconstruction_shift": float(shift),
+        "impostor_distance": float(imp_dist),
+        "shift_over_span": float(shift_over_span),
+        "shift_over_impostor": float(shift_over_impostor),
+        "preservation_ratio": float(preservation),
+        "grade": grade,
+        "legacy_secs_mean": legacy_secs,
+        "legacy_secs_diagnostic": (
+            "DIAGNOSTIC_ONLY — old arbitrary-threshold method. "
+            "Known broken-adapter range: 0.05-0.24. "
+            "NOT valid FACodec performance."
+            if legacy_secs is not None and not np.isnan(legacy_secs)
+            else "not computed"
+        ),
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Legacy SECS Diagnostic (preserved for backward compatibility)
+# ���══════════════════════════════════════════════════════════════════════════════
+
+def compute_legacy_secs(
+    originals: list[Utt],
+    reconstructions: list[np.ndarray],
+    extractor: ECAPAEmbedding,
+) -> float:
+    """Old SECS-style metric: mean source-reconstruction cosine sim.
+
+    KEPT AS DIAGNOSTIC ONLY — not used for calibration.
+    Known broken-adapter range: 0.05-0.24.
+    """
+    sims = []
+    for orig, recon in zip(originals, reconstructions):
+        sims.append(extractor.cosine_sim(
+            extractor(orig.wav, orig.sr),
+            extractor(recon, orig.sr),
+        ))
+    return float(np.mean(sims)) if sims else float("nan")
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Prompt Matching (for fair native vs Indian comparison)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def _normalize_text(text: str) -> str:
+    """Normalize transcript for matching."""
+    import re
+    text = text.lower().strip()
+    text = re.sub(r"[^a-z\s]", "", text)
+    text = re.sub(r"\s+", " ", text)
     return text
 
-def compute_wer(ref: str, hyp: str) -> float:
-    if not ref or not hyp or not whisper_available:
-        return float("nan")
-    from jiwer import wer
-    return wer(ref, hyp)
 
-# Get transcriptions for all source and reconstructed wavs
-def get_transcriptions(wavs: list[np.ndarray], labels: list[str]) -> list[dict]:
-    results = []
-    for i, (wav, lbl) in enumerate(zip(wavs, labels)):
-        print(f"  Transcribing [{lbl}] {i+1}/{len(wavs)} …")
-        text = transcribe(wav)
-        results.append({"label": lbl, "text": text})
-    return results
+def find_matched_prompts(
+    native: list[Utt], indian: list[Utt],
+) -> tuple[list[Utt], list[Utt]]:
+    """Find utterances with matching transcripts across native and Indian corpora.
 
-# For LibriSpeech: transcription is available in the dataset
-# For L2-ARCTIC: transcription is in the dataset row
-# We'll do ASR transcription for simplicity (no reference needed for source WER)
-print("\n  Transcribing source audio via ASR …")
-native_src_texts  = get_transcriptions(native_wavs[:RECON_N],  [f"native_src_{i}"  for i in range(RECON_N)])
-indian_src_texts  = get_transcriptions(indian_wavs[:RECON_N],  [f"indian_src_{i}"  for i in range(RECON_N)])
+    Returns (matched_native, matched_indian) — same-length lists with
+    corresponding sentences.
+    """
+    native_by_text: dict[str, Utt] = {}
+    for u in native:
+        key = _normalize_text(u.text)
+        if key and key not in native_by_text:
+            native_by_text[key] = u
 
-print("\n  Transcribing reconstructed audio …")
-native_recon_texts = []
-for i, (orig, recon) in enumerate(native_recons):
-    text = transcribe(recon)
-    native_recon_texts.append({"label": f"native_recon_{i}", "text": text})
-    print(f"  Transcribing [native_recon_{i}] {i+1}/{len(native_recons)}")
+    matched_native, matched_indian = [], []
+    seen_native = set()
+    for u in indian:
+        key = _normalize_text(u.text)
+        if key in native_by_text:
+            nu = native_by_text[key]
+            if id(nu) not in seen_native:
+                matched_native.append(nu)
+                matched_indian.append(u)
+                seen_native.add(id(nu))
 
-indian_recon_texts = []
-for i, (orig, recon) in enumerate(indian_recons):
-    text = transcribe(recon)
-    indian_recon_texts.append({"label": f"indian_recon_{i}", "text": text})
-    print(f"  Transcribing [indian_recon_{i}] {i+1}/{len(indian_recons)}")
+    print(f"  Matched prompts: {len(matched_native)} pairs")
+    return matched_native, matched_indian
 
-# WER: source vs reconstruction (same utterance)
-# Note: since source and recon ASR may differ slightly, we use source ASR as reference
-def paired_wer(src_texts, recon_texts):
-    paired = []
-    for s, r in zip(src_texts, recon_texts):
-        w = compute_wer(s["text"], r["text"])
-        paired.append(w)
-    return paired
 
-native_src_wer  = paired_wer(native_src_texts,  native_recon_texts)
-indian_src_wer = paired_wer(indian_src_texts,   indian_recon_texts)
+# ═���═════════════════════════════════════════════════════════════════════════════
+# Main Pipeline
+# ═══════════════════════════════════════════════════════════════════════════════
 
-# Reconstruction-induced delta WER: WER increase from source to recon (using
-# source transcription as reference for both, the recon WER is what we measure)
-native_recon_wer = native_src_wer  # source WER == recon WER in our setup (same ASR reference)
-indian_recon_wer = indian_src_wer
+def run(cfg: Config):
+    t_start = time.time()
+    np.random.seed(cfg.seed)
 
-# reconstruction-induced ΔWER = recon_WER − source_WER (how much WER degrades post-FACodec)
-native_delta_wer = [
-    native_recon_wer[i] - native_src_wer[i]
-    for i in range(len(native_src_wer))
-]
-indian_delta_wer = [
-    indian_recon_wer[i] - indian_src_wer[i]
-    for i in range(len(indian_src_wer))
-]
+    os.makedirs(cfg.output_dir, exist_ok=True)
+    print(f"Output: {cfg.output_dir}")
+    print(f"Device: {cfg.device}")
+    print(f"Seed:   {cfg.seed}")
 
-# Duration ratio: mean recon_duration / source_duration
-native_dur  = [len(r)/len(s) if len(s) > 0 else float('nan')
-               for s, r in native_recons]
-indian_dur  = [len(r)/len(s) if len(s) > 0 else float('nan')
-               for s, r in indian_recons]
+    # ECAPA-TDNN
+    print("\n>>> Loading ECAPA-TDNN (speechbrain/spkrec-ecapa-voxceleb)...")
+    extractor = ECAPAEmbedding(device=cfg.device)
+    print(f"  ECAPA-TDNN ready on {cfg.device}")
 
-# Mean source→reconstruction cosine similarity
-native_src_recon_sim  = native_recon_sims
-indian_src_recon_sim  = indian_recon_sims
+    # FACodec
+    if not cfg.facodec_dir.exists():
+        print(f"\n[ERROR] FACodec directory not found: {cfg.facodec_dir}")
+        print("  Set --facodec-dir or clone Plachta/FAcodec to that path.")
+        sys.exit(1)
 
-# ─── Step 13: Build results table ────────────────────────────────────────────
-def nan_mean(lst):
-    vals = [x for x in lst if x is not None and not (isinstance(x, float) and np.isnan(x))]
-    return float(np.mean(vals)) if vals else float("nan")
+    print(f"\n>>> Loading FACodec ({cfg.facodec_ckpt})...")
+    facodec = FACodecModel(
+        facodec_dir=cfg.facodec_dir,
+        ckpt_name=cfg.facodec_ckpt,
+        device=cfg.device,
+    )
+    print("  FACodec ready")
 
-def nan_median(lst):
-    vals = [x for x in lst if x is not None and not (isinstance(x, float) and np.isnan(x))]
-    return float(np.median(vals)) if vals else float("nan")
+    # Datasets
+    print("\n>>> Loading datasets...")
+    native_utts = load_cmu_arctic(cfg)
+    indian_utts = load_l2_arctic(cfg)
 
-# Check timbre availability (documents adapter health)
-timbre_ok = True
-try:
-    test_wav = native_wavs[0]
-    wav_t = torch.from_numpy(test_wav).float().unsqueeze(0)
-    z = _model_unpatched["encoder"](wav_t)
-    z_q, ql, cl, cbl, timbre = _model_unpatched["quantizer"](z, wav_t, n_c=2)
-    if timbre is None:
-        timbre_ok = False
-except Exception as e:
-    timbre_ok = False
-    print(f"\n[WARN] Timbre path check failed: {e}")
+    if len(native_utts) < 4:
+        print("[ERROR] Fewer than 4 native utterances loaded — aborting.")
+        sys.exit(1)
+    if len(indian_utts) < 4:
+        print("[ERROR] Fewer than 4 Indian utterances loaded — aborting.")
+        sys.exit(1)
 
-results = {
-    "metadata": {
-        "timestamp": datetime.now().isoformat(),
-        "native_n":       NATIVE_N,
-        "recon_n":        RECON_N,
-        "seed":           SEED,
-        "facodec_dir":    str(FACODEC_DIR),
-        "facodec_found":  FACODEC_DIR.exists(),
-        "l2arctic_dir":   str(l2arctic_dir),
-        "l2arctic_available": l2arctic_dir.exists(),
-        "timbre_adapter_ok": timbre_ok,
-        "timbre_note": (
-            "PASS: timbre tensor returned by quantizer"
-            if timbre_ok else
-            "FAIL: timbre is None — FactorizedSpeechCodec timbre path broken; "
-            "reconstruction uses fallback (z_q only)"
-        ),
-        "whisper_available": whisper_available,
-        "native_same_n":   len(native_same),
-        "indian_same_n":   len(indian_same),
-        "native_recon_n":  len(native_recon_sims),
-        "indian_recon_n":  len(indian_recon_sims),
-    },
+    # Find matched prompts for fair comparison
+    matched_native, matched_indian = find_matched_prompts(native_utts, indian_utts)
 
-    "distributions": {
-        "native_same_median":     float(native_same_median),
-        "native_impostor_median": float(native_imp_median),
-        "indian_same_median":     float(indian_same_median),
-        "indian_impostor_median": float(indian_imp_median),
-        "native_same_sims":       [float(x) for x in native_same],
-        "native_impostor_sims":   [float(x) for x in native_impostor],
-        "indian_same_sims":       [float(x) for x in indian_same],
-        "indian_impostor_sims":   [float(x) for x in indian_impostor],
-    },
+    # Reference Distribution 1: SAME-SPEAKER
+    print("\n>>> SAME-SPEAKER reference (within-speaker variation)...")
+    native_same = compute_same_speaker_distribution(native_utts, extractor, cfg.n_pairs_ref)
+    indian_same = compute_same_speaker_distribution(indian_utts, extractor, cfg.n_pairs_ref)
+    print(f"  Native  same-speaker: n={native_same['summary']['n']}, "
+          f"median={native_same['summary']['median']:.4f}")
+    print(f"  Indian  same-speaker: n={indian_same['summary']['n']}, "
+          f"median={indian_same['summary']['median']:.4f}")
 
-    "comparison_table": {
-        "native_english": {
-            "source_to_recon_similarity":      nan_mean(native_src_recon_sim),
-            "source_wer":                     nan_mean(native_src_wer),
-            "reconstruction_wer":              nan_mean(native_recon_wer),
-            "reconstruction_induced_delta_wer": nan_mean(native_delta_wer),
-            "duration_ratio":                 nan_mean(native_dur),
-            "id_norm":                        native_id_norm if native_id_norm is not None else float("nan"),
-            "n_samples":                     len(native_recon_sims),
+    # Reference Distribution 2: DIFFERENT-SPEAKER
+    print("\n>>> DIFFERENT-SPEAKER reference (impostor floor)...")
+    native_imp_within = compute_different_speaker_distribution(
+        native_utts, native_utts, extractor, cfg.n_pairs_ref,
+        label="native_within",
+    )
+    indian_imp_within = compute_different_speaker_distribution(
+        indian_utts, indian_utts, extractor, cfg.n_pairs_ref,
+        label="indian_within",
+    )
+    native_imp_cross = compute_different_speaker_distribution(
+        native_utts, indian_utts, extractor, cfg.n_pairs_ref,
+        label="native_vs_indian",
+    )
+    print(f"  Native  within-corpus impostor: n={native_imp_within['summary']['n']}, "
+          f"median={native_imp_within['summary']['median']:.4f}")
+    print(f"  Indian  within-corpus impostor: n={indian_imp_within['summary']['n']}, "
+          f"median={indian_imp_within['summary']['median']:.4f}")
+    print(f"  Cross-corpus (native vs Indian): n={native_imp_cross['summary']['n']}, "
+          f"median={native_imp_cross['summary']['median']:.4f}")
+
+    # FACodec Reconstructions
+    print("\n>>> FACodec reconstructions...")
+    native_recon_wavs: list[np.ndarray] = []
+    indian_recon_wavs: list[np.ndarray] = []
+
+    for utt in native_utts[: cfg.n_recon]:
+        try:
+            recon = facodec.reconstruct(utt.wav)
+            dur_ratio = len(recon) / max(len(utt.wav), 1)
+            print(f"  native [{utt.speaker_id}/{utt.sentence_id}] "
+                  f"dur_ratio={dur_ratio:.4f}")
+            native_recon_wavs.append(recon)
+        except Exception as e:
+            print(f"  [WARN] Native recon failed {utt.sentence_id}: {e}")
+
+    for utt in indian_utts[: cfg.n_recon]:
+        try:
+            recon = facodec.reconstruct(utt.wav)
+            dur_ratio = len(recon) / max(len(utt.wav), 1)
+            print(f"  indian [{utt.speaker_id}/{utt.sentence_id}] "
+                  f"dur_ratio={dur_ratio:.4f}")
+            indian_recon_wavs.append(recon)
+        except Exception as e:
+            print(f"  [WARN] Indian recon failed {utt.sentence_id}: {e}")
+
+    # Reference Distribution 3: RECONSTRUCTION
+    print("\n>>> RECONSTRUCTION reference (source vs FACodec output)...")
+    native_recon = compute_reconstruction_distribution(
+        native_utts[: len(native_recon_wavs)], native_recon_wavs, extractor, "native",
+    )
+    indian_recon = compute_reconstruction_distribution(
+        indian_utts[: len(indian_recon_wavs)], indian_recon_wavs, extractor, "indian",
+    )
+    print(f"  Native  recon: n={native_recon['summary']['n']}, "
+          f"median={native_recon['summary']['median']:.4f}")
+    print(f"  Indian  recon: n={indian_recon['summary']['n']}, "
+          f"median={indian_recon['summary']['median']:.4f}")
+
+    # Legacy SECS Diagnostic
+    native_legacy = compute_legacy_secs(
+        native_utts[: len(native_recon_wavs)], native_recon_wavs, extractor,
+    )
+    indian_legacy = compute_legacy_secs(
+        indian_utts[: len(indian_recon_wavs)], indian_recon_wavs, extractor,
+    )
+    print(f"\n  +{'-'*56}+")
+    print(f"  |  Legacy SECS mean (DIAGNOSTIC ONLY)          |")
+    print(f"  |  Native: {native_legacy:.4f}                              |")
+    print(f"  |  Indian: {indian_legacy:.4f}                              |")
+    print(f"  |  Broken-adapter range: 0.05 - 0.24             |")
+    print(f"  |  NOT valid FACodec performance                 |")
+    print(f"  +{'-'*56}+")
+
+    # Calibrated Comparisons
+    print("\n>>> Calibrated comparisons...")
+    native_cal = calibrate_corpus(native_same, native_imp_within, native_recon, native_legacy)
+    indian_cal = calibrate_corpus(indian_same, indian_imp_within, indian_recon, indian_legacy)
+
+    # Comparison Table
+    print("\n" + "=" * 72)
+    print("  CALIBRATED COMPARISON TABLE")
+    print("=" * 72)
+    header = f"  {'Metric':<36} {'Native':>14} {'Indian':>14}"
+    print(header)
+    print("  " + "-" * 66)
+
+    rows = [
+        ("same-speaker median",         native_cal["same_speaker_median"],  indian_cal["same_speaker_median"]),
+        ("impostor median",              native_cal["impostor_median"],       indian_cal["impostor_median"]),
+        ("recon median",                 native_cal["recon_median"],          indian_cal["recon_median"]),
+        ("same-speaker span",            native_cal["same_speaker_span"],     indian_cal["same_speaker_span"]),
+        ("reconstruction shift",         native_cal["reconstruction_shift"],  indian_cal["reconstruction_shift"]),
+        ("impostor distance",            native_cal["impostor_distance"],     indian_cal["impostor_distance"]),
+        ("shift / span",                 native_cal["shift_over_span"],       indian_cal["shift_over_span"]),
+        ("shift / impostor distance",    native_cal["shift_over_impostor"],   indian_cal["shift_over_impostor"]),
+        ("preservation ratio",           native_cal["preservation_ratio"],    indian_cal["preservation_ratio"]),
+        ("GRADE",                        native_cal["grade"],                 indian_cal["grade"]),
+        ("legacy SECS (DIAG ONLY)",      native_cal["legacy_secs_mean"],      indian_cal["legacy_secs_mean"]),
+    ]
+    for metric, nv, iv in rows:
+        def fmt(v):
+            if v is None or (isinstance(v, float) and np.isnan(v)):
+                return "N/A"
+            if isinstance(v, str):
+                return v
+            return f"{v:.4f}"
+        print(f"  {metric:<36} {fmt(nv):>14} {fmt(iv):>14}")
+
+    print("  " + "-" * 66)
+    gap = native_cal["shift_over_span"] - indian_cal["shift_over_span"]
+    print(f"  {'shift/span gap (native - Indian)':<36} {float(gap):>14.4f}")
+    print("=" * 72)
+
+    # Build Summary
+    matched_pairs_used = min(len(matched_native), len(matched_indian)) if matched_native else 0
+    elapsed = time.time() - t_start
+
+    summary = {
+        "metadata": {
+            "timestamp": datetime.now().isoformat(),
+            "device": cfg.device,
+            "seed": cfg.seed,
+            "facodec_dir": str(cfg.facodec_dir),
+            "facodec_ckpt": cfg.facodec_ckpt,
+            "n_pairs_ref": cfg.n_pairs_ref,
+            "n_recon": cfg.n_recon,
+            "native_utterances_loaded": len(native_utts),
+            "indian_utterances_loaded": len(indian_utts),
+            "native_reconstructed": len(native_recon_wavs),
+            "indian_reconstructed": len(indian_recon_wavs),
+            "matched_prompts_used": matched_pairs_used,
+            "elapsed_seconds": round(elapsed, 1),
         },
-        "indian_english": {
-            "source_to_recon_similarity":     nan_mean(indian_src_recon_sim),
-            "source_wer":                    nan_mean(indian_src_wer),
-            "reconstruction_wer":             nan_mean(indian_recon_wer),
-            "reconstruction_induced_delta_wer": nan_mean(indian_delta_wer),
-            "duration_ratio":                nan_mean(indian_dur),
-            "id_norm":                       indian_id_norm if indian_id_norm is not None else float("nan"),
-            "n_samples":                    len(indian_recon_sims),
+        "methodology": {
+            "same_speaker_ref": "Within-speaker pairs: utterance A vs utterance B",
+            "different_speaker_ref": "Cross-speaker pairs: speaker A vs speaker B",
+            "reconstruction_ref": "Source waveform vs FACodec reconstruction",
+            "key_comparison": (
+                "shift_over_span = reconstruction_shift / same_speaker_span. "
+                "Expresses reconstruction damage as fraction of natural speaker variation. "
+                "Avoids arbitrary cosine-similarity thresholds."
+            ),
+            "grading": {
+                "EXCELLENT": "shift_over_span < 0.15 AND preservation > 0.85",
+                "PASS":     "shift_over_span < 0.30 AND preservation > 0.70",
+                "MARGINAL": "shift_over_span < 0.50 AND preservation > 0.50",
+                "FAIL":     "anything worse",
+            },
         },
-    },
+        "native": native_cal,
+        "indian": indian_cal,
+        "cross_corpus": {
+            "native_vs_indian_impostor_median": float(native_imp_cross["summary"]["median"]),
+            "native_vs_indian_impostor_n": int(native_imp_cross["summary"]["n"]),
+        },
+        "comparison": {
+            "identity_gap_shift_over_span": float(gap),
+            "interpretation": (
+                f"Native English reconstruction shift/span = {native_cal['shift_over_span']:.4f} "
+                f"(grade {native_cal['grade']}). "
+                f"Indian English reconstruction shift/span = {indian_cal['shift_over_span']:.4f} "
+                f"(grade {indian_cal['grade']}). "
+                f"Gap: {gap:+.4f}."
+            ),
+        },
+        "legacy_secs_diagnostic": {
+            "native_mean": float(native_legacy) if not np.isnan(native_legacy) else None,
+            "indian_mean": float(indian_legacy) if not np.isnan(indian_legacy) else None,
+            "label": "DIAGNOSTIC_ONLY / BROKEN ADAPTER / NOT VALID FACODEC PERFORMANCE",
+            "known_broken_range": "0.05-0.24",
+            "note": (
+                "This metric used arbitrary cosine-similarity thresholds. "
+                "It does NOT calibrate against speaker variation and is "
+                "unreliable for cross-corpus comparison. Superseded by "
+                "shift_over_span and preservation_ratio."
+            ),
+        },
+    }
 
-    "identity_gap": float(identity_gap),
-}
+    # Save Outputs
+    def save_json(data, filename):
+        path = cfg.output_dir / filename
+        with open(path, "w") as f:
+            json.dump(data, f, indent=2, default=_json_safe)
+        print(f"  Saved: {path}")
 
-# Pretty-print comparison table
-print("\n" + "=" * 70)
-print("  COMPARISON TABLE")
-print("=" * 70)
-header = f"  {'Metric':<40} {'Native English':>18} {'Indian English':>18}"
-print(header)
-print("  " + "-" * 76)
+    def _json_safe(obj):
+        if isinstance(obj, float) and (np.isnan(obj) or np.isinf(obj)):
+            return None
+        if isinstance(obj, np.floating):
+            return float(obj)
+        if isinstance(obj, np.integer):
+            return int(obj)
+        return str(obj)
 
-rows = [
-    ("source→reconstruction similarity",      nan_mean(native_src_recon_sim),  nan_mean(indian_src_recon_sim)),
-    ("source WER",                           nan_mean(native_src_wer),         nan_mean(indian_src_wer)),
-    ("reconstruction WER",                   nan_mean(native_recon_wer),      nan_mean(indian_recon_wer)),
-    ("reconstruction-induced ΔWER",           nan_mean(native_delta_wer),      nan_mean(indian_delta_wer)),
-    ("duration ratio",                       nan_mean(native_dur),             nan_mean(indian_dur)),
-    ("ID_norm",                              native_id_norm or float("nan"),   indian_id_norm or float("nan")),
-]
-for metric, native_val, indian_val in rows:
-    def fmt(v):
-        if v is None or (isinstance(v, float) and np.isnan(v)):
-            return "N/A"
-        return f"{v:.4f}"
-    print(f"  {metric:<40} {fmt(native_val):>18} {fmt(indian_val):>18}")
+    save_json(native_same | {"indian": indian_same},  "same_speaker_dist.json")
+    save_json({
+        "native_within": native_imp_within,
+        "indian_within": indian_imp_within,
+        "native_vs_indian": native_imp_cross,
+    }, "different_speaker_dist.json")
+    save_json({
+        "native": native_recon,
+        "indian": indian_recon,
+        "legacy_secs_diagnostic": summary["legacy_secs_diagnostic"],
+    }, "reconstruction_dist.json")
+    save_json(summary, "summary.json")
 
-print("  " + "-" * 76)
-print(f"  {'identity_gap (native - indian)':<40} {float(identity_gap):>18.4f}")
-print("=" * 70)
+    # Final Verdict
+    print(f"\n{'=' * 72}")
+    print(f"  VERDICT")
+    print(f"{'=' * 72}")
+    for corpus in ["native", "indian"]:
+        c = summary[corpus]
+        print(f"  {corpus.upper():<10} grade={c['grade']}  "
+              f"shift/span={c['shift_over_span']:.4f}  "
+              f"preservation={c['preservation_ratio']:.4f}")
+    print(f"  Elapsed: {elapsed:.1f}s")
+    print(f"{'=' * 72}")
 
-# ─── Step 14: Save results ───────────────────────────────────────────────────
-print(f"\n>>> Saving results to {OUT_JSON} …")
-os.makedirs("artifacts", exist_ok=True)
-with open(OUT_JSON, "w") as f:
-    json.dump(results, f, indent=2)
-print("Done.")
+    return summary
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CLI
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Calibrated identity preservation: Native vs Indian English"
+    )
+    parser.add_argument("--facodec-dir", type=str, default=str(cfg.facodec_dir),
+                        help="Path to FAcodec repo")
+    parser.add_argument("--device", type=str, default=cfg.device)
+    parser.add_argument("--n-pairs", type=int, default=cfg.n_pairs_ref)
+    parser.add_argument("--n-recon", type=int, default=cfg.n_recon)
+    parser.add_argument("--output-dir", type=str, default=str(cfg.output_dir))
+    parser.add_argument("--seed", type=int, default=cfg.seed)
+    args = parser.parse_args()
+
+    cfg.facodec_dir = Path(args.facodec_dir)
+    cfg.device = args.device
+    cfg.n_pairs_ref = args.n_pairs
+    cfg.n_recon = args.n_recon
+    cfg.output_dir = Path(args.output_dir)
+    cfg.seed = args.seed
+
+    run(cfg)
+
+
+if __name__ == "__main__":
+    main()

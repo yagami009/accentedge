@@ -1,0 +1,78 @@
+# ============================================================================
+# AccentEdge Phase 1 — Overfit config
+#
+# Purpose: Smoke-test the full training loop on 8 utterances from 2 speakers.
+#   This config overfits the denoiser to a tiny subset of CMU ARCTIC to
+#   verify that gradients flow, the loss decreases, and checkpoints are saved.
+#
+# Expected outcome:
+#   - Training loss should drop to near-zero within a few hundred steps.
+#   - Phoneme-conditioned denoising converges (since the model can memorise
+#     the phone→acoustic mapping for 8 utterances).
+#
+# Usage:
+#   python scripts/train_phase1.py --config configs/phase1/overfit.yaml
+# ============================================================================
+
+sample_rate: 24000
+codec_hop: 300
+codec_fps: 80
+
+# ---------------------------------------------------------------------------
+# Model architecture
+# ---------------------------------------------------------------------------
+phone_vocab_size: 393
+latent_dim: 8
+phone_pad_id: 392
+
+denoiser:
+  d_model: 256        # transformer embedding dim (paper: 1024; scaled down for smoke test)
+  nhead: 4            # attention heads (paper: 8)
+  num_layers: 3       # transformer layers (paper: 6)
+  d_ff: 512           # feed-forward dim (paper: 2048)
+  dropout: 0.1
+
+diffusion:
+  num_timesteps: 100
+  schedule_type: "linear"
+
+# ---------------------------------------------------------------------------
+# Training hyperparameters
+# ---------------------------------------------------------------------------
+training:
+  learning_rate: 1.0e-4
+  batch_size: 2
+  precision: "fp32"       # "fp32" | "fp16" | "bf16"
+  checkpoint_interval: 50   # save every N steps
+  seed: 42
+  max_steps: 500            # total training steps (overfit)
+
+# ---------------------------------------------------------------------------
+# Overfit settings
+# ---------------------------------------------------------------------------
+overfit:
+  num_utterances: 8          # first 8 utterances from the dataset
+  normalize_latents: true     # z-score normalise zc1 latents
+
+# ---------------------------------------------------------------------------
+# Paths
+# ---------------------------------------------------------------------------
+paths:
+  facodec_checkpoint: "Plachta/FAcodec"
+  output_dir: "output/overfit"
+  cache_dir: "cache/overfit"
+
+# ---------------------------------------------------------------------------
+# Data
+# ---------------------------------------------------------------------------
+dataset:
+  # Speakers to include (native English only for overfit)
+  speakers:
+    - "slt"
+    - "bdl"
+  # Root directories — adjust to match your local download locations
+  cmu_arctic_root: "data/cmu_arctic"
+  l2_arctic_root: "data/l2_arctic"
+  # If you have pre-built item lists (JSON), point here.  Otherwise,
+  # the dataset loader will scan the corpus directories.
+  item_list: null

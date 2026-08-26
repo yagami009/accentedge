@@ -1,0 +1,33 @@
+# ============================================================================
+# AccentEdge Phase 1 — Gate 1 config
+#
+# Purpose: FACodec reconstruction sanity-check.
+#   Load a handful of test WAVs, run encode→decode, and verify the
+#   round-trip loss is within an expected threshold.
+#
+# Usage:
+#   python scripts/test_reconstruct.py --config configs/phase1/gate1.yaml
+# ============================================================================
+
+sample_rate: 24000
+codec_hop: 300
+codec_fps: 80
+
+paths:
+  facodec_checkpoint: "Plachta/FAcodec"
+  output_dir: "output/gate1"
+  cache_dir: "cache/gate1"
+
+# ---------------------------------------------------------------------------
+# Test WAVs — 8 representative clips from CMU ARCTIC speaker SLT
+# Adjust paths to point at your local copy.
+# ---------------------------------------------------------------------------
+test_wavs:
+  - "data/cmu_arctic/cmu_arctic/wav/slt/arctic_a0001.wav"
+  - "data/cmu_arctic/cmu_arctic/wav/slt/arctic_a0008.wav"
+  - "data/cmu_arctic/cmu_arctic/wav/slt/arctic_a0010.wav"
+  - "data/cmu_arctic/cmu_arctic/wav/slt/arctic_a0016.wav"
+  - "data/cmu_arctic/cmu_arctic/wav/slt/arctic_a0022.wav"
+  - "data/cmu_arctic/cmu_arctic/wav/slt/arctic_a0039.wav"
+  - "data/cmu_arctic/cmu_arctic/wav/slt/arctic_a0047.wav"
+  - "data/cmu_arctic/cmu_arctic/wav/slt/arctic_a0050.wav"
