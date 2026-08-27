@@ -166,13 +166,15 @@ class AccentConverter:
         # ----------------------------------------------------------------
         # Step 5: Recompute zc2
         # ----------------------------------------------------------------
-        zc2 = self.zc2_recomputer.recompute(
-            zc1_denoised=z_q_denoised,
-            zc2_pred=zc2_pred,
-            z_q=z_q,
+        zc2_result = self.zc2_recomputer.recompute(
+            encoder_features=z_q,           # timbre-conditioned quantized content
+            modified_zc1=z_q_denoised,       # denoised content
             z_p=z_p,
             z_r=z_r,
+            phone_ids=phone_ids,
         )
+        zc2 = zc2_result.zc2
+        zc2_pred = zc2_result.zc2_pred
 
         # ----------------------------------------------------------------
         # Step 6: Decode
@@ -235,7 +237,7 @@ class AccentConverter:
 
         # Get DDPM schedule buffers from the denoiser
         sqrt_abar = self.denoiser.sqrt_abar
-        sqrt_1mabar = self.denoiser.sqrt_1m_abar
+        sqrt_1mabar = self.denoiser.sqrt_1mabar
 
         # Add noise: z_noisy = sqrt(abar[t]) * z_q + sqrt(1-abar[t]) * noise
         t_tensor = torch.tensor([t_start], device=self.device).repeat(bsz)
