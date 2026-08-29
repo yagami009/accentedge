@@ -4,28 +4,63 @@ build-backend = "setuptools.backends.legacy:build"
 
 [project]
 name = "accentedge"
-version = "0.1.0-phase1"
-description = "Phase 1: FAC-FACodec reimplementation — offline pronunciation normalization baseline"
+version = "0.1.0-monorepo"
+description = "AccentEdge: identity-preserving speech-to-speech accent conversion"
 requires-python = ">=3.11"
+
 dependencies = [
+    # Core
     "torch>=2.2",
     "numpy>=1.24",
+    "scipy>=1.11",
+    "einops>=0.7",
+    # Audio
     "soundfile>=0.12",
     "librosa>=0.10",
-    "scipy>=1.11",
+    "torchaudio>=2.2",
+    # Evaluation
     "jiwer>=3.0",
-    "pyyaml>=6.0",
-    "einops>=0.7",
-    "huggingface-hub>=0.20",
-    "phonemizer>=3.0",
     "speechbrain>=0.5.16",
     "faster-whisper>=1.0",
+    "phonemizer>=3.0",
+    # Data / config
+    "pyyaml>=6.0",
+    "pydantic>=2.0",
+    "pandas>=2.0",
+    "pyarrow>=12.0",
+    # Benchmark
+    "typer>=0.9.0",
+    "jinja2>=3.1",
+    "matplotlib>=3.7",
+    # HuggingFace
+    "huggingface-hub>=0.20",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
+    "pytest-cov>=4.1",
+    "pytest-xdist>=3.3",
 ]
+cuda = ["torch[cuda]>=2.2"]
+mps = ["torch>=2.2; platform_machine=='arm64' and sys_platform=='darwin'"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"" = "src"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true

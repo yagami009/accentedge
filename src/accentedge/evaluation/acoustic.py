@@ -46,3 +46,4 @@ class AcousticEvaluator:
             "mel_l1": mel_l1(source, target, self.sr),
             "duration_ratio": duration_ratio(source, target, self.sr),
         }
+

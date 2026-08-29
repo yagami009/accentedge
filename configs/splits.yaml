@@ -1,0 +1,21 @@
+# Speaker split configuration
+
+splits:
+  dev_count: 24
+  locked_test_count: 24
+  calibration_exclude: true  # Phase-0 participants excluded from splits
+
+  stratification:
+    enabled: true
+    factors:
+      - l1_category
+      - accent_strength
+      - bpo_experience
+    # Stratification is best-effort; never breaks speaker disjointness
+
+  constraints:
+    speaker_disjoint: true       # Hard requirement
+    no_duplicate_audio: true     # Same hash must not appear in multiple splits
+    deterministic: true          # Same seed + same input = same output
+
+  seed: 42

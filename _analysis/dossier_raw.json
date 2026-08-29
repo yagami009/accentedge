@@ -1,0 +1,5141 @@
+{
+  "paragraphs": [
+    {
+      "idx": 1,
+      "text": "AccentEdge",
+      "style": "Normal"
+    },
+    {
+      "idx": 2,
+      "text": "MASTER PROJECT DOSSIER",
+      "style": "Normal"
+    },
+    {
+      "idx": 3,
+      "text": "Technology \u2022 Model Research \u2022 Data \u2022 Runtime \u2022 Deployment \u2022 Commercialization \u2022 Evidence History",
+      "style": "Normal"
+    },
+    {
+      "idx": 5,
+      "text": "Prepared as a complete handoff/reference for future engineering, research, commercial discussions, investor/customer conversations, and coding-agent sessions.",
+      "style": "Normal"
+    },
+    {
+      "idx": 6,
+      "text": "Version 1.0  |  As-of: 27 August 2026 (Asia/Kolkata)",
+      "style": "Normal"
+    },
+    {
+      "idx": 8,
+      "text": "0. Document Control, Status Labels & Evidence Hierarchy",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 9,
+      "text": "This dossier intentionally does not flatten every prior statement into one \u201cfinal architecture.\u201d AccentEdge has gone through research resets and several architectural explorations. The master therefore uses status labels and an evidence hierarchy.",
+      "style": "Normal"
+    },
+    {
+      "idx": 11,
+      "text": "0.1 Evidence hierarchy",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 12,
+      "text": "1. PROJECT_CONTEXT.md / current master dossier\n2. Current phase decision document (TGFP v2 for Phase 0)\n3. Current experimental evidence / artifacts\n4. Current code\n5. Older audits, reports, milestone labels\n6. Old agent summaries and exploratory architecture discussions",
+      "style": "Normal"
+    },
+    {
+      "idx": 13,
+      "text": "The authoritative internal project context explicitly states that old reports and code are not automatically more authoritative than current product/spec decisions. The immediate scientific question is still whether one convincing same-speaker target can be produced.",
+      "style": "Normal"
+    },
+    {
+      "idx": 14,
+      "text": "0.2 Claims that must not be carried forward as current facts",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 15,
+      "text": "\u201cPhase 2 complete.\u201d",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 16,
+      "text": "\u201cArchitecture bake-off complete.\u201d",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 17,
+      "text": "\u201cCandidate D selected as the winner.\u201d",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 18,
+      "text": "\u201cSpeaker preservation validated.\u201d",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 19,
+      "text": "\u201cContent preservation validated.\u201d",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 20,
+      "text": "\u201cAccent conversion validated.\u201d",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 21,
+      "text": "\u201cReal-time validated.\u201d",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 22,
+      "text": "\u201cRTF proves AccentEdge is fast.\u201d",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 23,
+      "text": "\u201cBenchmark scientifically validated.\u201d",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 24,
+      "text": "\u201cStage A proves same-speaker accent conversion.\u201d",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 26,
+      "text": "0.3 What \u201ceverything\u201d means in this master",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 27,
+      "text": "Current product thesis and linguistic contract.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 28,
+      "text": "All prior relevant AccentEdge/Accent Translator engineering branches: Seed-VC, FACodec, Stage A, bake-off/reset, target-generation protocol.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 29,
+      "text": "Every model family discussed in this thread and the commercial/license caveats attached to it.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 30,
+      "text": "The complete streaming/runtime architecture proposals, cross-platform strategy, on-prem hardware, deployment topology, model-plugin approach, and framework stack.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 31,
+      "text": "Business-model evolution from $1/min cloud service to seat-based local/on-prem deployment, including the Sanas benchmark.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 32,
+      "text": "Every dataset/source discussed, its intended role, license posture, provenance caveat, and link.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 33,
+      "text": "Evaluation gates, RTF/latency definitions, critical-content safety, speaker identity, correction/damage metrics, and listening-study design.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 34,
+      "text": "Explicit unknowns, risks, decisions not yet made, and immediate next actions.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 35,
+      "text": "A consolidated link register at the end.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 36,
+      "text": "0.4 Master content map",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 37,
+      "text": "1. Executive Position \u2014 What AccentEdge Is and Is Not",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 38,
+      "text": "2. Business Thesis & Pricing Evolution",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 39,
+      "text": "3. Product and Linguistic Contract",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 40,
+      "text": "4. Scientific Gate: TGFP v2",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 41,
+      "text": "5. Roadmap: Phase 0 to Controlled BPO Pilot",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 42,
+      "text": "6. Legacy Work: What Was Built, What Failed, What Survives",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 43,
+      "text": "7. Model Landscape: Offline, Accent-Specific, Real-Time VC",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 44,
+      "text": "8. Existing Real-Time Model Shortcut Strategy",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 45,
+      "text": "9. Proprietary Model Architecture (Only If Needed)",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 46,
+      "text": "10. Streaming Audio & Runtime Architecture",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 47,
+      "text": "11. Cross-Platform Desktop Architecture",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 48,
+      "text": "12. On-Prem / Production Hardware & Deployment",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 49,
+      "text": "13. Frameworks, Languages & Production Tech Stack",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 50,
+      "text": "14. Data Strategy & Dataset Catalogue",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 51,
+      "text": "15. Proprietary AccentEdge-PAIR Dataset",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 52,
+      "text": "16. Evaluation, Benchmarks & Production Gates",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 53,
+      "text": "17. Licensing, Provenance, Privacy & Enterprise Security",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 54,
+      "text": "18. Business Economics, Competitive Proof & Go-to-Market",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 55,
+      "text": "19. Risk Register & Unresolved Questions",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 56,
+      "text": "20. Immediate Execution Plan & Decision Tree",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 57,
+      "text": "Appendix A. Exact Phase-0 Test Material",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 58,
+      "text": "Appendix B. Repository/API/Interface Blueprints",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 59,
+      "text": "Appendix C. Chronological Decision Log",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 60,
+      "text": "Appendix D. Complete Link Register",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 62,
+      "text": "1. Executive Position \u2014 What AccentEdge Is and Is Not",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 64,
+      "text": "1.1 First commercial wedge",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 66,
+      "text": "1.2 Production path vs. paths explicitly rejected",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 67,
+      "text": "INTENDED\nLIVE SPEECH IN\n    \u2193\ncausal / bounded-context speech representation\n    \u2193\npronunciation/accent transformation\n    \u2193\nLIVE SPEECH OUT\n\nNOT THE DEPLOYED CRITICAL PATH\nspeech \u2192 ASR \u2192 text \u2192 LLM \u2192 TTS",
+      "style": "Normal"
+    },
+    {
+      "idx": 68,
+      "text": "ASR, forced alignment, phoneme labels, TTS, voice conversion, teacher models, and text may still be used offline for training, target generation, supervision, diagnostics, and evaluation.",
+      "style": "Normal"
+    },
+    {
+      "idx": 69,
+      "text": "1.3 What the MVP is",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 70,
+      "text": "Physical Headset Mic\n        \u2193\nAccentEdge Runtime\n        \u2193\nReal-Time S2S Model / selected engine\n        \u2193\nAccentEdge Virtual Microphone\n        \u2193\nGenesys / Five9 / NICE / Teams / Zoom / Webex / browser dialer / SIP softphone\n        \u2193\nCustomer",
+      "style": "Normal"
+    },
+    {
+      "idx": 71,
+      "text": "The technical MVP is not an API demo and not a research notebook. A real person must install it, choose their microphone, select \u201cAccentEdge Microphone\u201d in an existing calling application, talk continuously, and retain the original call if conversion fails.",
+      "style": "Normal"
+    },
+    {
+      "idx": 72,
+      "text": "1.4 What is not currently proven",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 73,
+      "text": "A commercially acceptable same-speaker target exists.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 74,
+      "text": "An existing real-time VC model can learn same-speaker accent normalization.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 75,
+      "text": "The FACodec path correctly disentangles and reconstructs all required attributes end-to-end.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 76,
+      "text": "A streaming model meets BPO latency on unseen speakers.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 77,
+      "text": "CPU-only endpoint inference is acceptable on ordinary BPO PCs.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 78,
+      "text": "BPO agents will voluntarily keep the transformation enabled.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 79,
+      "text": "A BPO will pay the target price at scale.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 82,
+      "text": "2. Business Thesis & Pricing Evolution",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 83,
+      "text": "2.1 Original business idea preserved",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 84,
+      "text": "Initial idea discussed: sell real-time accent conversion to BPOs as a service at approximately $1 per converted minute. The product would process agent audio and return transformed audio during the call.",
+      "style": "Normal"
+    },
+    {
+      "idx": 85,
+      "text": "BPO Agent \u2192 audio \u2192 AccentEdge API/GPU \u2192 converted audio \u2192 customer\nBilling hypothesis: $1 / converted minute",
+      "style": "Normal"
+    },
+    {
+      "idx": 86,
+      "text": "2.2 Why the idea felt threatened",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 87,
+      "text": "Research-grade models such as CosyAccent/TokAN are not necessarily true streaming engines out of the box.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 88,
+      "text": "Cloud inference adds network latency, privacy review, concurrency capacity, GPU cost, and outage exposure.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 89,
+      "text": "A BPO may not allow live call audio to leave its network.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 90,
+      "text": "Concurrency economics must be benchmarked by RTF and not guessed from parameter count.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 91,
+      "text": "2.3 Why real-time itself is not the deal-breaker",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 92,
+      "text": "Sanas provides current commercial proof that real-time accent translation is possible for contact centers. Its documentation says Accent Translation processes conversation data and voice samples on-device in real time, retains personalized voice characteristics, and integrates as a desktop application. The user guide says audio is processed on the device while internet connectivity is used for access verification.",
+      "style": "Normal"
+    },
+    {
+      "idx": 93,
+      "text": "Sanas Accent Translation: https://help.sanas.ai/docs/accent-translation \u2014 Current product documentation: real-time, personalized voice, on-device processing.",
+      "style": "Normal"
+    },
+    {
+      "idx": 94,
+      "text": "Sanas App User Guide: https://help.sanas.ai/v1/docs/using-sanas-app \u2014 Desktop application; local processing with internet for access verification.",
+      "style": "Normal"
+    },
+    {
+      "idx": 95,
+      "text": "Sanas product page: https://www.sanas.ai/accent-translation \u2014 Market proof and contact-center integration positioning.",
+      "style": "Normal"
+    },
+    {
+      "idx": 96,
+      "text": "2.4 The bigger commercial problem with $1/minute",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 97,
+      "text": "The public AWS Marketplace listing currently shows a 12-month Accent Translation contract for 100 users at $72,000, i.e. $60 per user per month before any negotiated enterprise terms. This is a much lower effective price than $1/minute for agents who talk for hours per day.",
+      "style": "Normal"
+    },
+    {
+      "idx": 99,
+      "text": "Sanas AWS Marketplace: https://aws.amazon.com/marketplace/pp/prodview-mr5luwansb4k6 \u2014 Public listing: 100 Accent Translation users = $72,000/12 months at time of verification.",
+      "style": "Normal"
+    },
+    {
+      "idx": 100,
+      "text": "2.5 Current business-model direction",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 103,
+      "text": "2.6 Why on-device/local-first improves economics",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 104,
+      "text": "Inference cost is paid largely by the endpoint hardware rather than a central GPU per minute.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 105,
+      "text": "Call audio can remain on the agent PC or inside the BPO LAN.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 106,
+      "text": "Control plane can be light: licensing, model distribution, configuration, fleet health, analytics/telemetry.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 107,
+      "text": "A 1,000-seat deployment at an illustrative $40/seat/month is $40,000 MRR without processing every minute in your own cloud.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 110,
+      "text": "3. Product & Linguistic Transformation Contract",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 111,
+      "text": "3.1 Why \u201cremove the Indian accent\u201d is the wrong specification",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 112,
+      "text": "Accent is not an independent knob. It overlaps with phone realization, vowel quality, stress, duration, rhythm, intonation, pitch contour, coarticulation, and speaker/style cues. \u201cIndian English\u201d is also not one accent; speakers vary by first-language substrate, region, education, and existing target-like realizations.",
+      "style": "Normal"
+    },
+    {
+      "idx": 114,
+      "text": "3.2 Likely in-scope pronunciation dimensions",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 116,
+      "text": "3.3 Explicitly not automatic v1 scope",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 117,
+      "text": "Wholesale sentence-rhythm conversion.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 118,
+      "text": "Full US-style global intonation remapping.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 119,
+      "text": "Major phrase-level reconstruction.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 120,
+      "text": "Lexical variant substitutions such as schedule/route/advertisement/privacy/mobile as a discrete \u201cAmerican word choice\u201d mechanism.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 121,
+      "text": "Language translation.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 122,
+      "text": "Speaker impersonation or voice cloning.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 123,
+      "text": "3.4 Identity definition",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 124,
+      "text": "Identity is perceptual and physiological/timbral: listeners should continue to hear the output as the same human even when selected pronunciation patterns change. It is not defined as \u201cmaximize one arbitrary speaker-encoder cosine.\u201d The current Phase-0 protocol calibrates identity against natural same-speaker cross-accent change.",
+      "style": "Normal"
+    },
+    {
+      "idx": 125,
+      "text": "3.5 Preservation vs transformation contract",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 128,
+      "text": "4. Scientific Gate \u2014 Target Generation Feasibility Protocol (TGFP v2)",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 130,
+      "text": "4.1 Gate structure",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 132,
+      "text": "The protocol timeboxes Gates \u22121 through 2 to approximately 10 weeks of side-project time. If the evaluation apparatus itself overruns badly, that is evidence to re-scope rather than perpetually expanding the protocol.",
+      "style": "Normal"
+    },
+    {
+      "idx": 133,
+      "text": "4.2 Gate \u22121: annotation validity",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 134,
+      "text": "Hand-transcribe all Phase-0 utterances.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 135,
+      "text": "Auto-align only as initialization; manually correct boundaries in the in-scope pronunciation regions.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 136,
+      "text": "Track how much alignment correction was required; poor accented-speech alignment is itself a future data-cost finding.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 137,
+      "text": "For each in-scope token label ALREADY-TARGET, DEVIANT, or AMBIGUOUS.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 138,
+      "text": "Correction rate is computed only over DEVIANT tokens; damage rate only over ALREADY-TARGET tokens.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 139,
+      "text": "Report AMBIGUOUS count. Around >15% was discussed as a warning that annotation has become the measurement bottleneck.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 140,
+      "text": "Target at least 20 DEVIANT and 20 ALREADY-TARGET tokens per speaker so both correction and damage are measurable.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 141,
+      "text": "4.3 Initial source speakers and recordings",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 142,
+      "text": "Three speakers across different Indian-English substrates: e.g. Hindi-L1 North, Dravidian-L1 South, and one contrasting background.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 143,
+      "text": "Moderate-to-strong accent preferred for the feasibility protocol; a mild-accent speaker can make the test falsely easy.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 144,
+      "text": "16 kHz or better, mono, quiet room, consistent headset/microphone.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 145,
+      "text": "One speaker should repeat a session on a different day to estimate session nuisance.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 146,
+      "text": "4.4 Degradation conditions",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 148,
+      "text": "4.5 Gate 0: highest-information experiment",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 149,
+      "text": "ONE SPEAKER \u2022 ONE SENTENCE \u2022 STRATEGY B \u2022 BUILT BY HAND\n\nIndian source\n   \u2193\nnative-US linguistic realization\n   \u2193\ntransfer source identity/timbre\n   \u2193\ncandidate target\n\nQuestion: \u201cthe same person speaking differently\u201d or \u201ca different person wearing their voice characteristics\u201d?",
+      "style": "Normal"
+    },
+    {
+      "idx": 150,
+      "text": "4.6 Gate 1 teacher strategies",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 152,
+      "text": "4.7 Sparse repair is not automatically \u201ceasier\u201d",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 153,
+      "text": "Discrete failure: one repaired word can sound abruptly different from surrounding speech.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 154,
+      "text": "Detection requires streaming phone recognition/deviation detection \u2014 the hard representation problem moves rather than disappears.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 155,
+      "text": "Lookahead can be worse because the system must decide to fire before a word is complete.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 156,
+      "text": "Damage rate may dominate correction rate; false repair of already-correct speech is highly salient to agents.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 157,
+      "text": "4.8 Gate 2: natural cross-accent calibration",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 158,
+      "text": "Recruit genuine code-switchers/register shifters rather than people merely performing an American accent. A performer may change persona, voice quality, rate, loudness, and emotion, contaminating the \u201ccost of accent change.\u201d The protocol targets 5\u201310 speakers and 50\u2013100 matched sentences once initial feasibility advances.",
+      "style": "Normal"
+    },
+    {
+      "idx": 160,
+      "text": "4.9 Gold-derived identity budget",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 161,
+      "text": "d_gold = mean distance over condition D\n         = same speaker: Indian \u2194 naturally code-switched US\n\nPASS target identity if:\n    d(source, generated_target) \u2264 d_gold + confidence interval\n\nUse \u22653 independent speaker encoders (e.g. ECAPA-TDNN, WavLM verification head, another)\nand human same-person ratings. If encoders disagree, humans decide and disagreement is recorded.",
+      "style": "Normal"
+    },
+    {
+      "idx": 162,
+      "text": "4.10 Accent metric: correction AND damage",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 163,
+      "text": "Correction rate = DEVIANT tokens that became target-like / all DEVIANT tokens\nDamage rate     = ALREADY-TARGET tokens that became non-target / all ALREADY-TARGET tokens\nOff-target movement = changed tokens that moved toward neither desired centroid",
+      "style": "Normal"
+    },
+    {
+      "idx": 164,
+      "text": "The protocol explicitly rejects one black-box \u201caccent score\u201d as the headline. A conversion-strength parameter should trace a correction/damage tradeoff curve, and a conservative operating point may be preferable for BPO use.",
+      "style": "Normal"
+    },
+    {
+      "idx": 165,
+      "text": "4.11 Per-dimension diagnostics discussed",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 167,
+      "text": "4.12 Timing is hierarchical, not one arbitrary percentage",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 169,
+      "text": "4.13 Human listening study",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 170,
+      "text": "US-native panel (~8\u201312) for accent/naturalness.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 171,
+      "text": "Identity panel (~8\u201312), including people unfamiliar with the source speakers.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 172,
+      "text": "Two independent content transcribers for critical entities.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 173,
+      "text": "Fully randomized/unlabelled stimuli with hidden source (low) and natural cross-accent reference (high) anchors.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 174,
+      "text": "Identity blocks include true-same and true-different catch trials; compute per-rater discrimination (d\u2032) and pre-register exclusion rules.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 175,
+      "text": "Sessions capped around 20 minutes to reduce fatigue.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 176,
+      "text": "Identity paired AB 1\u20135 + free-text \u201cwhat changed\u201d; accent 5-point anchored; naturalness MOS; emotion match + confidence.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 177,
+      "text": "If confidence intervals overlap for close teacher strategies, advance both rather than overclaim a winner from a tiny sample.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 178,
+      "text": "4.14 Teacher headroom and outcomes",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 179,
+      "text": "TGFP v2 treats earlier numerical bars as provisional unless gold-derived. The following numbers were explicitly retained as [P] engineering/admission hypotheses, not universal truths.",
+      "style": "Normal"
+    },
+    {
+      "idx": 183,
+      "text": "5. Delivery Roadmap \u2014 Phase 0 to Controlled BPO Pilot",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 184,
+      "text": "PHASE 0 \u2014 VALID TARGET\n      \u2193\nPHASE 1 \u2014 LEARNED BASELINE\n      \u2193\nPHASE 2 \u2014 GENERALIZATION & QUALITY\n      \u2193\nPHASE 3 \u2014 TRUE STREAMING\n      \u2193\nPHASE 4 \u2014 CPU / ENDPOINT RUNTIME\n      \u2193\nPHASE 5 \u2014 PILOT-READY VIRTUAL-MIC MVP\n      \u2193\nPHASE 6 \u2014 CONTROLLED BPO PILOT",
+      "style": "Normal"
+    },
+    {
+      "idx": 185,
+      "text": "5.1 Phase 0 \u2014 Valid Target",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 186,
+      "text": "Audit provenance of every legacy source/target/prediction pair.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 187,
+      "text": "Replace Griffin-Lim-based listening with a compatible neural vocoder where needed.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 188,
+      "text": "Replace homemade speaker metric with established verification + humans.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 189,
+      "text": "Use WER/CER plus human critical-entity checking for content.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 190,
+      "text": "Produce one valid same-speaker target; listen; only then expand to ~10\u201330 pairs.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 191,
+      "text": "Phase-0 artifacts: source/, targets/, metadata.csv, target_provenance.md, listening_notes.md, PHASE0_DECISION.md.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 192,
+      "text": "5.2 Phase 1 \u2014 Learned Baseline",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 193,
+      "text": "Do not restart a four-model architecture bake-off. Pick one simple baseline that is easy to overfit/debug.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 194,
+      "text": "Candidate D / Minimal Hybrid may be reused only as Baseline v0, not as a proven winner.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 195,
+      "text": "Overfit 5\u201310 valid pairs. If the model cannot memorize direction, do not scale data; fix architecture/loss/target/vocoder/training.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 196,
+      "text": "Then ~3\u201310 speakers and 100\u2013500 paired utterances; train/evaluation speakers disjoint.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 197,
+      "text": "Evaluate WER/CER/entities, established speaker verification + human identity, accent A/B, naturalness listening.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 198,
+      "text": "5.3 Phase 2 \u2014 Generalization & Quality",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 199,
+      "text": "Initial held-out target: ~5\u201310 speakers / 100\u2013300 utterances.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 200,
+      "text": "Categories: scripted BPO, critical entities, pronunciation contrasts, already-correct speech, spontaneous speech.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 201,
+      "text": "Measure correction and damage separately.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 202,
+      "text": "Telephony sanity: 16 kHz \u2192 8 kHz \u2192 G.711, optionally controlled call-center noise.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 203,
+      "text": "Pass only if intended pronunciation improves on unseen speakers without unacceptable content/identity damage.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 204,
+      "text": "5.4 Phase 3 \u2014 True Streaming",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 205,
+      "text": "state = model.create_state()\noutput, state = model.process_chunk(audio_chunk, state)",
+      "style": "Normal"
+    },
+    {
+      "idx": 206,
+      "text": "Bounded state and bounded lookahead; no whole utterance requirement.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 207,
+      "text": "No reference speaker in production; no text/LLM critical path.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 208,
+      "text": "Measure algorithmic latency, compute latency, first-output latency, RTF, backlog, state size, memory.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 209,
+      "text": "Chunk sweep: 160 / 80 / 40 / 20 ms. Lookahead sweep: 0 / 20 / 40 / 80 / 160 ms where needed.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 210,
+      "text": "Verify causality: future audio outside declared lookahead cannot change already-emitted output.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 211,
+      "text": "Long-stream tests: 30 min, then 1\u20132 hours for viable candidates. Check memory/state growth, latency drift, backlog, timing drift, NaNs, silence/restart behavior, artifacts.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 212,
+      "text": "Authoritative provisional pilot objective: P95 added latency \u2264250\u2013300 ms and RTF \u22640.6; stronger later commercial objective P95 \u2264200 ms. Earlier stricter 0.25/200ms numbers in this conversation are aspirational, not Phase-0 gates.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 213,
+      "text": "5.5 Phase 4 \u2014 CPU / endpoint runtime",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 214,
+      "text": "Source-of-truth target: Windows 10/11 x86-64, 8\u201316 GB RAM, Intel/AMD CPU, no dedicated GPU requirement.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 215,
+      "text": "Optimize only after quality works: ONNX export, ONNX Runtime, operator fusion, quantization, distillation, smaller encoder, lighter synthesis, thread tuning.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 216,
+      "text": "Profile exact CPU, threads, RAM, OS, P50/P95/P99, RTF, CPU%, memory, model load and first-output latency.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 217,
+      "text": "Native runtime uses bounded input/output rings; no unbounded queues.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 218,
+      "text": "Fail-open: ACTIVE \u2192 DEGRADED \u2192 CROSSFADE \u2192 BYPASS; recovery uses hysteresis.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 219,
+      "text": "Pass continuous real-time conversion with bounded latency/memory/no backlog/fail-open for at least 30\u201360 minutes before packaging.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 220,
+      "text": "5.6 Phase 5 \u2014 Pilot-ready MVP",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 221,
+      "text": "Simple agent UI: status, input mic, target, strength, enable/disable, diagnostics.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 222,
+      "text": "Expose \u201cAccentEdge Microphone\u201d to OS/softphones.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 223,
+      "text": "No deep CCaaS integration required for MVP.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 224,
+      "text": "Diagnostics: model readiness, latency, CPU/memory, bypass, runtime/model version.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 225,
+      "text": "Metadata-only logs by default; no recorded call audio.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 226,
+      "text": "Installer/uninstaller/runtime/model/virtual audio component/config; no terminal commands.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 227,
+      "text": "Reliability tests: 2h call simulation, headset disconnect/reconnect, softphone restart, CPU overload, model error, audio device change, bypass/recovery.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 228,
+      "text": "5.7 Phase 6 \u2014 Controlled BPO Pilot",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 231,
+      "text": "6. Legacy Engineering \u2014 What Was Built, What Failed, What Survives",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 232,
+      "text": "6.1 Seed-VC prototype \u2014 verified legacy facts",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 233,
+      "text": "A forensic audit dated 25 Aug 2026 found a genuine working offline Seed-VC integration, but explicitly not a real-time/streaming accent product.",
+      "style": "Normal"
+    },
+    {
+      "idx": 235,
+      "text": "6.2 Seed-VC module details worth retaining",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 236,
+      "text": "Actual call path: CLI \u2192 ConversionEngine \u2192 SeedVCConverter \u2192 semantic content/ref features \u2192 CAMPPlus reference style \u2192 RMVPE F0 \u2192 CFM inference \u2192 BigVGAN \u2192 WAV.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 237,
+      "text": "Legacy capture default: 16 kHz, ~200 ms chunks, float32 mono.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 238,
+      "text": "Legacy queues were unbounded in capture/playback; this is explicitly incompatible with real-time backpressure safety.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 239,
+      "text": "RingBuffer itself was fixed-capacity/thread-safe but allocated on reads and held locks during copies.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 240,
+      "text": "Silero VAD wrapper existed but real model loading was not exercised in the live pipeline.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 241,
+      "text": "Sample-rate mismatch existed: capture/playback 16 kHz while Seed-VC model path used ~22.05 kHz, requiring resampling both ways.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 242,
+      "text": "Dependencies were largely unpinned; model files had no hash/version pinning; torch.load checkpoint supply-chain risk existed.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 243,
+      "text": "6.3 Legacy bugs/risks recorded",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 245,
+      "text": "6.4 FACodec branch \u2014 corrections and current status",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 247,
+      "text": "6.5 Critical FACodec timbre-path lesson",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 249,
+      "text": "6.6 What legacy code may still be reused",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 250,
+      "text": "Streaming session abstractions.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 251,
+      "text": "Causality harness.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 252,
+      "text": "Latency profiler and state-growth tests.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 253,
+      "text": "Chunk/lookahead sweep tooling.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 254,
+      "text": "Experiment/manifest logic.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 255,
+      "text": "Some simple baseline/Candidate D code if clean and relevant.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 256,
+      "text": "6.7 What is retired as evidence",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 257,
+      "text": "Homemade speaker-similarity metric.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 258,
+      "text": "Mel L1 labeled as content preservation.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 259,
+      "text": "Griffin-Lim-based naturalness/identity claims.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 260,
+      "text": "RTF 0.0044-style product-performance claims.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 261,
+      "text": "Stage A speaker-preservation claims.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 262,
+      "text": "\u201cPhase 2 complete\u201d and \u201cCandidate D winner\u201d labels.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 264,
+      "text": "7. Model Landscape \u2014 Local Audio-to-Audio, Accent and Real-Time Candidates",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 265,
+      "text": "The thread explored two distinct categories: (A) models that explicitly target accent normalization but are not necessarily production streaming engines, and (B) real-time voice-conversion engines that may provide a shortcut if they can be trained on same-speaker cross-accent pairs.",
+      "style": "Normal"
+    },
+    {
+      "idx": 267,
+      "text": "7.1 CosyAccent details",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 268,
+      "text": "Official ICASSP 2026 implementation; Hugging Face card identifies MIT license.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 269,
+      "text": "Direct WAV\u2192WAV inference.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 270,
+      "text": "Default `--reference_wav` can fall back to source WAV for timbre conditioning.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 271,
+      "text": "Default `--n_timesteps` = 32 flow-matching steps in current repo, making it a quality/teacher candidate rather than assumed streaming endpoint.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 272,
+      "text": "Other exposed knobs include duration preservation and speech length ratio.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 273,
+      "text": "Use first to establish how good an accent-specific teacher can sound, not as proof of endpoint feasibility.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 274,
+      "text": "CosyAccent GitHub: https://github.com/P1ping/CosyAccent",
+      "style": "Normal"
+    },
+    {
+      "idx": 275,
+      "text": "CosyAccent weights: https://huggingface.co/Piping/CosyAccent \u2014 MIT metadata; ICASSP 2026 model card.",
+      "style": "Normal"
+    },
+    {
+      "idx": 276,
+      "text": "CosyAccent paper: https://arxiv.org/abs/2602.19166v1",
+      "style": "Normal"
+    },
+    {
+      "idx": 277,
+      "text": "7.2 TokAN-Legacy details",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 278,
+      "text": "Official Interspeech 2025 legacy implementation for Accent Normalization Using Self-Supervised Discrete Tokens.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 279,
+      "text": "Repository exposes training steps, including token-to-token pretraining/fine-tuning and use of LibriTTS-R + L2-ARCTIC/ARCTIC in the research recipe.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 280,
+      "text": "Long-audio inference splits by Silero VAD; this is chunked offline inference, not automatically a bounded-lookahead live-call architecture.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 281,
+      "text": "Useful because it exposes an actual accent-learning pipeline rather than only a pretrained black-box inference script.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 282,
+      "text": "TokAN-Legacy: https://github.com/P1ping/TokAN-Legacy \u2014 MIT repository; newer TokAN repo exists, but Legacy was the clearer training reference in the discussion.",
+      "style": "Normal"
+    },
+    {
+      "idx": 283,
+      "text": "7.3 Real-time engines: what they solve vs what they do not",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 284,
+      "text": "GENERIC VOICE CONVERSION\nSpeaker A + reference/target voice \u2192 speech that sounds like target speaker\n\nACCENTEDGE REQUIREMENT\nSpeaker A, Indian English \u2192 Speaker A, US-oriented pronunciation\nidentity SAME \u2022 words SAME \u2022 emotion SAME \u2022 accent/pronunciation DIFFERENT",
+      "style": "Normal"
+    },
+    {
+      "idx": 286,
+      "text": "7.4 Real-time lab stack recommendation",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 287,
+      "text": "RVC: fastest low-friction experiment; official project MIT and widely used for real-time VC.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 288,
+      "text": "Beatrice: important low-latency candidate; keep engine/data licenses separate.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 289,
+      "text": "Seed-VC: benchmark its zero-shot/realtime behavior but avoid committing a proprietary distribution strategy to GPL until licensing strategy is explicit.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 290,
+      "text": "w-okada: use as a laboratory to switch RVC/Beatrice/DDSP/SVC backends and prove conversational behavior before writing custom device/runtime code.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 291,
+      "text": "RVC official: https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI",
+      "style": "Normal"
+    },
+    {
+      "idx": 292,
+      "text": "Beatrice VST: https://github.com/prj-beatrice/beatrice-vst",
+      "style": "Normal"
+    },
+    {
+      "idx": 293,
+      "text": "Seed-VC: https://github.com/Plachtaa/seed-vc",
+      "style": "Normal"
+    },
+    {
+      "idx": 294,
+      "text": "w-okada voice-changer: https://github.com/w-okada/voice-changer",
+      "style": "Normal"
+    },
+    {
+      "idx": 295,
+      "text": "w-okada license notice: https://github.com/w-okada/voice-changer/blob/master/LICENSE-NOTICE \u2014 Shows backend/vocoder/Beatrice data licenses must be audited separately.",
+      "style": "Normal"
+    },
+    {
+      "idx": 297,
+      "text": "8. Existing Real-Time Model Shortcut Strategy",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 299,
+      "text": "8.1 Model-pluggable runtime",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 300,
+      "text": "AccentEdge Runtime\n       \u2502\n       \u25bc\nIVoiceEngine / IAccentEngine\n       \u2502\n   \u250c\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n   \u25bc   \u25bc               \u25bc              \u25bc\n RVC  Beatrice      Seed-VC      AccentEdge proprietary\n   \u2502   \u2502               \u2502              \u2502\n   \u2514\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n                  \u2193\n           same streaming/audio API",
+      "style": "Normal"
+    },
+    {
+      "idx": 301,
+      "text": "class IVoiceEngine {\n  virtual bool loadModel(path) = 0;\n  virtual AudioFrame process(AudioFrame in) = 0;\n  virtual void reset() = 0;\n  virtual float latencyMs() = 0;\n  virtual float realtimeFactor() = 0;\n};",
+      "style": "Normal"
+    },
+    {
+      "idx": 302,
+      "text": "8.2 The key experiment",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 303,
+      "text": "Train a real-time VC/student engine not as Speaker A\u2192Speaker B, but as the same speaker across two accent conditions:",
+      "style": "Normal"
+    },
+    {
+      "idx": 304,
+      "text": "SOURCE: Speaker A \u2014 natural Indian English\nTARGET: Speaker A \u2014 coached/natural US-oriented English\n\nTrain RVC / Beatrice / another realtime student on matched pairs.",
+      "style": "Normal"
+    },
+    {
+      "idx": 305,
+      "text": "8.3 Synthetic teacher shortcut",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 306,
+      "text": "Permissively licensed Indian-English source speech\n                \u2193\n     high-quality offline teacher\n    (CosyAccent / validated strategy)\n                \u2193\n same-speaker synthetic normalized target\n                \u2193\n      paired synthetic corpus\n                \u2193\n  real-time student (RVC/Beatrice/etc.)\n                \u2193\n  fine-tune/calibrate on human paired data",
+      "style": "Normal"
+    },
+    {
+      "idx": 307,
+      "text": "This is only allowed if the teacher-generated target passes the Phase-0 identity/content/accent gates and the teacher/checkpoint/data licenses permit use for training/target generation. A non-commercial or inference-only teacher cannot be assumed safe for commercial distillation.",
+      "style": "Normal"
+    },
+    {
+      "idx": 308,
+      "text": "8.4 Five experiments previously proposed",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 310,
+      "text": "8.5 Scorecard for every real-time candidate",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 311,
+      "text": "Accent strength / per-dimension correction.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 312,
+      "text": "Damage to already-correct phones.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 313,
+      "text": "Speaker similarity + human same-person judgment.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 314,
+      "text": "WER/CER + critical-entity accuracy.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 315,
+      "text": "Naturalness and emotion preservation.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 316,
+      "text": "First-output latency, P50/P95 compute, algorithmic lookahead, RTF.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 317,
+      "text": "CPU/GPU/RAM/VRAM.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 318,
+      "text": "Long-stream stability.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 319,
+      "text": "Windows/macOS/Linux portability.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 320,
+      "text": "Code, weights, dataset, vocoder, and dependency licenses.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 322,
+      "text": "9. Proprietary Model Architecture \u2014 Only If Existing Real-Time Engines Fail",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 323,
+      "text": "The thread developed a detailed FACodec-style architecture. It remains useful as Plan B / long-term moat, but current source-of-truth says not to build this before the valid-target gate and simple baseline experiments.",
+      "style": "Normal"
+    },
+    {
+      "idx": 324,
+      "text": "9.1 Conceptual architecture",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 325,
+      "text": "Speech waveform\n      \u2193\nFactorized speech encoder\n      \u251c\u2500\u2500 Content \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n      \u251c\u2500\u2500 Prosody \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u25ba Causal Accent Mapper / Conformer \u2500\u2500\u2500\u2510\n      \u251c\u2500\u2500 Timbre \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\n      \u2514\u2500\u2500 Acoustic residual/detail \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\n                                                                    \u25bc\n                                                               Decoder\n                                                                    \u2193\n                                                             output speech",
+      "style": "Normal"
+    },
+    {
+      "idx": 327,
+      "text": "9.2 Why causal Conformer / feed-forward student was preferred",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 328,
+      "text": "A flow-matching/diffusion teacher may need many iterative steps; that is difficult to push to CPU live-call latency.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 329,
+      "text": "A causal/bounded-context Conformer or similarly efficient sequence model can emit incrementally in one feed-forward path per chunk.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 330,
+      "text": "The production student should be quantizable and exportable to ONNX/other native runtimes.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 331,
+      "text": "Distillation allows a high-quality offline teacher to supervise a smaller causal student.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 332,
+      "text": "9.3 Speaker state idea (exploratory)",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 333,
+      "text": "Instead of estimating speaker identity independently every 160\u2013320 ms, maintain a rolling speaker state/embedding across the session. Update conservatively (e.g., EMA) and condition the decoder consistently. This remains exploratory because the speaker representation itself can leak accent; any implementation must be tested against the gold-calibrated identity budget.",
+      "style": "Normal"
+    },
+    {
+      "idx": 334,
+      "text": "9.4 Conversion strength as one control surface",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 335,
+      "text": "INITIALIZING \u2192 SOFT_CONVERSION \u2192 STABLE_CONVERSION\n                      \u2191                    \u2193\n                CROSSFADE_UP \u2190 BYPASS \u2190 CROSSFADE_DOWN \u2190 DEGRADED",
+      "style": "Normal"
+    },
+    {
+      "idx": 336,
+      "text": "The same continuous strength parameter can govern warm-up, the correction-vs-damage operating point, and fail-open ramp-down. The model should therefore accept continuous strength conditioning rather than only binary on/off.",
+      "style": "Normal"
+    },
+    {
+      "idx": 338,
+      "text": "10. Streaming Audio & Runtime Architecture",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 339,
+      "text": "10.1 Frame and internal audio assumptions discussed",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 341,
+      "text": "10.2 Preprocessing pipeline proposed",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 342,
+      "text": "Physical mic\n  \u2193\nDC removal / basic conditioning\n  \u2193\nresample\n  \u2193\nnoise suppression (if needed)\n  \u2193\nAEC where system topology requires it\n  \u2193\ngain normalization\n  \u2193\nVAD\n  \u2193\nAccent model\n  \u2193\npost-DSP / overlap / crossfade\n  \u2193\nvirtual microphone",
+      "style": "Normal"
+    },
+    {
+      "idx": 343,
+      "text": "10.3 VAD / noise components discussed",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 344,
+      "text": "Silero VAD: small, widely used, MIT; already appeared in legacy TokAN/AccentEdge workflows.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 345,
+      "text": "RNNoise: permissive BSD-3-Clause neural-noise-suppression baseline; do not waste early R&D inventing custom denoising.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 346,
+      "text": "Noise/AEC should not mask core pronunciation feasibility. Keep Phase-0 clean first; add NB/NOISY degradation deliberately.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 347,
+      "text": "Silero VAD: https://github.com/snakers4/silero-vad",
+      "style": "Normal"
+    },
+    {
+      "idx": 348,
+      "text": "RNNoise: https://github.com/xiph/rnnoise",
+      "style": "Normal"
+    },
+    {
+      "idx": 349,
+      "text": "10.4 Real-time metrics \u2014 definitions",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 351,
+      "text": "10.5 Earlier performance heuristics \u2014 preserved but downgraded",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 352,
+      "text": "Earlier in the thread, the following intuitive RTF examples were used to explain concurrency. They remain useful intuition, not capacity commitments:",
+      "style": "Normal"
+    },
+    {
+      "idx": 354,
+      "text": "Do not translate these into \u201cone L4 handles N calls\u201d until the actual model is benchmarked with batching, I/O, memory, p95 latency, and quality under concurrency.",
+      "style": "Normal"
+    },
+    {
+      "idx": 356,
+      "text": "11. Cross-Platform Desktop Architecture \u2014 Windows First, Not Windows Only",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 358,
+      "text": "11.1 Shared core vs OS adapters",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 359,
+      "text": "                    AccentEdge Core (C++20)\n        DSP \u2022 VAD \u2022 streaming \u2022 session state \u2022 model API\n                           \u2502\n                 platform abstraction\n        \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n        \u25bc                  \u25bc                  \u25bc\n     Windows             macOS              Linux\n     WASAPI              CoreAudio          PipeWire\n     virtual mic         HAL plug-in        virtual source\n     WinML/TRT/CPU       CoreML/ANE/CPU      TRT/OpenVINO/CPU",
+      "style": "Normal"
+    },
+    {
+      "idx": 361,
+      "text": "11.2 Important macOS correction",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 362,
+      "text": "The discussion corrected an earlier AudioDriverKit idea: Apple\u2019s current documentation says virtual audio devices should use an Audio Server Driver Plug-in; AudioDriverKit is intended for physical devices. macOS therefore uses CoreAudio/HAL virtual device concepts, while inference can use ONNX Runtime CoreML / Apple hardware.",
+      "style": "Normal"
+    },
+    {
+      "idx": 363,
+      "text": "Apple virtual audio sample: https://developer.apple.com/documentation/coreaudio/creating-an-audio-server-driver-plug-in",
+      "style": "Normal"
+    },
+    {
+      "idx": 364,
+      "text": "11.3 Linux advantage",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 365,
+      "text": "PipeWire can create virtual sources/sinks and loopback streams without a custom kernel driver for the common case, which makes Linux attractive for thin clients, VDI, kiosks, and the on-prem inference server.",
+      "style": "Normal"
+    },
+    {
+      "idx": 366,
+      "text": "PipeWire loopback: https://docs.pipewire.org/1.2/page_module_loopback.html",
+      "style": "Normal"
+    },
+    {
+      "idx": 367,
+      "text": "11.4 Windows integration",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 368,
+      "text": "Microsoft\u2019s SysVAD sample demonstrates a WDM virtual audio device and WaveRT architecture. The kernel/device layer should stay intentionally simple: no PyTorch, CUDA, ONNX graph, or complex neural DSP inside the driver. Neural inference belongs in a user-space service.",
+      "style": "Normal"
+    },
+    {
+      "idx": 369,
+      "text": "Microsoft SysVAD sample: https://learn.microsoft.com/en-us/samples/microsoft/windows-driver-samples/sysvad-virtual-audio-device-driver-sample/",
+      "style": "Normal"
+    },
+    {
+      "idx": 370,
+      "text": "SysVAD GitHub mirror: https://github.com/microsoft/audio/blob/main/Samples/Audio/sysvad/README.md",
+      "style": "Normal"
+    },
+    {
+      "idx": 371,
+      "text": "11.5 Shared desktop UI choice",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 372,
+      "text": "The thread initially proposed C# + WinUI 3 for a Windows-only agent UI. After the cross-platform question, the preferred shared UI became Flutter desktop with a C ABI/FFI into the C++ engine. Keep all timing-sensitive audio/ML work in C++; the UI remains a thin control surface.",
+      "style": "Normal"
+    },
+    {
+      "idx": 373,
+      "text": "Flutter UI\n    \u2502 FFI / C ABI\n    \u25bc\nAccentEdge C++ SDK\n    \u251c\u2500\u2500 Windows audio backend\n    \u251c\u2500\u2500 macOS audio backend\n    \u2514\u2500\u2500 Linux audio backend",
+      "style": "Normal"
+    },
+    {
+      "idx": 374,
+      "text": "11.6 Architecture interfaces",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 375,
+      "text": "AccentEngine\nIAudioInput\nIAudioOutput\nIVirtualMicrophone\nIInferenceBackend\n\nIInferenceBackend implementations:\n  OrtCpuBackend\n  TensorRTBackend\n  CoreMLBackend\n  OpenVINOBackend\n  MIGraphXBackend / other supported EP",
+      "style": "Normal"
+    },
+    {
+      "idx": 376,
+      "text": "11.7 CPU architecture portability",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 377,
+      "text": "Windows x86-64 first commercial target.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 378,
+      "text": "Linux x86-64 and ARM64 should not be blocked by core assumptions.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 379,
+      "text": "macOS ARM64 is first-class; Intel macOS can be lower priority.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 380,
+      "text": "Future portability could include Jetson, ARM thin clients, Qualcomm Windows, Android/iPad only if customer demand exists.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 382,
+      "text": "12. On-Prem / Production Hardware & Deployment",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 383,
+      "text": "12.1 Deployment modes discussed",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 385,
+      "text": "12.2 Hardware sizing tiers discussed",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 387,
+      "text": "12.3 Proposed first on-prem appliance",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 388,
+      "text": "CPU       AMD EPYC / Intel Xeon, ~24\u201332 physical cores\nGPU       2 \u00d7 NVIDIA L4 24GB (only after single-L4 benchmarking justifies it)\nRAM       128GB ECC\nOS        Ubuntu Server 24.04 LTS\nStorage   redundant OS NVMe + 2\u20134TB model/cache/log NVMe\nNetwork   dual 10GbE preferred\nRuntime   Docker + NVIDIA Container Toolkit + model runtime\nServices  audio gateway \u2192 VAD/preprocess \u2192 accent model \u2192 decode/post-DSP \u2192 telephony/WebRTC",
+      "style": "Normal"
+    },
+    {
+      "idx": 389,
+      "text": "12.4 Hardware facts used in discussion",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 391,
+      "text": "NVIDIA L4: https://www.nvidia.com/en-in/data-center/l4/",
+      "style": "Normal"
+    },
+    {
+      "idx": 392,
+      "text": "NVIDIA L40S: https://www.nvidia.com/en-in/data-center/l40s/",
+      "style": "Normal"
+    },
+    {
+      "idx": 393,
+      "text": "RTX PRO 6000 Blackwell Server Edition: https://www.nvidia.com/en-in/data-center/rtx-pro-6000-blackwell-server-edition/",
+      "style": "Normal"
+    },
+    {
+      "idx": 394,
+      "text": "12.5 Never buy capacity before measuring these",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 395,
+      "text": "VRAM and RAM per stream/model instance.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 396,
+      "text": "Model load time.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 397,
+      "text": "First-output and steady-state latency.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 398,
+      "text": "RTF under realistic chunk/lookahead configuration.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 399,
+      "text": "Max concurrent streams at p95 latency target.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 400,
+      "text": "GPU utilization and batching effects.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 401,
+      "text": "WER/critical-entity/speaker/accent quality as concurrency rises.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 402,
+      "text": "Long-stream degradation, memory growth, underruns/overruns.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 404,
+      "text": "12.6 High-availability preference",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 405,
+      "text": "When production requires HA, prefer two independent inference nodes before simply stacking GPUs into one server. Two GPUs in one chassis still share motherboard, OS, power path, and failure domain.",
+      "style": "Normal"
+    },
+    {
+      "idx": 406,
+      "text": "Load balancer / session router\n        \u2502\n   \u250c\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2510\n   \u25bc          \u25bc\nNode A       Node B\n1\u20132\u00d7L4      1\u20132\u00d7L4\n   \u2502          \u2502\n   \u2514\u2500\u2500\u2500\u2500metrics/health\u2500\u2500\u2500\u2500",
+      "style": "Normal"
+    },
+    {
+      "idx": 408,
+      "text": "13. Frameworks, Languages & Production Tech Stack",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 411,
+      "text": "13.1 ONNX Runtime hardware abstraction",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 412,
+      "text": "ONNX Runtime\u2019s execution-provider architecture was selected because the same ONNX graph can be routed through CPU, NVIDIA TensorRT/CUDA, Intel OpenVINO, Apple CoreML, AMD/other providers depending target hardware.",
+      "style": "Normal"
+    },
+    {
+      "idx": 413,
+      "text": "ONNX Runtime execution providers: https://onnxruntime.ai/docs/execution-providers/",
+      "style": "Normal"
+    },
+    {
+      "idx": 414,
+      "text": "ONNX Runtime TensorRT: https://onnxruntime.ai/docs/execution-providers/TensorRT-ExecutionProvider.html",
+      "style": "Normal"
+    },
+    {
+      "idx": 415,
+      "text": "ONNX Runtime CoreML: https://onnxruntime.ai/docs/execution-providers/CoreML-ExecutionProvider.html",
+      "style": "Normal"
+    },
+    {
+      "idx": 416,
+      "text": "ONNX Runtime OpenVINO: https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html",
+      "style": "Normal"
+    },
+    {
+      "idx": 417,
+      "text": "13.2 Endpoint runtime safety model",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 418,
+      "text": "Capture Thread\n     \u2193\nBounded Input Ring\n     \u2193\nInference Worker\n     \u2193\nBounded Output Ring\n     \u2193\nVirtual Microphone\n\nNO unbounded queues.\nIf inference falls behind \u2192 degrade/crossfade/bypass; never accumulate seconds of audio.",
+      "style": "Normal"
+    },
+    {
+      "idx": 419,
+      "text": "13.3 Proposed model update chain",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 420,
+      "text": "signed manifest + model hash + version + minimum runtime\n          \u2193\ndownload model B\n          \u2193\nverify signature/checksum\n          \u2193\nload + health check B\n          \u2193\natomic switch A \u2192 B\n          \u2193 failure\nrollback to A",
+      "style": "Normal"
+    },
+    {
+      "idx": 421,
+      "text": "13.4 Model manifest fields discussed",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 422,
+      "text": "{\n  \"model_version\": \"1.3.7\",\n  \"accent\": \"en-US-neutral\",\n  \"sample_rate\": 16000,\n  \"quantization\": \"int8\",\n  \"sha256\": \"...\",\n  \"minimum_runtime\": \"1.4.0\"\n}",
+      "style": "Normal"
+    },
+    {
+      "idx": 423,
+      "text": "13.5 Control-plane data model discussed",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 424,
+      "text": "organizations\nsites\nusers\ndevices\nlicenses\nmodels\nmodel_versions\ndeployments\nsessions\nusage_metrics\naudit_events",
+      "style": "Normal"
+    },
+    {
+      "idx": 425,
+      "text": "13.6 Observability metrics discussed",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 426,
+      "text": "accent_frame_latency_ms\naccent_rtf\naudio_underruns / audio_overruns\nmodel_load_ms\nvad_speech_ratio\ncpu_percent / memory_mb\ngpu_percent / gpu_vram_mb\nsession_duration\ndriver_errors / model_errors / bypass_events",
+      "style": "Normal"
+    },
+    {
+      "idx": 427,
+      "text": "Raw audio and transcripts should not be logged by default. A diagnostic audio-capture mode, if ever added, needs explicit customer/user policy and retention controls.",
+      "style": "Normal"
+    },
+    {
+      "idx": 429,
+      "text": "14. Data Strategy & Dataset Catalogue",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 431,
+      "text": "14.1 Dataset-use buckets",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 432,
+      "text": "PRODUCTION-SAFE CANDIDATES  \u2192 only after provenance/license audit\nRESEARCH / EVALUATION ONLY \u2192 noncommercial or restrictive corpora\nLICENSE CLARIFICATION       \u2192 commercial rights not implied by public download\nPROPRIETARY                 \u2192 AccentEdge-collected paired data with explicit consent/rights",
+      "style": "Normal"
+    },
+    {
+      "idx": 433,
+      "text": "14.2 Dataset catalogue \u2014 free/open candidates",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 435,
+      "text": "Common Voice Indian Accent HF: https://huggingface.co/datasets/ishands/commonvoice-indian_accent",
+      "style": "Normal"
+    },
+    {
+      "idx": 436,
+      "text": "Kaggle Indian English Accent Audio: https://www.kaggle.com/datasets/kotekalvijay/indian-english-accent-audio",
+      "style": "Normal"
+    },
+    {
+      "idx": 437,
+      "text": "CMU ARCTIC: http://festvox.org/cmu_arctic/",
+      "style": "Normal"
+    },
+    {
+      "idx": 438,
+      "text": "FLEURS: https://huggingface.co/datasets/google/fleurs",
+      "style": "Normal"
+    },
+    {
+      "idx": 439,
+      "text": "LibriTTS-R OpenSLR: https://www.openslr.org/141/",
+      "style": "Normal"
+    },
+    {
+      "idx": 440,
+      "text": "VCTK (HF convenience link): https://huggingface.co/datasets/vt57299/vctk \u2014 Verify against original University of Edinburgh corpus terms before production.",
+      "style": "Normal"
+    },
+    {
+      "idx": 441,
+      "text": "IndicVoices: https://huggingface.co/datasets/ai4bharat/IndicVoices",
+      "style": "Normal"
+    },
+    {
+      "idx": 442,
+      "text": "Project Vaani: https://vaani.iisc.ac.in/dataset",
+      "style": "Normal"
+    },
+    {
+      "idx": 443,
+      "text": "14.3 Indian-English institutional/commercial sources",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 445,
+      "text": "LDC-IL portal: https://ldcil.org/",
+      "style": "Normal"
+    },
+    {
+      "idx": 446,
+      "text": "LDC-IL Kannada raw Indian-English corpus: https://data.ldcil.org/indian-english-raw-speech-corpus-kannada-variant",
+      "style": "Normal"
+    },
+    {
+      "idx": 447,
+      "text": "Defined.ai en-IN catalogue: https://defined.ai/datasets?locales=en-IN&pagination_page=1&pagination_pageSize=50",
+      "style": "Normal"
+    },
+    {
+      "idx": 448,
+      "text": "ELRA commercial-use search: https://catalogue.elra.info/en-us/repository/search/?q=&selected_facets=restrictionsOfUseFilter_exact%3ACommercial+Use \u2014 Discussed earlier; specific item terms must be re-verified.",
+      "style": "Normal"
+    },
+    {
+      "idx": 449,
+      "text": "ELRA Indian English mobile item (discussed): https://catalog.elra.info/en-us/repository/browse/ELRA-S0456/ \u2014 Preserved from earlier scan; re-verify current item page/rights before procurement.",
+      "style": "Normal"
+    },
+    {
+      "idx": 450,
+      "text": "14.4 Research-only / restricted datasets",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 452,
+      "text": "L2-ARCTIC project: https://psi.engr.tamu.edu/l2-arctic-corpus/",
+      "style": "Normal"
+    },
+    {
+      "idx": 453,
+      "text": "Speech Accent Archive: https://accent.gmu.edu/",
+      "style": "Normal"
+    },
+    {
+      "idx": 454,
+      "text": "Speech Accent Archive download/license: https://accent.gmu.edu/download/",
+      "style": "Normal"
+    },
+    {
+      "idx": 455,
+      "text": "Whissle Meta STT EN-IN Tech Interviews: https://huggingface.co/datasets/WhissleAI/Meta_STT_EN-IN_Tech_Interviews",
+      "style": "Normal"
+    },
+    {
+      "idx": 456,
+      "text": "14.5 Data lake layout discussed",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 457,
+      "text": "accentedge-data/\n\u251c\u2500\u2500 production-safe/\n\u2502   \u251c\u2500\u2500 source-indian/\n\u2502   \u2502   \u251c\u2500\u2500 commonvoice-en-in/\n\u2502   \u2502   \u251c\u2500\u2500 kaggle-indian-audit/\n\u2502   \u2502   \u2514\u2500\u2500 ldc-il/\n\u2502   \u251c\u2500\u2500 target-american/\n\u2502   \u2502   \u251c\u2500\u2500 cmu-arctic/\n\u2502   \u2502   \u251c\u2500\u2500 fleurs-en-us/\n\u2502   \u2502   \u2514\u2500\u2500 libritts-r/\n\u2502   \u251c\u2500\u2500 speaker/\n\u2502   \u2502   \u251c\u2500\u2500 vctk/\n\u2502   \u2502   \u2514\u2500\u2500 libritts-r/\n\u2502   \u2514\u2500\u2500 indian-pretraining/\n\u2502       \u251c\u2500\u2500 indicvoices/\n\u2502       \u2514\u2500\u2500 vaani/\n\u251c\u2500\u2500 research-only/\n\u2502   \u251c\u2500\u2500 l2-arctic/\n\u2502   \u2514\u2500\u2500 speech-accent-archive/\n\u2514\u2500\u2500 proprietary/\n    \u2514\u2500\u2500 accentedge-paired/",
+      "style": "Normal"
+    },
+    {
+      "idx": 458,
+      "text": "14.6 Required provenance manifest per dataset",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 459,
+      "text": "dataset name\nsource URL\noriginal creator / collector\nversion + download date\nlicense text snapshot + hash\nspeaker consent / release status\ncommercial model-training right\ntarget-generation/distillation right\nderivative model/weight distribution right\nredistribution right\nvoice cloning / biometric restrictions if any\nfile checksums\nallowed use category: EVAL_ONLY / TRAIN / TARGET_GEN / PROD",
+      "style": "Normal"
+    },
+    {
+      "idx": 461,
+      "text": "15. Proprietary AccentEdge-PAIR Dataset Strategy",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 462,
+      "text": "15.1 Why this becomes the moat",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 463,
+      "text": "Open corpora supply Indian-English source speech and native-US speech, but do not give a large commercially clean dataset where the same speaker says the same sentence in a natural Indian-English condition and a US-oriented condition. That axis is exactly what the product must learn and what identity metrics must calibrate against.",
+      "style": "Normal"
+    },
+    {
+      "idx": 464,
+      "text": "15.2 Do not jump straight to 50 speakers",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 466,
+      "text": "15.3 Long-term collection plan discussed",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 468,
+      "text": "15.4 Recording contract",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 469,
+      "text": "Same human, same sentence/script in both conditions.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 470,
+      "text": "Natural Indian-English condition first; target condition should be natural/code-switched/coached without changing persona unnecessarily.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 471,
+      "text": "Same microphone/headset, room, sampling format, and approximate emotional intent.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 472,
+      "text": "Capture natural/spontaneous speech, not only studio read sentences.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 473,
+      "text": "Recruit across Hindi/Punjabi/Bengali/Gujarati/Marathi/Tamil/Telugu/Kannada/Malayalam and other substrate backgrounds rather than treating \u201cIndian accent\u201d as one class.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 474,
+      "text": "Obtain explicit informed consent for ML training, derived model weights, commercial deployment, and biometric/voice processing where applicable.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 475,
+      "text": "15.5 Synthetic paired-data scale-up",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 476,
+      "text": "Potential shortcut after the teacher is validated: take a commercially clean Indian-English corpus (e.g., Common Voice Indian subset), generate same-speaker normalized teacher targets, then train a real-time student. The earlier discussion called this \u201c~164 hours paired almost immediately,\u201d but the master downgrades that to a potential capacity estimate: quality, licenses, speaker identity and teacher rights must be proven first.",
+      "style": "Normal"
+    },
+    {
+      "idx": 478,
+      "text": "16. Evaluation, Benchmarks & Production Gates",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 479,
+      "text": "16.1 Content safety is first-class",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 480,
+      "text": "WER and CER with one fixed ASR evaluator across conditions.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 481,
+      "text": "Human critical-entity transcription, not ASR alone.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 482,
+      "text": "Numbers: fifteen/fifty, thirteen/thirty, amounts, dates, appointment times.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 483,
+      "text": "Names, addresses, account/claim IDs, alphanumeric codes.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 484,
+      "text": "Semantic-equivalence scoring where format differs but meaning is identical (e.g. \u201cfifteen dollars\u201d vs \u201c$15\u201d).",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 485,
+      "text": "16.2 Identity evaluation",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 486,
+      "text": "Established speaker verification, not homemade mel statistics.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 487,
+      "text": "At least ECAPA-TDNN + WavLM-based verification head + one independent verifier in the calibration protocol.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 488,
+      "text": "Normalize each metric against same-session, different-session, style-shift, natural cross-accent, and imposter conditions.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 489,
+      "text": "Human same-person judgment remains decisive when objective encoders disagree.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 490,
+      "text": "16.3 Accent/pronunciation evaluation",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 491,
+      "text": "Human A/B listening early.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 492,
+      "text": "Per-dimension pronunciation probes later.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 493,
+      "text": "Correction over DEVIANT tokens; damage over ALREADY-TARGET tokens.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 494,
+      "text": "Off-target movement tracked separately.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 495,
+      "text": "One accent classifier may be secondary diagnostics, never the headline metric.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 496,
+      "text": "16.4 Naturalness & emotion",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 497,
+      "text": "5-point MOS with hidden natural anchors.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 498,
+      "text": "Emotion/intended-style match plus confidence.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 499,
+      "text": "Free-text identity feedback to detect \u201csounds like them doing an impression\u201d or \u201canother person wearing their voice.\u201d",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 500,
+      "text": "16.5 Telephony and realistic acoustic tests",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 501,
+      "text": "16kHz original.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 502,
+      "text": "8kHz downsample.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 503,
+      "text": "G.711 \u03bc-law round-trip.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 504,
+      "text": "Call-center babble/noise around the protocol\u2019s controlled SNR.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 505,
+      "text": "Headset-response proxy.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 506,
+      "text": "NB+NOISY combined.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 507,
+      "text": "16.6 Production engineering gates discussed \u2014 status distinction",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 509,
+      "text": "16.7 Long-stream failure checks",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 510,
+      "text": "Memory/state growth.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 511,
+      "text": "Latency drift.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 512,
+      "text": "Backlog.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 513,
+      "text": "Output timing drift.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 514,
+      "text": "NaNs or model-state corruption.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 515,
+      "text": "Audio artifacts at boundaries.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 516,
+      "text": "Silence/restart behavior.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 517,
+      "text": "Headset disconnect/reconnect.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 518,
+      "text": "CPU overload.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 519,
+      "text": "Device changes.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 520,
+      "text": "Bypass and hysteretic recovery.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 522,
+      "text": "17. Licensing, Provenance, Privacy & Enterprise Security",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 523,
+      "text": "17.1 Four separate license layers",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 524,
+      "text": "1. SOURCE CODE LICENSE\n2. PRETRAINED WEIGHTS / CHECKPOINT LICENSE\n3. TRAINING / TARGET-GENERATION DATA LICENSE\n4. BUNDLED DEPENDENCIES / VOCODERS / SPEAKER MODELS / SUBMODULES",
+      "style": "Normal"
+    },
+    {
+      "idx": 525,
+      "text": "An MIT GitHub repository does not automatically make every downloaded voice, checkpoint, dataset, teacher-generated target, or bundled vocoder commercially safe.",
+      "style": "Normal"
+    },
+    {
+      "idx": 526,
+      "text": "17.2 Model-specific license lessons from the scan",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 527,
+      "text": "CosyAccent HF model card: MIT; still audit dependencies and source-synthesis training data rights for your intended use.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 528,
+      "text": "TokAN-Legacy repo: MIT; its reference training recipe includes L2-ARCTIC, which is noncommercial \u2014 do not copy a recipe into commercial training without replacing/relicensing the data.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 529,
+      "text": "FACodec current HF checkpoint metadata: Apache-2.0; record exact model revision and all dependencies.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 530,
+      "text": "Vevo weights: CC BY-NC 4.0; study architecture but do not use weights commercially without permission.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 531,
+      "text": "Seed-VC: GPL-3.0; commercial use is not \u201cbanned,\u201d but copyleft obligations can conflict with a proprietary closed-source distribution plan.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 532,
+      "text": "Beatrice engine: MIT; JVS/bundled voice assets have separate restrictions.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 533,
+      "text": "w-okada: license notice explicitly points to backend/vocoder/Beatrice-specific terms.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 534,
+      "text": "Whissle: inference-only license explicitly forbids training/distillation.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 535,
+      "text": "17.3 Security architecture discussed",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 536,
+      "text": "No raw call audio to cloud by default.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 537,
+      "text": "mTLS for agent\u2194on-prem gateway streaming if server mode is used.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 538,
+      "text": "Signed model manifests + SHA-256; pin model revisions/checkpoints.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 539,
+      "text": "Do not blindly torch.load untrusted checkpoints in production; convert/sign internally controlled artifacts.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 540,
+      "text": "Metadata-only telemetry by default.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 541,
+      "text": "Per-device licensing, runtime/model version reporting, health/bypass events.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 542,
+      "text": "Fail-open to original microphone if inference fails.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 543,
+      "text": "No unbounded queues that turn transient overload into ever-growing call delay.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 544,
+      "text": "17.4 Enterprise privacy advantage",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 545,
+      "text": "A local-first endpoint mirrors the strongest part of the competitive proof: Sanas currently emphasizes on-device real-time processing and that conversation data/voice samples are not stored. For BPOs serving banking, healthcare, telecom and other regulated clients, \u201caudio remains on endpoint/customer network\u201d materially simplifies architecture/security review.",
+      "style": "Normal"
+    },
+    {
+      "idx": 546,
+      "text": "Sanas privacy-first Accent Translation docs: https://help.sanas.ai/docs/accent-translation",
+      "style": "Normal"
+    },
+    {
+      "idx": 547,
+      "text": "17.5 Voice-data consent",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 548,
+      "text": "Because speaker identity is biometric/voice data, proprietary data collection should use an explicit contributor release covering recording, preprocessing, model training, commercial derived weights, internal evaluation, retention/deletion, and any permitted voice/speaker-embedding use. This master is an engineering/business record, not legal advice; counsel should review final licenses and consent language.",
+      "style": "Normal"
+    },
+    {
+      "idx": 550,
+      "text": "18. Business Economics, Competitive Proof & Go-to-Market",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 551,
+      "text": "18.1 Competitive proof that the category exists",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 552,
+      "text": "Sanas markets real-time Accent Translation to enterprises/contact centers.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 553,
+      "text": "Current product docs list source accents including India and targets including the US/UK.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 554,
+      "text": "Product docs say personalized voice characteristics are retained and processing is on-device in real time.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 555,
+      "text": "Public AWS Marketplace pricing gives a concrete per-seat benchmark.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 556,
+      "text": "Sanas documentation also shows endpoint/headset/system requirements and a virtual-audio style workflow in the calling app.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 557,
+      "text": "Sanas system requirements: https://help.sanas.ai/docs/sanas-system-requirements \u2014 Current Aug 2026 system-requirement documentation can be used as an external endpoint-compute sanity benchmark.",
+      "style": "Normal"
+    },
+    {
+      "idx": 558,
+      "text": "18.2 Positioning options discussed",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 560,
+      "text": "18.3 Sales proof to collect in pilot",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 561,
+      "text": "Does listener clarification/repetition decrease?",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 562,
+      "text": "Does AHT move without harming QA/FCR?",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 563,
+      "text": "Do agents voluntarily keep it enabled?",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 564,
+      "text": "Does agent fatigue or self-consciousness increase?",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 565,
+      "text": "Does it ever mutate high-risk entities?",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 566,
+      "text": "Can IT deploy it without changing CCaaS stack?",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 567,
+      "text": "Does privacy/local-processing reduce procurement friction?",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 568,
+      "text": "What price/seat would customer actually extend after pilot?",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 569,
+      "text": "18.4 What not to claim before data",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 570,
+      "text": "Guaranteed CSAT/AHT/FCR improvement.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 571,
+      "text": "\u201cNo latency\u201d or an exact millisecond number without device/model benchmark.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 572,
+      "text": "Exact calls-per-GPU capacity.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 573,
+      "text": "\u201cRemoves accents\u201d universally.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 574,
+      "text": "Commercial safety of an open-source model because the code repository is permissive.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 575,
+      "text": "Same-speaker preservation based only on one embedding score.",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 577,
+      "text": "19. Master Risk Register & Unresolved Questions",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 579,
+      "text": "19.1 Key unresolved architecture choices",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 580,
+      "text": "Which teacher strategy clears TGFP v2: CosyAccent, Strategy B TTS\u2192identity, Strategy C sparse, another teacher?",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 581,
+      "text": "Can Beatrice/RVC learn same-speaker accent mapping with paired supervision?",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 582,
+      "text": "If not, is FACodec-style factorization actually the right proprietary representation?",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 583,
+      "text": "What exact streaming chunk/lookahead gives quality without >200\u2013300ms p95?",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 584,
+      "text": "Can final student run CPU-only on real BPO endpoint hardware?",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 585,
+      "text": "Does BPO need on-prem GPU gateway as permanent product or only bridge?",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 586,
+      "text": "Which datasets have explicit rights for commercial target generation/distillation?",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 587,
+      "text": "What is the first validated price/seat and purchase motion?",
+      "style": "List Bullet"
+    },
+    {
+      "idx": 589,
+      "text": "20. Immediate Execution Plan & Decision Tree",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 591,
+      "text": "20.1 Current sprint: VALID TARGET",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 592,
+      "text": "Resolve every legacy Stage-A pair: corpus, source speaker, target speaker, same transcript, same human, model, synthesis path.",
+      "style": "List Number"
+    },
+    {
+      "idx": 593,
+      "text": "Retire the old homemade speaker metric as evidence; document exactly what it computed.",
+      "style": "List Number"
+    },
+    {
+      "idx": 594,
+      "text": "Record current repo integrity: git commit/status/tests for reproducibility, without treating tests as scientific success.",
+      "style": "List Number"
+    },
+    {
+      "idx": 595,
+      "text": "Ensure synthesis/reconstruction path is competent and upstream-faithful.",
+      "style": "List Number"
+    },
+    {
+      "idx": 596,
+      "text": "Use one established speaker-verification model plus human identity.",
+      "style": "List Number"
+    },
+    {
+      "idx": 597,
+      "text": "Use a fixed ASR for WER/CER plus manual critical entities.",
+      "style": "List Number"
+    },
+    {
+      "idx": 598,
+      "text": "Produce one same-speaker target.",
+      "style": "List Number"
+    },
+    {
+      "idx": 599,
+      "text": "Listen blind enough to answer same person / same words / desired shift / natural enough.",
+      "style": "List Number"
+    },
+    {
+      "idx": 600,
+      "text": "Only if convincing, expand to 10\u201330 high-quality targets and run the TGFP v2 teacher strategies.",
+      "style": "List Number"
+    },
+    {
+      "idx": 601,
+      "text": "Only after trustworthy targets, run a tiny-overfit baseline / existing real-time student experiment.",
+      "style": "List Number"
+    },
+    {
+      "idx": 602,
+      "text": "20.2 Decision tree after Phase-0 evidence",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 603,
+      "text": "VALID SAME-SPEAKER TARGET?\n   \u251c\u2500\u2500 NO \u2192 fix target generation / supervision; do NOT build streaming runtime\n   \u2514\u2500\u2500 YES\n       \u2193\nCAN EXISTING REAL-TIME ENGINE (RVC/Beatrice/etc.) LEARN IT?\n   \u251c\u2500\u2500 YES \u2192 benchmark generalization + streaming \u2192 optimize/export \u2192 MVP\n   \u2514\u2500\u2500 NO\n       \u2193\nCAN SIMPLE BASELINE LEARN IT OFFLINE?\n   \u251c\u2500\u2500 NO \u2192 revisit representation/target/loss\n   \u2514\u2500\u2500 YES\n       \u2193\nFAILURE-DRIVEN ARCHITECTURE\n   \u251c\u2500\u2500 context bottleneck \u2192 streaming Conformer/Emformer ideas\n   \u251c\u2500\u2500 synthesis bottleneck \u2192 lighter vocoder/DDSP ideas\n   \u251c\u2500\u2500 pronunciation mapping \u2192 token/phonetic representation\n   \u2514\u2500\u2500 whole-speech identity failure but sparse repair works \u2192 sparse-repair product branch",
+      "style": "Normal"
+    },
+    {
+      "idx": 604,
+      "text": "20.3 The seven milestones that matter",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 607,
+      "text": "Appendix A \u2014 Exact Phase-0 Test Material Preserved from TGFP v2",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 608,
+      "text": "A.1 Set A \u2014 Scripted BPO (10)",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 609,
+      "text": "Thank you for calling. My name is Priya. How may I help you today?",
+      "style": "List Number"
+    },
+    {
+      "idx": 610,
+      "text": "Could you please confirm your account number and the billing address on file?",
+      "style": "List Number"
+    },
+    {
+      "idx": 611,
+      "text": "I can see a charge of thirty dollars posted on the thirteenth of August.",
+      "style": "List Number"
+    },
+    {
+      "idx": 612,
+      "text": "Let me check the details and get back to you in about fifteen minutes.",
+      "style": "List Number"
+    },
+    {
+      "idx": 613,
+      "text": "The total amount due is one hundred and forty-four dollars.",
+      "style": "List Number"
+    },
+    {
+      "idx": 614,
+      "text": "Unfortunately, that particular service is not available in your area at the moment.",
+      "style": "List Number"
+    },
+    {
+      "idx": 615,
+      "text": "Your appointment has been rescheduled for Thursday the third at four thirty.",
+      "style": "List Number"
+    },
+    {
+      "idx": 616,
+      "text": "Can you spell that for me? A as in Alpha, B as in Bravo, seven, one, three, nine, K.",
+      "style": "List Number"
+    },
+    {
+      "idx": 617,
+      "text": "I understand your frustration, and I want to sort this out for you right away.",
+      "style": "List Number"
+    },
+    {
+      "idx": 618,
+      "text": "I'll transfer you to our technical department. Please hold for a moment.",
+      "style": "List Number"
+    },
+    {
+      "idx": 619,
+      "text": "A.2 Set B \u2014 Contrast-dense diagnostic (3)",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 620,
+      "text": "The water in the quarter-litre bottle was better than the third one we ordered.",
+      "style": "List Number"
+    },
+    {
+      "idx": 621,
+      "text": "We will verify whether the vendor\u2019s development schedule is available for review.",
+      "style": "List Number"
+    },
+    {
+      "idx": 622,
+      "text": "She thought the three tickets were worth thirty pounds, but they cost thirty-three.",
+      "style": "List Number"
+    },
+    {
+      "idx": 623,
+      "text": "A.3 Set C \u2014 Spontaneous (3 prompts)",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 624,
+      "text": "Describe your commute for 20\u201330 seconds.",
+      "style": "List Number"
+    },
+    {
+      "idx": 625,
+      "text": "Explain a process you know well for 20\u201330 seconds.",
+      "style": "List Number"
+    },
+    {
+      "idx": 626,
+      "text": "Recount a mildly annoying recent experience for 20\u201330 seconds.",
+      "style": "List Number"
+    },
+    {
+      "idx": 627,
+      "text": "Do not omit spontaneous speech. It exposes disfluency, speaking rate, coarticulation, reduced articulation, and alignment failure that scripted speech can hide.",
+      "style": "Normal"
+    },
+    {
+      "idx": 628,
+      "text": "A.4 Set D \u2014 Already-target-dense (4)",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 629,
+      "text": "She placed a simple order for six items on Friday morning.",
+      "style": "List Number"
+    },
+    {
+      "idx": 630,
+      "text": "Please send me the file before the meeting starts.",
+      "style": "List Number"
+    },
+    {
+      "idx": 631,
+      "text": "The system is running slowly, so I\u2019ll restart the machine.",
+      "style": "List Number"
+    },
+    {
+      "idx": 632,
+      "text": "My colleague will call you back after lunch to finish the process.",
+      "style": "List Number"
+    },
+    {
+      "idx": 633,
+      "text": "These are candidate already-target-dense sentences, not assumptions. Per-token realization labels are speaker-specific and must determine which tokens are actually ALREADY-TARGET.",
+      "style": "Normal"
+    },
+    {
+      "idx": 635,
+      "text": "Appendix B \u2014 Repository, Service & Interface Blueprints",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 636,
+      "text": "B.1 Fresh-start research repository (source-of-truth version)",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 637,
+      "text": "accentedge/\n\u251c\u2500\u2500 docs/\n\u2502   \u251c\u2500\u2500 PROJECT_CONTEXT.md\n\u2502   \u251c\u2500\u2500 PHASE0.md\n\u2502   \u2514\u2500\u2500 decisions/\n\u251c\u2500\u2500 experiments/\n\u251c\u2500\u2500 data/\n\u2502   \u251c\u2500\u2500 manifests/\n\u2502   \u2514\u2500\u2500 README.md\n\u251c\u2500\u2500 src/accentedge/\n\u2502   \u251c\u2500\u2500 target_generation/\n\u2502   \u251c\u2500\u2500 model/\n\u2502   \u251c\u2500\u2500 evaluation/\n\u2502   \u251c\u2500\u2500 streaming/\n\u2502   \u2514\u2500\u2500 runtime/\n\u251c\u2500\u2500 tests/\n\u2514\u2500\u2500 legacy/\n    \u2514\u2500\u2500 README.md",
+      "style": "Normal"
+    },
+    {
+      "idx": 638,
+      "text": "B.2 Later production monorepo concept discussed",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 639,
+      "text": "accentedge/\n\u251c\u2500\u2500 model-lab/\n\u251c\u2500\u2500 core/\n\u2502   \u251c\u2500\u2500 inference/\n\u2502   \u251c\u2500\u2500 dsp/\n\u2502   \u251c\u2500\u2500 streaming/\n\u2502   \u251c\u2500\u2500 vad/\n\u2502   \u251c\u2500\u2500 speaker/\n\u2502   \u2514\u2500\u2500 include/\n\u251c\u2500\u2500 platform/\n\u2502   \u251c\u2500\u2500 windows/{wasapi,virtual-mic,service}/\n\u2502   \u251c\u2500\u2500 macos/{coreaudio,hal-plugin,service}/\n\u2502   \u2514\u2500\u2500 linux/{pipewire,service}/\n\u251c\u2500\u2500 desktop/flutter/\n\u251c\u2500\u2500 inference-server/\n\u251c\u2500\u2500 control-plane/\n\u251c\u2500\u2500 dashboard/\n\u251c\u2500\u2500 infra/\n\u251c\u2500\u2500 benchmarks/\n\u2514\u2500\u2500 docs/",
+      "style": "Normal"
+    },
+    {
+      "idx": 640,
+      "text": "The second layout is POST-GATE. The first layout is deliberately simpler and should be used until Phase 0/1 evidence justifies production infrastructure.",
+      "style": "Normal"
+    },
+    {
+      "idx": 641,
+      "text": "B.3 On-prem gRPC contract concept",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 642,
+      "text": "StartSession\nPushAudioFrame\nReceiveAudioFrame\nUpdateConfig\nEndSession\n\nTransport: bidirectional gRPC streaming + mTLS\nAudio: PCM16, 16 kHz, mono, ~20 ms packets\nDo not Base64/JSON-encode raw audio.",
+      "style": "Normal"
+    },
+    {
+      "idx": 643,
+      "text": "B.4 Model engine contract concept",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 644,
+      "text": "initialize(ModelConfig)\nprocess(AudioFrame)\nsetAccent(AccentProfile)\nsetStrength(float)\nreset()\nmetrics()\n\nThe engine must not know whether it is called from Windows, macOS, Linux, or an on-prem server.",
+      "style": "Normal"
+    },
+    {
+      "idx": 645,
+      "text": "Appendix C \u2014 Chronological Decision & Discussion Log",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 648,
+      "text": "Appendix D \u2014 Complete Link Register",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 649,
+      "text": "Links below include sources explicitly discussed in this thread plus official references used to verify the current technical stack. \u201cVerify exact asset\u201d means the URL is useful but the specific checkpoint/data/version license must still be recorded in the project manifest before commercial use.",
+      "style": "Normal"
+    },
+    {
+      "idx": 650,
+      "text": "MODELS \u2014 CosyAccent GitHub: https://github.com/P1ping/CosyAccent \u2014 Official ICASSP 2026 implementation.",
+      "style": "Normal"
+    },
+    {
+      "idx": 651,
+      "text": "MODELS \u2014 CosyAccent HF: https://huggingface.co/Piping/CosyAccent \u2014 MIT model card; model weights.",
+      "style": "Normal"
+    },
+    {
+      "idx": 652,
+      "text": "MODELS \u2014 CosyAccent paper: https://arxiv.org/abs/2602.19166v1 \u2014 Duration-controllable accent normalization.",
+      "style": "Normal"
+    },
+    {
+      "idx": 653,
+      "text": "MODELS \u2014 TokAN-Legacy: https://github.com/P1ping/TokAN-Legacy \u2014 MIT; full accent-normalization training reference.",
+      "style": "Normal"
+    },
+    {
+      "idx": 654,
+      "text": "MODELS \u2014 FACodec checkpoint: https://huggingface.co/amphion/naturalspeech3_facodec \u2014 Current model card Apache-2.0.",
+      "style": "Normal"
+    },
+    {
+      "idx": 655,
+      "text": "MODELS \u2014 Amphion: https://github.com/open-mmlab/Amphion \u2014 Speech/audio generation toolkit containing FACodec/Vevo integrations.",
+      "style": "Normal"
+    },
+    {
+      "idx": 656,
+      "text": "MODELS \u2014 seq2seq-vc: https://github.com/unilight/seq2seq-vc \u2014 MIT; includes L2-ARCTIC foreign-accent-conversion recipe.",
+      "style": "Normal"
+    },
+    {
+      "idx": 657,
+      "text": "MODELS \u2014 PPG2PPG: https://github.com/warisqr007/ppg2ppg \u2014 Accent conversion research pipeline; verify all assets.",
+      "style": "Normal"
+    },
+    {
+      "idx": 658,
+      "text": "MODELS \u2014 CosyVoice: https://github.com/QwenAudio/CosyVoice \u2014 Apache-2.0 repo; VC/training capabilities.",
+      "style": "Normal"
+    },
+    {
+      "idx": 659,
+      "text": "MODELS \u2014 SpeechT5 VC: https://huggingface.co/microsoft/speecht5_vc \u2014 MIT audio-to-audio model card.",
+      "style": "Normal"
+    },
+    {
+      "idx": 660,
+      "text": "MODELS \u2014 RVC official: https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI \u2014 MIT official project.",
+      "style": "Normal"
+    },
+    {
+      "idx": 661,
+      "text": "MODELS \u2014 OpenVoice: https://github.com/myshell-ai/OpenVoice \u2014 Official repo; V2 commercial-use discussion.",
+      "style": "Normal"
+    },
+    {
+      "idx": 662,
+      "text": "MODELS \u2014 Seed-VC: https://github.com/Plachtaa/seed-vc \u2014 GPL-3.0; real-time/zero-shot VC reference.",
+      "style": "Normal"
+    },
+    {
+      "idx": 663,
+      "text": "MODELS \u2014 Vevo HF: https://huggingface.co/amphion/Vevo \u2014 CC BY-NC 4.0 released weights; accent/style conversion.",
+      "style": "Normal"
+    },
+    {
+      "idx": 664,
+      "text": "MODELS \u2014 Vevo Amphion README: https://github.com/open-mmlab/Amphion/blob/main/models/vc/vevo/README.md \u2014 Architecture/usage reference.",
+      "style": "Normal"
+    },
+    {
+      "idx": 665,
+      "text": "MODELS \u2014 Beatrice VST: https://github.com/prj-beatrice/beatrice-vst \u2014 MIT real-time voice conversion DSP engine.",
+      "style": "Normal"
+    },
+    {
+      "idx": 666,
+      "text": "MODELS \u2014 Project Beatrice V2 org: https://github.com/Project-Beatrice-V2/.github \u2014 Community training/packaging ecosystem; audit JVS data terms.",
+      "style": "Normal"
+    },
+    {
+      "idx": 667,
+      "text": "MODELS \u2014 w-okada voice-changer: https://github.com/w-okada/voice-changer \u2014 Realtime multi-backend laboratory.",
+      "style": "Normal"
+    },
+    {
+      "idx": 668,
+      "text": "MODELS \u2014 w-okada license notice: https://github.com/w-okada/voice-changer/blob/master/LICENSE-NOTICE \u2014 Backend/vocoder/Beatrice licensing notes.",
+      "style": "Normal"
+    },
+    {
+      "idx": 669,
+      "text": "DATA \u2014 Common Voice Indian Accent: https://huggingface.co/datasets/ishands/commonvoice-indian_accent \u2014 163.89h / 110,088 recordings / CC0 card.",
+      "style": "Normal"
+    },
+    {
+      "idx": 670,
+      "text": "DATA \u2014 Kaggle Indian English Accent: https://www.kaggle.com/datasets/kotekalvijay/indian-english-accent-audio \u2014 6.01GB / 8,115 files / CC0 page; provenance audit required.",
+      "style": "Normal"
+    },
+    {
+      "idx": 671,
+      "text": "DATA \u2014 CMU ARCTIC: http://festvox.org/cmu_arctic/ \u2014 Native-US phonetically designed corpus.",
+      "style": "Normal"
+    },
+    {
+      "idx": 672,
+      "text": "DATA \u2014 FLEURS: https://huggingface.co/datasets/google/fleurs \u2014 Includes en_us; CC BY 4.0 metadata.",
+      "style": "Normal"
+    },
+    {
+      "idx": 673,
+      "text": "DATA \u2014 LibriTTS-R: https://www.openslr.org/141/ \u2014 Original OpenSLR distribution; verify exact license/version.",
+      "style": "Normal"
+    },
+    {
+      "idx": 674,
+      "text": "DATA \u2014 VCTK convenience HF: https://huggingface.co/datasets/vt57299/vctk \u2014 Verify original corpus license/source.",
+      "style": "Normal"
+    },
+    {
+      "idx": 675,
+      "text": "DATA \u2014 LDC-IL: https://ldcil.org/ \u2014 Government of India language resource consortium.",
+      "style": "Normal"
+    },
+    {
+      "idx": 676,
+      "text": "DATA \u2014 LDC-IL Kannada Indian-English raw: https://data.ldcil.org/indian-english-raw-speech-corpus-kannada-variant \u2014 Commercial/noncommercial user routes.",
+      "style": "Normal"
+    },
+    {
+      "idx": 677,
+      "text": "DATA \u2014 IndicVoices: https://huggingface.co/datasets/ai4bharat/IndicVoices \u2014 CC BY 4.0 card.",
+      "style": "Normal"
+    },
+    {
+      "idx": 678,
+      "text": "DATA \u2014 Project Vaani: https://vaani.iisc.ac.in/dataset \u2014 Large Indian speech project.",
+      "style": "Normal"
+    },
+    {
+      "idx": 679,
+      "text": "DATA \u2014 Defined.ai en-IN marketplace: https://defined.ai/datasets?locales=en-IN&pagination_page=1&pagination_pageSize=50 \u2014 Commercial Indian-English call-center/domain data.",
+      "style": "Normal"
+    },
+    {
+      "idx": 680,
+      "text": "DATA \u2014 InfoBayAI HF datasets search: https://huggingface.co/datasets?other=call-center-audio \u2014 Use to locate public call-center previews; full rights separately.",
+      "style": "Normal"
+    },
+    {
+      "idx": 681,
+      "text": "DATA \u2014 Axon English call-center Kaggle: https://www.kaggle.com/datasets/axondata/english-call-center-speech-recognition \u2014 Preview discussed; commercial full data requires separate terms.",
+      "style": "Normal"
+    },
+    {
+      "idx": 682,
+      "text": "DATA \u2014 ELRA commercial-use catalogue: https://catalogue.elra.info/en-us/repository/search/?q=&selected_facets=restrictionsOfUseFilter_exact%3ACommercial+Use \u2014 Commercial speech-resource catalogue.",
+      "style": "Normal"
+    },
+    {
+      "idx": 683,
+      "text": "DATA \u2014 ELRA-S0456 (discussed): https://catalog.elra.info/en-us/repository/browse/ELRA-S0456/ \u2014 Re-verify current item and terms.",
+      "style": "Normal"
+    },
+    {
+      "idx": 684,
+      "text": "DATA \u2014 L2-ARCTIC: https://psi.engr.tamu.edu/l2-arctic-corpus/ \u2014 Research corpus; noncommercial licensing in discussed release.",
+      "style": "Normal"
+    },
+    {
+      "idx": 685,
+      "text": "DATA \u2014 Speech Accent Archive: https://accent.gmu.edu/ \u2014 CC BY-NC-SA 4.0 current site.",
+      "style": "Normal"
+    },
+    {
+      "idx": 686,
+      "text": "DATA \u2014 Speech Accent Archive download: https://accent.gmu.edu/download/ \u2014 OSF download/license details.",
+      "style": "Normal"
+    },
+    {
+      "idx": 687,
+      "text": "DATA \u2014 Whissle EN-IN Tech Interviews: https://huggingface.co/datasets/WhissleAI/Meta_STT_EN-IN_Tech_Interviews \u2014 Inference-only; no training/distillation.",
+      "style": "Normal"
+    },
+    {
+      "idx": 688,
+      "text": "HARDWARE \u2014 NVIDIA L4: https://www.nvidia.com/en-in/data-center/l4/ \u2014 24GB / 72W inference candidate.",
+      "style": "Normal"
+    },
+    {
+      "idx": 689,
+      "text": "HARDWARE \u2014 NVIDIA L40S: https://www.nvidia.com/en-in/data-center/l40s/ \u2014 48GB ECC / 350W class.",
+      "style": "Normal"
+    },
+    {
+      "idx": 690,
+      "text": "HARDWARE \u2014 RTX PRO 6000 Blackwell Server: https://www.nvidia.com/en-in/data-center/rtx-pro-6000-blackwell-server-edition/ \u2014 96GB GDDR7 ECC; high-end R&D/inference.",
+      "style": "Normal"
+    },
+    {
+      "idx": 691,
+      "text": "RUNTIME \u2014 ONNX Runtime EPs: https://onnxruntime.ai/docs/execution-providers/ \u2014 Cross-hardware execution-provider overview.",
+      "style": "Normal"
+    },
+    {
+      "idx": 692,
+      "text": "RUNTIME \u2014 TensorRT EP: https://onnxruntime.ai/docs/execution-providers/TensorRT-ExecutionProvider.html \u2014 NVIDIA ONNX inference.",
+      "style": "Normal"
+    },
+    {
+      "idx": 693,
+      "text": "RUNTIME \u2014 CoreML EP: https://onnxruntime.ai/docs/execution-providers/CoreML-ExecutionProvider.html \u2014 Apple CPU/GPU/Neural Engine.",
+      "style": "Normal"
+    },
+    {
+      "idx": 694,
+      "text": "RUNTIME \u2014 OpenVINO EP: https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html \u2014 Intel/edge acceleration.",
+      "style": "Normal"
+    },
+    {
+      "idx": 695,
+      "text": "AUDIO \u2014 Microsoft SysVAD: https://learn.microsoft.com/en-us/samples/microsoft/windows-driver-samples/sysvad-virtual-audio-device-driver-sample/ \u2014 Windows virtual audio device sample.",
+      "style": "Normal"
+    },
+    {
+      "idx": 696,
+      "text": "AUDIO \u2014 Windows audio samples: https://learn.microsoft.com/en-us/windows-hardware/drivers/audio/sample-audio-drivers \u2014 Microsoft audio-driver references.",
+      "style": "Normal"
+    },
+    {
+      "idx": 697,
+      "text": "AUDIO \u2014 Apple Audio Server Driver Plug-in: https://developer.apple.com/documentation/coreaudio/creating-an-audio-server-driver-plug-in \u2014 Preferred virtual audio-device mechanism on macOS.",
+      "style": "Normal"
+    },
+    {
+      "idx": 698,
+      "text": "AUDIO \u2014 Apple AudioDriverKit note: https://developer.apple.com/documentation/audiodriverkit/creating-an-audio-device-driver \u2014 States virtual-device best practice is Audio Server plug-in; AudioDriverKit for physical devices.",
+      "style": "Normal"
+    },
+    {
+      "idx": 699,
+      "text": "AUDIO \u2014 PipeWire loopback: https://docs.pipewire.org/1.2/page_module_loopback.html \u2014 Virtual sinks/sources and loopback.",
+      "style": "Normal"
+    },
+    {
+      "idx": 700,
+      "text": "AUDIO \u2014 Silero VAD: https://github.com/snakers4/silero-vad \u2014 VAD.",
+      "style": "Normal"
+    },
+    {
+      "idx": 701,
+      "text": "AUDIO \u2014 RNNoise: https://github.com/xiph/rnnoise \u2014 BSD neural noise suppression.",
+      "style": "Normal"
+    },
+    {
+      "idx": 702,
+      "text": "FRAMEWORK \u2014 PyTorch: https://pytorch.org/ \u2014 Training/research.",
+      "style": "Normal"
+    },
+    {
+      "idx": 703,
+      "text": "FRAMEWORK \u2014 Hydra: https://github.com/hydra-ecosystem/hydra \u2014 Experiment configuration.",
+      "style": "Normal"
+    },
+    {
+      "idx": 704,
+      "text": "FRAMEWORK \u2014 MLflow: https://mlflow.org/docs/latest/ml/tracking/ \u2014 Experiment tracking.",
+      "style": "Normal"
+    },
+    {
+      "idx": 705,
+      "text": "FRAMEWORK \u2014 DVC: https://dvc.org/ \u2014 Dataset/model versioning.",
+      "style": "Normal"
+    },
+    {
+      "idx": 706,
+      "text": "FRAMEWORK \u2014 FastAPI: https://fastapi.tiangolo.com/ \u2014 Control-plane API later.",
+      "style": "Normal"
+    },
+    {
+      "idx": 707,
+      "text": "FRAMEWORK \u2014 PostgreSQL: https://www.postgresql.org/ \u2014 Control-plane database.",
+      "style": "Normal"
+    },
+    {
+      "idx": 708,
+      "text": "FRAMEWORK \u2014 Redis: https://redis.io/ \u2014 Ephemeral cache/rate limiting.",
+      "style": "Normal"
+    },
+    {
+      "idx": 709,
+      "text": "FRAMEWORK \u2014 Flutter: https://flutter.dev/ \u2014 Cross-platform desktop UI proposal.",
+      "style": "Normal"
+    },
+    {
+      "idx": 710,
+      "text": "FRAMEWORK \u2014 gRPC: https://grpc.io/ \u2014 Bidirectional LAN audio streaming proposal.",
+      "style": "Normal"
+    },
+    {
+      "idx": 711,
+      "text": "OBSERVABILITY \u2014 OpenTelemetry: https://opentelemetry.io/ \u2014 Telemetry standard.",
+      "style": "Normal"
+    },
+    {
+      "idx": 712,
+      "text": "OBSERVABILITY \u2014 Prometheus: https://prometheus.io/ \u2014 Metrics.",
+      "style": "Normal"
+    },
+    {
+      "idx": 713,
+      "text": "OBSERVABILITY \u2014 Grafana: https://grafana.com/ \u2014 Dashboards.",
+      "style": "Normal"
+    },
+    {
+      "idx": 714,
+      "text": "OBSERVABILITY \u2014 Loki: https://grafana.com/oss/loki/ \u2014 Logs.",
+      "style": "Normal"
+    },
+    {
+      "idx": 715,
+      "text": "INFRA \u2014 Docker: https://www.docker.com/ \u2014 Server/control-plane packaging.",
+      "style": "Normal"
+    },
+    {
+      "idx": 716,
+      "text": "INFRA \u2014 Terraform: https://developer.hashicorp.com/terraform \u2014 Infrastructure as code.",
+      "style": "Normal"
+    },
+    {
+      "idx": 717,
+      "text": "BUSINESS \u2014 Sanas Accent Translation docs: https://help.sanas.ai/docs/accent-translation \u2014 Realtime/on-device competitive proof.",
+      "style": "Normal"
+    },
+    {
+      "idx": 718,
+      "text": "BUSINESS \u2014 Sanas app guide: https://help.sanas.ai/v1/docs/using-sanas-app \u2014 Device/calling-app workflow.",
+      "style": "Normal"
+    },
+    {
+      "idx": 719,
+      "text": "BUSINESS \u2014 Sanas system requirements: https://help.sanas.ai/docs/sanas-system-requirements \u2014 Current endpoint hardware requirements.",
+      "style": "Normal"
+    },
+    {
+      "idx": 720,
+      "text": "BUSINESS \u2014 Sanas AWS Marketplace: https://aws.amazon.com/marketplace/pp/prodview-mr5luwansb4k6 \u2014 Public pricing benchmark.",
+      "style": "Normal"
+    },
+    {
+      "idx": 721,
+      "text": "BUSINESS \u2014 Sanas product page: https://www.sanas.ai/accent-translation \u2014 Category/enterprise integration proof.",
+      "style": "Normal"
+    },
+    {
+      "idx": 722,
+      "text": "CLOUD REFERENCE \u2014 OpenAI GPT-Realtime: https://developers.openai.com/api/docs/models/gpt-realtime \u2014 Cloud audio-to-audio reference; not local; fine-tuning currently unsupported.",
+      "style": "Normal"
+    },
+    {
+      "idx": 723,
+      "text": "CLOUD REFERENCE \u2014 OpenAI custom voices API: https://platform.openai.com/docs/api-reference/audio/updateVoiceConsent?lang=javascript \u2014 Custom voice/consent API reference for eligible customers; not a local model path.",
+      "style": "Normal"
+    },
+    {
+      "idx": 724,
+      "text": "D.1 Legal/verification disclaimer",
+      "style": "Heading 2"
+    },
+    {
+      "idx": 725,
+      "text": "Licenses, model cards, dataset availability, prices, system requirements, and vendor terms change. This master records what was discussed and what was re-verified on 27 Aug 2026 where practical. Before commercial training, target generation, redistribution, or deployment, freeze the exact repository/model/data revision and archive the corresponding license/terms. This dossier is not legal advice.",
+      "style": "Normal"
+    },
+    {
+      "idx": 727,
+      "text": "Final Synthesis \u2014 The Architecture to Commit To Without Overbuilding",
+      "style": "Heading 1"
+    },
+    {
+      "idx": 735,
+      "text": "End of master dossier.",
+      "style": "Normal"
+    },
+    {
+      "idx": 736,
+      "text": "As-of 27 August 2026",
+      "style": "Normal"
+    }
+  ],
+  "tables": [
+    {
+      "idx": 0,
+      "rows": [
+        [
+          "SOURCE-OF-TRUTH STATUS\nThis document consolidates the entire AccentEdge discussion and prior relevant project evidence through 27 August 2026. It preserves exploratory ideas and legacy work, but explicitly labels what is authoritative, proposed, unverified, or invalidated so old claims cannot silently become current facts."
+        ]
+      ]
+    },
+    {
+      "idx": 1,
+      "rows": [
+        [
+          "Label",
+          "Meaning",
+          "How to use it"
+        ],
+        [
+          "ACTIVE / SOURCE OF TRUTH",
+          "Current product/scientific constraint that wins over older work.",
+          "Build and report against this unless a dated decision explicitly supersedes it."
+        ],
+        [
+          "CURRENT DECISION",
+          "A design/business decision reached in the current discussion.",
+          "Treat as the preferred direction, subject to the scientific gates."
+        ],
+        [
+          "POST-GATE PROPOSAL",
+          "A detailed production choice that becomes relevant only after target/model feasibility is demonstrated.",
+          "Do not build prematurely; retain for later phases."
+        ],
+        [
+          "EXPLORATORY",
+          "Candidate, benchmark, or hypothesis discussed for investigation.",
+          "Measure before adopting."
+        ],
+        [
+          "LEGACY EVIDENCE",
+          "Real work/results from an older branch that remain historically useful.",
+          "May inform debugging, but does not prove current milestones."
+        ],
+        [
+          "INVALIDATED",
+          "A prior claim/metric/experiment that was found not to support the thesis.",
+          "Keep for lessons only; never cite as proof."
+        ],
+        [
+          "LICENSE CHECK REQUIRED",
+          "Code/weights/data may have different licenses or unclear commercial rights.",
+          "Legal/provenance review before training, target generation, distribution, or shipping."
+        ]
+      ]
+    },
+    {
+      "idx": 2,
+      "rows": [
+        [
+          "WHY THIS MATTERS\nThe later audit found that previous Stage A target material may have used a different human speaker, which turns that experiment into reference-speaker voice conversion/debugging evidence rather than same-speaker accent/pronunciation conversion. The project therefore resets to target validity before architecture scale-up."
+        ]
+      ]
+    },
+    {
+      "idx": 3,
+      "rows": [
+        [
+          "ACTIVE PRODUCT THESIS\nAccentEdge aims to make international BPO calls easier to understand by transforming selected pronunciation characteristics of Indian English toward a neutral-US target in real time, while keeping the speaker recognizably themselves and preserving exact linguistic content and emotional intent."
+        ]
+      ]
+    },
+    {
+      "idx": 4,
+      "rows": [
+        [
+          "Dimension",
+          "Current position"
+        ],
+        [
+          "User",
+          "India-based BPO/contact-centre agent serving US customers."
+        ],
+        [
+          "Buyer",
+          "BPO, contact centre, outsourced support operation, or customer-service organization with Indian voice agents."
+        ],
+        [
+          "Direction",
+          "Agent \u2192 customer first."
+        ],
+        [
+          "Source",
+          "Indian English."
+        ],
+        [
+          "Target",
+          "Neutral/General US pronunciation profile."
+        ],
+        [
+          "Inference",
+          "Direct speech-to-speech; no ASR\u2192LLM\u2192TTS in production critical path."
+        ],
+        [
+          "Identity",
+          "Same speaker must remain perceptually recognizable."
+        ],
+        [
+          "Content",
+          "Exact words and critical entities must remain intact."
+        ],
+        [
+          "Emotion",
+          "Preserve emotional intent and conversational flow."
+        ],
+        [
+          "Privacy",
+          "Local-first; no raw call-audio upload by default."
+        ],
+        [
+          "Endpoint",
+          "Windows first commercial MVP; architecture should remain cross-platform."
+        ],
+        [
+          "Softphone integration",
+          "Virtual microphone / OS audio device rather than deep Genesys/Five9/NICE integration for MVP."
+        ]
+      ]
+    },
+    {
+      "idx": 5,
+      "rows": [
+        [
+          "CURRENT TRUE STATUS\nThe project is research-valid only when it can demonstrate the sequence: valid same-speaker target \u2192 learned transformation \u2192 generalization \u2192 streaming \u2192 endpoint compute feasibility \u2192 virtual-microphone product \u2192 controlled BPO pilot. Infrastructure counts and unit-test counts do not substitute for those demonstrations."
+        ]
+      ]
+    },
+    {
+      "idx": 6,
+      "rows": [
+        [
+          "Example",
+          "Calculation",
+          "Implication"
+        ],
+        [
+          "Light usage",
+          "$1 \u00d7 60 min/day \u00d7 22 days = $1,320/agent/month",
+          "Far above a $60/user/month public benchmark."
+        ],
+        [
+          "4 hours/day",
+          "$1 \u00d7 240 min/day \u00d7 22 days = $5,280/agent/month",
+          "Implausibly expensive for broad BPO rollout."
+        ],
+        [
+          "100 seats at 4h/day",
+          "$528,000/month",
+          "Versus $6,000/month equivalent for 100 users in the public Sanas annual listing."
+        ]
+      ]
+    },
+    {
+      "idx": 7,
+      "rows": [
+        [
+          "CURRENT DECISION\nPrimary BPO packaging should be evaluated as per-seat/per-agent software or an enterprise annual contract, not $1/minute cloud inference. Per-minute pricing can remain a separate API/OEM option if unit economics and demand justify it."
+        ]
+      ]
+    },
+    {
+      "idx": 8,
+      "rows": [
+        [
+          "Packaging concept",
+          "Illustrative discussion range",
+          "Status"
+        ],
+        [
+          "Pilot",
+          "$20\u201340 / agent / month",
+          "Exploratory pricing, not market-validated."
+        ],
+        [
+          "Standard",
+          "$40\u201370 / agent / month",
+          "Exploratory."
+        ],
+        [
+          "Enterprise",
+          "$60\u2013100+ / agent / month",
+          "Exploratory; could bundle controls/support."
+        ],
+        [
+          "Private/on-prem",
+          "Annual enterprise contract",
+          "Preferred for privacy-sensitive deployments."
+        ],
+        [
+          "Custom accent/model",
+          "Additional enterprise fee",
+          "Potential services/IP line."
+        ],
+        [
+          "API",
+          "Per audio minute",
+          "Optional secondary product, not primary BPO motion."
+        ]
+      ]
+    },
+    {
+      "idx": 9,
+      "rows": [
+        [
+          "IMPORTANT\nThe hard company problem is speech-model R&D and reliability: same speaker, correct words, desired pronunciation shift, natural emotion, bounded latency, and continuous stability. The dashboard/API is not the core moat."
+        ]
+      ]
+    },
+    {
+      "idx": 10,
+      "rows": [
+        [
+          "ACTIVE V1 CONTRACT\nImprove segmental pronunciation and selected lexical-stress patterns toward neutral US English while preserving identity, content, emotional intent, and conversational timing as strongly as possible."
+        ]
+      ]
+    },
+    {
+      "idx": 11,
+      "rows": [
+        [
+          "Dimension",
+          "V1 treatment / note"
+        ],
+        [
+          "Rhoticity",
+          "Transform where source realization differs; many educated Indian-English speakers may already be variably rhotic."
+        ],
+        [
+          "Vowel quality",
+          "Selected TRAP / LOT / THOUGHT / GOAT / FACE-like shifts; includes monophthong\u2194diphthong behavior."
+        ],
+        [
+          "Vowel reduction",
+          "Transform where appropriate; not purely local because schwa reduction changes duration."
+        ],
+        [
+          "/\u03b8/ and /\u00f0/",
+          "Transform dental-fricative realization when needed."
+        ],
+        [
+          "Voiceless stop aspiration",
+          "Target stressed-syllable onset realization."
+        ],
+        [
+          "Retroflex/alveolar /t d/",
+          "Move toward target realization where deviant."
+        ],
+        [
+          "/v/\u2013/w/",
+          "Correct only where needed; many speakers already preserve the contrast."
+        ],
+        [
+          "Intervocalic /t/ flapping",
+          "Target behavior where appropriate."
+        ],
+        [
+          "Cluster epenthesis",
+          "Reduce target-inconsistent epenthetic vowels where appropriate."
+        ],
+        [
+          "Lexical stress",
+          "Correct within bounded scope."
+        ],
+        [
+          "Phone duration",
+          "May change; do not impose a fake local constancy."
+        ],
+        [
+          "Word/phrase timing",
+          "Must be calibrated from natural same-speaker cross-accent references rather than invented."
+        ]
+      ]
+    },
+    {
+      "idx": 12,
+      "rows": [
+        [
+          "Must transform",
+          "Must preserve",
+          "May change / calibrated"
+        ],
+        [
+          "Selected segmental pronunciation; bounded lexical stress.",
+          "Exact lexical content; speaker identity; emotional intent; voice quality/timbre; natural conversational continuity.",
+          "Phone duration; limited word timing; some prosodic detail where natural cross-accent human references prove it necessary."
+        ]
+      ]
+    },
+    {
+      "idx": 13,
+      "rows": [
+        [
+          "PHASE-0 SOURCE OF TRUTH\nBefore dataset scale-up, model bake-offs, streaming engineering, ONNX/C++, or endpoint deployment, answer one question: can we generate offline audio that a blind listener judges to be the same person, saying the same words with the same emotional intent, but meaningfully more US-neutral \u2014 and good enough for a weaker causal student to imitate?"
+        ]
+      ]
+    },
+    {
+      "idx": 14,
+      "rows": [
+        [
+          "Gate",
+          "Question",
+          "Kill / redirect condition"
+        ],
+        [
+          "\u22121",
+          "Do we know where relevant phones are and which source tokens are already target-like?",
+          "Manual annotation/alignment is not tractable even at ~30 utterances."
+        ],
+        [
+          "0",
+          "One speaker, one sentence, Strategy B: does it still sound like the same person?",
+          "Identity collapses immediately."
+        ],
+        [
+          "1",
+          "Can teacher strategies repeatedly generate targets with headroom above product bars?",
+          "No strategy clears the admission gate."
+        ],
+        [
+          "2",
+          "What does genuine same-speaker cross-accent change look like?",
+          "Gold/reference data shows the v1 contract itself is incoherent."
+        ],
+        [
+          "3",
+          "Benchmark + streaming student.",
+          "Reached only after Gates 0\u20132 pass."
+        ]
+      ]
+    },
+    {
+      "idx": 15,
+      "rows": [
+        [
+          "Condition",
+          "Construction",
+          "Purpose"
+        ],
+        [
+          "NB",
+          "Resample to 8 kHz; G.711 \u03bc-law round trip.",
+          "Does benefit survive telephony bandwidth/codec?"
+        ],
+        [
+          "NOISY",
+          "Call-centre babble around 15 dB SNR + headset-response proxy.",
+          "Can target generation tolerate realistic input?"
+        ],
+        [
+          "NB+NOISY",
+          "Both.",
+          "Proxy for actual production condition."
+        ]
+      ]
+    },
+    {
+      "idx": 16,
+      "rows": [
+        [
+          "Strategy",
+          "Flow",
+          "Primary failure mode"
+        ],
+        [
+          "A \u2014 source-conditioned native TTS",
+          "transcript + source F0 + source durations + speaker embedding \u2192 native-US TTS",
+          "Speaker embedding may carry accent back into the output. Identity can score well while conversion is weak."
+        ],
+        [
+          "B \u2014 native realization first, identity second",
+          "transcript \u2192 native-US TTS \u2192 identity/timbre conversion \u2192 source voice",
+          "Identity/VC stage can re-introduce accent from reference. Measure accent after identity transfer."
+        ],
+        [
+          "C \u2014 whole-utterance analysis/resynthesis with sparse edits",
+          "analyze whole utterance \u2192 edit selected latent/control regions + neighbor timing \u2192 resynthesize whole",
+          "Local discontinuities, token-decision threshold, lookahead, false-fire damage. No waveform splicing."
+        ],
+        [
+          "GOLD \u2014 natural bidialectal recording",
+          "same human naturally renders matched sentence in Indian and US-oriented register",
+          "Not a production method; empirical calibration reference."
+        ]
+      ]
+    },
+    {
+      "idx": 17,
+      "rows": [
+        [
+          "Condition",
+          "Speaker",
+          "Accent/style/session",
+          "What it establishes"
+        ],
+        [
+          "A",
+          "same",
+          "Indian baseline",
+          "Ceiling / measurement noise."
+        ],
+        [
+          "B",
+          "same",
+          "Indian, different session",
+          "Session nuisance floor."
+        ],
+        [
+          "C",
+          "same",
+          "Indian, changed rate/emotion",
+          "Style nuisance floor."
+        ],
+        [
+          "D",
+          "same",
+          "code-switched US, matched sentence",
+          "Distribution that matters for identity/timing."
+        ],
+        [
+          "E",
+          "different",
+          "Indian",
+          "Imposter, accent-matched."
+        ],
+        [
+          "F",
+          "different",
+          "US",
+          "Different speaker + accent."
+        ]
+      ]
+    },
+    {
+      "idx": 18,
+      "rows": [
+        [
+          "Code",
+          "Dimension"
+        ],
+        [
+          "RHO",
+          "Rhoticity"
+        ],
+        [
+          "FLAP",
+          "Intervocalic /t/"
+        ],
+        [
+          "TH",
+          "Dental fricatives"
+        ],
+        [
+          "ASP",
+          "Onset aspiration"
+        ],
+        [
+          "RET",
+          "Retroflex \u2192 alveolar"
+        ],
+        [
+          "VW",
+          "/v/\u2013/w/ contrast"
+        ],
+        [
+          "RED",
+          "Vowel reduction"
+        ],
+        [
+          "STR",
+          "Lexical stress"
+        ]
+      ]
+    },
+    {
+      "idx": 19,
+      "rows": [
+        [
+          "Level",
+          "Constraint philosophy"
+        ],
+        [
+          "Phone",
+          "Unconstrained where pronunciation requires local duration movement."
+        ],
+        [
+          "Word",
+          "Derive acceptable bands from natural same-speaker cross-accent gold; protocol suggests using a gold percentile rather than inventing."
+        ],
+        [
+          "Phrase",
+          "Earlier provisional teacher/product values (<5% / <2%) remain [P] until gold calibration."
+        ],
+        [
+          "Turn",
+          "Measure cumulative drift over spontaneous ~30s segments; this matters for live buffer synchronization."
+        ]
+      ]
+    },
+    {
+      "idx": 20,
+      "rows": [
+        [
+          "Metric",
+          "Pilot/product hypothesis",
+          "Teacher target hypothesis"
+        ],
+        [
+          "Naturalness MOS",
+          "\u22654.0 [P]",
+          "\u22654.3 [P]"
+        ],
+        [
+          "Human speaker similarity",
+          "\u22654.0 [P]",
+          "\u22654.3 [P]"
+        ],
+        [
+          "Critical entity accuracy",
+          "\u226599%",
+          "100%"
+        ],
+        [
+          "Identity",
+          "\u2014",
+          "\u2264 d_gold + CI"
+        ],
+        [
+          "Phrase-duration drift",
+          "<2% [P]",
+          "<5% [P]"
+        ],
+        [
+          "Damage rate",
+          "\u2014",
+          "\u22642% [P]"
+        ]
+      ]
+    },
+    {
+      "idx": 21,
+      "rows": [
+        [
+          "Outcome",
+          "Meaning",
+          "Next move"
+        ],
+        [
+          "FULL-S2S PASS",
+          "Whole-speech teacher clears admission on most utterances incl. spontaneous; meaningful correction and low damage.",
+          "Proceed toward full benchmark and direct causal S2S student."
+        ],
+        [
+          "SPARSE-REPAIR PASS",
+          "Whole-speech identity fails but sparse strategy works.",
+          "Redefine around real-time pronunciation repair; price false-fire/detection costs honestly."
+        ],
+        [
+          "TEACHER FAIL / GOLD PASS",
+          "Natural human cross-accent references pass; synthetic teachers do not.",
+          "Thesis survives; supervision/identity transfer is bottleneck. Improve teacher or collect small real parallel corpus."
+        ],
+        [
+          "FUNDAMENTAL FAIL",
+          "Even controlled natural cross-accent change cannot satisfy identity/naturalness/timing contract.",
+          "Stop downstream ML; re-scope to lighter intelligibility enhancement, licensing, or revisit later."
+        ]
+      ]
+    },
+    {
+      "idx": 22,
+      "rows": [
+        [
+          "Area",
+          "Pilot measurement"
+        ],
+        [
+          "Scale",
+          "Start 3\u20135 agents; expand to 10\u201320 if stable."
+        ],
+        [
+          "Technical",
+          "P50/P95 latency, CPU, RAM, session duration, crashes, bypasses, dropouts, critical-content errors."
+        ],
+        [
+          "Agent",
+          "Still sound like you? voluntarily keep enabled? less repetition? easier calls? wrong words? too strong? fatigue?"
+        ],
+        [
+          "Business",
+          "Clarification/repeat requests, AHT, FCR, QA, CSAT, conversion rate where applicable."
+        ],
+        [
+          "Continuation",
+          "Agents can use it; calls stay stable; listeners perceive value; critical content safe; agent acceptance okay; BPO wants to continue/pay/test further."
+        ]
+      ]
+    },
+    {
+      "idx": 23,
+      "rows": [
+        [
+          "Finding",
+          "Legacy evidence",
+          "Current interpretation"
+        ],
+        [
+          "Successful conversions",
+          "5 successful full-utterance WAV conversions among ~40 iterative runs (runs 028, 030, 038, 039, 040).",
+          "Real integration/debugging achievement; not accent-validity proof."
+        ],
+        [
+          "Model load",
+          "~9.19 s CPU; roughly 1.2\u20131.4 GB peak RAM depending report field.",
+          "Useful operational fact only."
+        ],
+        [
+          "Inference",
+          "~37\u201347 s wall-clock for ~12 s audio on CPU.",
+          "True inference-only RTF \u22483.1\u20133.9; not real-time."
+        ],
+        [
+          "Reported RTF",
+          "0.003\u20130.004 in legacy metrics.",
+          "INVALIDATED as product evidence because timing calculation mixed/incorrectly interpreted load vs audio duration."
+        ],
+        [
+          "Device",
+          "MPS appeared available but all recorded runs used CPU.",
+          "Acceleration path unverified."
+        ],
+        [
+          "Architecture",
+          "Semantic encoder + CAMPPlus style + RMVPE F0 + CFM + BigVGAN; n_steps=10 in audited path.",
+          "Full-utterance zero-shot VC path."
+        ],
+        [
+          "Streaming",
+          "WebSocket/StreamingPipeline scaffolding existed; components heavily mocked; upstream \u201cstreaming\u201d did not imply true incremental model inference.",
+          "NOT PROVEN."
+        ],
+        [
+          "Product thesis",
+          "Seed-VC is a voice converter; output could copy target/reference speaker rather than preserve source identity while changing accent.",
+          "Core risk; generic VC \u2260 same-speaker accent normalization."
+        ]
+      ]
+    },
+    {
+      "idx": 24,
+      "rows": [
+        [
+          "ID",
+          "Issue",
+          "Lesson for current design"
+        ],
+        [
+          "P0",
+          "Tensor .numpy() without detach caused runtime failure.",
+          "Inference wrappers need deterministic no-grad/runtime discipline."
+        ],
+        [
+          "P1",
+          "Misleading RTF timing.",
+          "Keep load, compute, algorithmic, first-output, end-to-end latency separate."
+        ],
+        [
+          "P1",
+          "Unbounded queues in capture/playback.",
+          "All production buffers bounded; degrade/bypass rather than backlog."
+        ],
+        [
+          "P2",
+          "Status flags dropped.",
+          "Surface overruns/underruns as metrics/health."
+        ],
+        [
+          "P2",
+          "No input-device selection.",
+          "Endpoint UX must explicitly bind headset/mic."
+        ],
+        [
+          "P2",
+          "Model load concurrency/idempotency risk.",
+          "Thread-safe lifecycle and one model instance per intended worker."
+        ],
+        [
+          "P0 risk",
+          "Voice-conversion architecture mismatch.",
+          "Validate same-speaker accent behavior before optimizing."
+        ],
+        [
+          "P2 risk",
+          "Unpinned dependencies/checkpoints.",
+          "Lockfile, hashes, model manifest, SBOM/provenance."
+        ]
+      ]
+    },
+    {
+      "idx": 25,
+      "rows": [
+        [
+          "Track",
+          "What was changed",
+          "Current evidence status"
+        ],
+        [
+          "Reconstruction adapter",
+          "Corrected `forward_v2` unpacking to [z_p, z_c, z_r]; removed incorrect external timbre assumption in that adapter path; prior reconstruction audit numbers relabeled diagnostic/invalidated.",
+          "Code-level fix; real reconstruction gate still must be re-proven under current protocol."
+        ],
+        [
+          "Frame rate",
+          "Corrected phoneme/frame assumptions from ~50 fps to ~80 fps (`//300` rather than `//480` in earlier logic).",
+          "Unit/math corrected; must validate on real alignment."
+        ],
+        [
+          "Phoneme conditioning",
+          "text\u2192phones via phonemizer/eSpeak; audio alignment via XLS-R/Viterbi; phones\u219280fps frames; explicit equal-length assertion to prevent silent truncation.",
+          "Real implementation; many tests used mocked external dependencies."
+        ],
+        [
+          "Tests",
+          "34 passed, 2 skipped, 1 warning in the recorded state.",
+          "Software correctness only; not scientific validation."
+        ],
+        [
+          "Real-data gaps",
+          "Real z_c extraction/shape, real end-to-end phone alignment, identity comparison, WER, denoiser on real latents, full audio\u2192latent\u2192condition\u2192denoise\u2192decode chain.",
+          "UNVERIFIED."
+        ],
+        [
+          "Architectural gap",
+          "Questions remained around z_c2 recomputation and exact paper-faithful path; phone vocab mismatch (paper/config vs 77-symbol local set) flagged.",
+          "Must resolve only if this branch is revived after target gate."
+        ]
+      ]
+    },
+    {
+      "idx": 26,
+      "rows": [
+        [
+          "THESIS-CRITICAL LESSON\nIn factorized speech models, timbre/speaker identity must be treated according to the upstream decoder contract. A previous adapter concept effectively mixed timbre into a latent mean offset; that destroys the structural separation AccentEdge depends on. Reconstruction must be proven with upstream-faithful timbre conditioning before using FACodec as evidence for identity-preserving accent edits."
+        ]
+      ]
+    },
+    {
+      "idx": 27,
+      "rows": [
+        [
+          "Model / engine",
+          "Realtime today?",
+          "Training / FT",
+          "License posture discussed",
+          "Role for AccentEdge"
+        ],
+        [
+          "CosyAccent",
+          "Whole-WAV inference; not a purpose-built live streaming API.",
+          "Public repo currently inference-heavy; checkpoint available.",
+          "HF model card MIT; audit dependencies/teacher data before commercial derivation.",
+          "Highest-priority accent-specific teacher/reference benchmark."
+        ],
+        [
+          "TokAN-Legacy",
+          "VAD chunking for long files; not identical to low-latency causal streaming.",
+          "Full training and fine-tuning recipe.",
+          "MIT repo; training uses datasets with their own licenses.",
+          "Best open accent-normalization training reference."
+        ],
+        [
+          "FACodec / NaturalSpeech3 codec",
+          "Codec component, not a finished accent product.",
+          "Training/research ecosystem available.",
+          "Current HF checkpoint metadata Apache-2.0; verify repo/dependency/checkpoint inventory.",
+          "Factorized foundation for proprietary model if needed."
+        ],
+        [
+          "seq2seq-vc",
+          "Not selected for production live path.",
+          "Full toolkit; L2-ARCTIC FAC recipe.",
+          "MIT code; dataset recipe includes noncommercial L2-ARCTIC.",
+          "Reproducible FAC research baseline."
+        ],
+        [
+          "PPG2PPG",
+          "Research system.",
+          "Training pipeline.",
+          "Apache-2.0 code as discussed; verify exact assets.",
+          "Accent-specific research baseline."
+        ],
+        [
+          "CosyVoice",
+          "VC function exists; heavier generation stack.",
+          "Training/SFT available.",
+          "Apache-2.0 repo ecosystem; exact checkpoint audit required.",
+          "High-quality resynthesis/VC experiment."
+        ],
+        [
+          "SpeechT5 VC",
+          "Not ideal for strict live-call latency.",
+          "Fine-tunable.",
+          "MIT model card.",
+          "Commercially simpler audio-to-audio baseline."
+        ],
+        [
+          "RVC official",
+          "Yes; mature real-time ecosystem.",
+          "Very easy custom voice training.",
+          "Official project MIT; forks/assets differ.",
+          "Fast MVP/student experiment; normally timbre VC, not accent."
+        ],
+        [
+          "OpenVoice V2",
+          "Fast voice/tone conversion, but not primary streaming accent engine.",
+          "Training less first-class in public workflow.",
+          "Official project states MIT/free commercial use; exact checkpoints must be matched.",
+          "Optional timbre/identity stage."
+        ],
+        [
+          "Seed-VC",
+          "Has real-time support upstream; legacy AccentEdge integration was not truly streaming.",
+          "Fine-tuning/zero-shot capabilities.",
+          "GPL-3.0; problematic for closed-source proprietary distribution strategy.",
+          "Strong technical reference/lab benchmark, not preferred closed-source base."
+        ],
+        [
+          "Vevo / Vevo-Style",
+          "Research conversion system.",
+          "Architecture useful.",
+          "Released Amphion weights CC BY-NC 4.0.",
+          "Study architecture; do not ship/use NC weights for commercial training without permission."
+        ],
+        [
+          "Beatrice VST / V2 ecosystem",
+          "Yes; explicitly real-time VC DSP engine.",
+          "Training ecosystem exists.",
+          "Core engine MIT; bundled JVS corpus editions/non-core assets need separate review.",
+          "Very important low-latency MVP/student candidate."
+        ],
+        [
+          "w-okada voice-changer",
+          "Realtime wrapper/server; supports multiple VC families.",
+          "Depends on selected backend.",
+          "Wrapper contains MIT licenses plus license notices and backend-specific terms.",
+          "Excellent laboratory/prototyping harness; not blindly shippable as one clean license bundle."
+        ]
+      ]
+    },
+    {
+      "idx": 28,
+      "rows": [
+        [
+          "NON-NEGOTIABLE DISTINCTION\nLow-latency VC does not prove low-latency same-speaker accent normalization. RVC, Beatrice, and Seed-VC become valuable only if the training data/objective causes pronunciation to move without replacing speaker identity."
+        ]
+      ]
+    },
+    {
+      "idx": 29,
+      "rows": [
+        [
+          "CURRENT R&D PRIORITY AFTER PHASE-0 TARGET VALIDITY\nBefore inventing a custom streaming codec model, test whether an existing real-time VC engine can learn the same-speaker Indian\u2192US pronunciation mapping. If it reaches product quality, that is the product; proprietary IP can reside in data, training, evaluation, deployment, and later optimization."
+        ]
+      ]
+    },
+    {
+      "idx": 30,
+      "rows": [
+        [
+          "Experiment",
+          "Candidate",
+          "Question"
+        ],
+        [
+          "E1",
+          "RVC",
+          "Can the easiest realtime engine learn same-speaker cross-accent pairs at all?"
+        ],
+        [
+          "E2",
+          "Beatrice",
+          "Can a low-latency engine preserve identity better / run lighter?"
+        ],
+        [
+          "E3",
+          "Seed-VC realtime upstream",
+          "What quality/latency/zero-shot behavior is achievable as a reference, despite GPL concerns?"
+        ],
+        [
+          "E4",
+          "Validated teacher \u2192 RVC/Beatrice",
+          "Can synthetic paired supervision compress accent quality into a realtime student?"
+        ],
+        [
+          "E5",
+          "Selected model \u2192 ONNX/native",
+          "Can the winning student be exported/optimized for endpoint deployment?"
+        ]
+      ]
+    },
+    {
+      "idx": 31,
+      "rows": [
+        [
+          "STRUCTURAL RULE\nTimbre/speaker identity should not be blindly transformed by the accent mapper. It must follow the correct upstream factorization/decoder conditioning path. The prior FACodec timbre bug showed that collapsing timbre into a latent offset can invalidate the entire identity-preservation thesis."
+        ]
+      ]
+    },
+    {
+      "idx": 32,
+      "rows": [
+        [
+          "Item",
+          "Proposed value / rule",
+          "Status"
+        ],
+        [
+          "Internal speech sample rate",
+          "16 kHz mono for the ML path.",
+          "Proposed; aligns with many speech models and telephony-wideband use."
+        ],
+        [
+          "Capture device rate",
+          "May be 44.1/48 kHz; resample immediately to model rate.",
+          "Proposed."
+        ],
+        [
+          "Internal numeric format",
+          "float32 in DSP/model pipeline; PCM16 for network transport where appropriate.",
+          "Proposed."
+        ],
+        [
+          "Audio frame",
+          "20 ms = 320 samples @16 kHz.",
+          "Proposed standard framing."
+        ],
+        [
+          "Model context",
+          "~160\u2013320 ms overlapping context.",
+          "Exploratory; final from chunk/lookahead sweep."
+        ],
+        [
+          "Crossfade/overlap-add",
+          "Smooth boundaries between processed chunks.",
+          "Required if chunked waveform synthesis creates seams."
+        ],
+        [
+          "Queues",
+          "Bounded only.",
+          "ACTIVE runtime safety rule."
+        ],
+        [
+          "Failure",
+          "Crossfade to original mic rather than silence.",
+          "ACTIVE fail-open rule."
+        ]
+      ]
+    },
+    {
+      "idx": 33,
+      "rows": [
+        [
+          "Metric",
+          "Definition / why it matters"
+        ],
+        [
+          "RTF",
+          "processing_seconds / audio_seconds. RTF <1 is necessary for sustained real-time, but does not alone prove conversational latency."
+        ],
+        [
+          "Algorithmic latency",
+          "Future audio/lookahead structurally required before a sample can be emitted."
+        ],
+        [
+          "Compute latency",
+          "Wall-clock time spent processing a frame/chunk."
+        ],
+        [
+          "First-output latency",
+          "Time from first accepted input to first transformed output available."
+        ],
+        [
+          "End-to-end added latency",
+          "Frame accumulation + lookahead + compute + synthesis buffering + OS/audio scheduling + network if server mode."
+        ],
+        [
+          "Backlog",
+          "Unprocessed audio accumulation. Must remain bounded; rising backlog is a product failure even if average RTF seems good."
+        ]
+      ]
+    },
+    {
+      "idx": 34,
+      "rows": [
+        [
+          "RTF",
+          "Interpretation"
+        ],
+        [
+          "2.0",
+          "Impossible for sustained live stream without backlog."
+        ],
+        [
+          "1.0",
+          "Barely keeps up; no concurrency/headroom."
+        ],
+        [
+          "0.25",
+          "~4\u00d7 real-time raw throughput before overhead; earlier \u201cgood\u201d target."
+        ],
+        [
+          "0.05",
+          "~20\u00d7 raw real-time throughput before overhead; excellent if quality/stability hold."
+        ]
+      ]
+    },
+    {
+      "idx": 35,
+      "rows": [
+        [
+          "CURRENT DECISION\nDesign the shared inference/audio core cross-platform from day one. Ship Windows first because it is the most commercially relevant BPO endpoint. Linux is first-class for on-prem servers/thin-client environments; macOS is a supported port and useful Apple-Silicon R&D target."
+        ]
+      ]
+    },
+    {
+      "idx": 36,
+      "rows": [
+        [
+          "Layer",
+          "Windows",
+          "macOS",
+          "Linux"
+        ],
+        [
+          "Audio capture",
+          "WASAPI",
+          "CoreAudio",
+          "PipeWire"
+        ],
+        [
+          "Virtual microphone",
+          "SysVAD/WaveRT-derived virtual device or appropriate Windows virtual-audio implementation",
+          "Audio Server Driver Plug-in / HAL virtual device",
+          "PipeWire virtual source/loopback"
+        ],
+        [
+          "NVIDIA acceleration",
+          "TensorRT/CUDA",
+          "N/A",
+          "TensorRT/CUDA"
+        ],
+        [
+          "Apple acceleration",
+          "N/A",
+          "CoreML \u2192 CPU/GPU/Neural Engine",
+          "N/A"
+        ],
+        [
+          "Intel/other",
+          "WinML/OpenVINO/CPU depending target",
+          "CPU/CoreML",
+          "OpenVINO/CPU; MIGraphX for AMD where supported"
+        ],
+        [
+          "UI",
+          "Shared Flutter proposed; native WinUI remains an option",
+          "Shared Flutter; SwiftUI optional native",
+          "Shared Flutter; GTK optional native"
+        ]
+      ]
+    },
+    {
+      "idx": 37,
+      "rows": [
+        [
+          "Mode",
+          "Audio path",
+          "Pros",
+          "Cons"
+        ],
+        [
+          "Cloud/SaaS GPU",
+          "BPO \u2192 Internet/VPN \u2192 AccentEdge GPU \u2192 returned audio",
+          "Central updates and easiest centralized ops.",
+          "Latency, privacy, egress, GPU-per-minute economics, outage dependency."
+        ],
+        [
+          "On-prem software",
+          "PBX/agent LAN \u2192 local AccentEdge GPU gateway \u2192 softphone/PBX",
+          "Audio stays inside customer network; easier pilot before endpoint optimization.",
+          "Customer appliance/server ops; concurrency sizing required."
+        ],
+        [
+          "On-device endpoint",
+          "Physical mic \u2192 local model \u2192 virtual mic",
+          "Best privacy/unit economics; minimal central GPU dependency.",
+          "Requires model distillation/optimization across heterogeneous PCs."
+        ],
+        [
+          "AccentEdge appliance",
+          "Rackable validated hardware + software",
+          "Simple enterprise procurement/support boundary.",
+          "Hardware logistics/support; risk of premature capex."
+        ]
+      ]
+    },
+    {
+      "idx": 38,
+      "rows": [
+        [
+          "Environment",
+          "GPU",
+          "CPU",
+          "RAM",
+          "Storage",
+          "Purpose"
+        ],
+        [
+          "Developer",
+          "RTX 4070/4080/4090 16\u201324GB",
+          "12\u201316 cores",
+          "64GB",
+          "2TB NVMe",
+          "Research/benchmark."
+        ],
+        [
+          "On-prem pilot",
+          "1\u00d7 NVIDIA L4 24GB",
+          "16\u201324 cores",
+          "64\u2013128GB ECC",
+          "2TB NVMe",
+          "First live concurrency benchmark."
+        ],
+        [
+          "Small production",
+          "2\u00d7 L4 24GB",
+          "24\u201332 cores",
+          "128GB ECC",
+          "2\u20134TB",
+          "Multiple streams + some failover/headroom."
+        ],
+        [
+          "Performance production",
+          "1\u20132\u00d7 L40S 48GB",
+          "32\u201348 cores",
+          "128\u2013256GB ECC",
+          "4TB",
+          "Higher throughput / heavier model."
+        ],
+        [
+          "Larger enterprise",
+          "2\u20134\u00d7 L40S",
+          "48\u201364 cores",
+          "256GB ECC",
+          "4\u20138TB",
+          "Only after measured demand."
+        ],
+        [
+          "Training/R&D",
+          "2\u20134\u00d7 48\u201396GB class GPU",
+          "32\u201364 cores",
+          "256\u2013512GB",
+          "4\u201312TB",
+          "Fine-tune/full training/teacher experiments."
+        ]
+      ]
+    },
+    {
+      "idx": 39,
+      "rows": [
+        [
+          "GPU",
+          "Verified vendor specs relevant here",
+          "AccentEdge interpretation"
+        ],
+        [
+          "NVIDIA L4",
+          "24GB memory, ~300GB/s, 72W, low-profile single-slot PCIe; server configurations 1\u20138 GPUs.",
+          "Attractive pilot inference GPU due power/form factor; concurrency unknown until benchmark."
+        ],
+        [
+          "NVIDIA L40S",
+          "48GB GDDR6 ECC, 864GB/s, up to 350W.",
+          "Heavier/high-throughput inference or R&D if L4 is insufficient."
+        ],
+        [
+          "RTX PRO 6000 Blackwell Server Edition",
+          "96GB GDDR7 ECC, ~1597GB/s, up to 600W, very high tensor throughput.",
+          "Overkill for initial inference; useful combined R&D/high-concurrency box if economics justify."
+        ]
+      ]
+    },
+    {
+      "idx": 40,
+      "rows": [
+        [
+          "CAPACITY RULE\nNo exact \u201cone L4 handles 20/50 calls\u201d claim belongs in the business plan until it is measured. The model architecture and streaming schedule determine capacity more than raw GPU VRAM."
+        ]
+      ]
+    },
+    {
+      "idx": 41,
+      "rows": [
+        [
+          "STACK PRINCIPLE\nResearch/training stays Python/PyTorch. The eventual production agent runtime should not depend on Python. Performance-sensitive audio, streaming and inference live behind a native C++ core. However, the current project source-of-truth explicitly says not to build the C++/ONNX platform before model validity requires it."
+        ]
+      ]
+    },
+    {
+      "idx": 42,
+      "rows": [
+        [
+          "Layer",
+          "Preferred stack discussed",
+          "When"
+        ],
+        [
+          "Research/modeling",
+          "Python, PyTorch, torchaudio, NumPy, SciPy, SoundFile",
+          "Now for target/model experiments."
+        ],
+        [
+          "Experiment config",
+          "Hydra",
+          "When experiments become numerous enough to justify reproducibility."
+        ],
+        [
+          "Experiment tracking",
+          "MLflow",
+          "Post-gate, when real runs need lineage."
+        ],
+        [
+          "Dataset/versioning",
+          "DVC + explicit manifests/checksums",
+          "As soon as production-safe datasets are ingested."
+        ],
+        [
+          "Model interchange",
+          "ONNX",
+          "After a model is good enough to optimize."
+        ],
+        [
+          "Native inference",
+          "ONNX Runtime C++",
+          "Phase 4 / endpoint optimization."
+        ],
+        [
+          "NVIDIA",
+          "TensorRT/CUDA EP",
+          "On-prem/Windows/Linux NVIDIA targets."
+        ],
+        [
+          "Apple",
+          "CoreML EP / native CoreML path",
+          "macOS/Apple Silicon port."
+        ],
+        [
+          "Intel",
+          "OpenVINO EP where beneficial",
+          "Windows/Linux Intel CPU/iGPU/NPU."
+        ],
+        [
+          "Core runtime",
+          "C++20",
+          "Streaming/audio/inference once scientific value is proven."
+        ],
+        [
+          "Desktop UI",
+          "Flutter desktop + FFI",
+          "Cross-platform packaging phase."
+        ],
+        [
+          "Windows audio",
+          "WASAPI + virtual-audio device",
+          "Windows endpoint phase."
+        ],
+        [
+          "macOS audio",
+          "CoreAudio + Audio Server Driver Plug-in",
+          "macOS endpoint."
+        ],
+        [
+          "Linux audio",
+          "PipeWire",
+          "Linux endpoint/thin client/server."
+        ],
+        [
+          "On-prem audio transport",
+          "gRPC bidirectional streaming + mTLS",
+          "Only if using LAN GPU gateway."
+        ],
+        [
+          "Control-plane API",
+          "FastAPI + Pydantic + SQLAlchemy + Alembic",
+          "Post-MVP fleet/licensing phase."
+        ],
+        [
+          "Database",
+          "PostgreSQL",
+          "Control plane."
+        ],
+        [
+          "Cache/ephemeral",
+          "Redis",
+          "License/token cache, rate limit, ephemeral device state."
+        ],
+        [
+          "Dashboard",
+          "Next.js + TypeScript + React + Tailwind",
+          "Admin/fleet phase, not Phase 0."
+        ],
+        [
+          "Object/model storage",
+          "Azure Blob / S3-compatible",
+          "Model registry and signed artifacts."
+        ],
+        [
+          "Observability",
+          "OpenTelemetry + Prometheus + Grafana + Loki",
+          "Runtime/pilot operations."
+        ],
+        [
+          "Packaging/deploy",
+          "Docker; Terraform for infra",
+          "Server/control-plane production."
+        ]
+      ]
+    },
+    {
+      "idx": 43,
+      "rows": [
+        [
+          "CENTRAL DATA FINDING\nThere is enough commercially plausible Indian-English and US-English speech to start research. The scarce asset is commercially clean, same-speaker, sentence-aligned Indian-English \u2194 US-oriented pronunciation data. That is the dataset AccentEdge eventually needs to own or contract for explicitly."
+        ]
+      ]
+    },
+    {
+      "idx": 44,
+      "rows": [
+        [
+          "Dataset",
+          "What it gives",
+          "Scale discussed",
+          "License posture",
+          "Recommended use"
+        ],
+        [
+          "Common Voice Indian Accent (HF derivative)",
+          "Indian-accent English source speech.",
+          "163.89h; 110,088 recordings; ~4.12GB.",
+          "HF card CC0, derived from Common Voice v21; preserve original terms snapshot.",
+          "First large source-accent corpus; speaker diversity."
+        ],
+        [
+          "Kaggle Indian English Accent Audio",
+          "Regional Indian-English folders.",
+          "6.01GB; 8,115 files.",
+          "Kaggle page CC0; provenance/ownership of uploaded audio must be audited.",
+          "Experimental source diversity; production only after provenance check."
+        ],
+        [
+          "CMU ARCTIC",
+          "Phonetically designed native US English speakers.",
+          "~1,100\u20131,200 utterances per speaker; multiple US speakers.",
+          "Permissive CMU/FestVox terms discussed; verify exact corpus notice.",
+          "Native-US phonetics/reference/evaluation/teacher components."
+        ],
+        [
+          "Google FLEURS en_us",
+          "US English speech.",
+          "Subset of multilingual FLEURS.",
+          "CC BY 4.0 metadata.",
+          "US-accent distribution/classifier/reference."
+        ],
+        [
+          "LibriTTS-R",
+          "Large high-quality multi-speaker English.",
+          "Hundreds of hours; discussion referenced ~755k rows / ~100GB HF packaging.",
+          "Commonly CC BY 4.0; verify original OpenSLR corpus license not only derivative HF card.",
+          "General speech encoder/decoder/pretraining."
+        ],
+        [
+          "VCTK",
+          "Multi-speaker English with accent diversity.",
+          "~44h; ~110 speakers.",
+          "CC BY 4.0 metadata.",
+          "Teach speaker\u2260accent disentanglement; evaluation."
+        ],
+        [
+          "AI4Bharat IndicVoices",
+          "Large Indian-language speech.",
+          "Very large multi-language corpus.",
+          "CC BY 4.0 HF card; gated contact sharing.",
+          "Indian acoustic/speaker representation pretraining, not direct FAC pairs."
+        ],
+        [
+          "Project Vaani",
+          "Large geographically diverse Indian speech.",
+          "Discussion referenced ~31k hours/current expanding corpus.",
+          "CC BY 4.0 on discussed release; verify per version.",
+          "Optional Indian acoustic robustness/pretraining; do not download all at start."
+        ]
+      ]
+    },
+    {
+      "idx": 45,
+      "rows": [
+        [
+          "Source",
+          "Relevant material",
+          "Commercial posture",
+          "Use"
+        ],
+        [
+          "LDC-IL / CIIL",
+          "Indian English Bengali/Kannada variants; raw and sentence-aligned resources. Current Kannada raw page shows 23:43:04, 56 speakers, 14,455 segments and separate commercial/non-commercial user routes.",
+          "Explicit commercial user path exists, but terms for model training, derivatives and weight distribution must be obtained in writing.",
+          "High-quality Indian-English phonetics and regional substrate coverage."
+        ],
+        [
+          "Defined.ai",
+          "Indian-English simulated banking/insurance/telco/retail; public catalogue currently shows 174h +187h +173h +169h =703h across those four, plus IVR and larger call-center offerings.",
+          "Commercial vendor; negotiate exact ML training/derived-model rights.",
+          "Strong domain adaptation after feasibility."
+        ],
+        [
+          "InfoBayAI",
+          "India/US call-center previews on Hugging Face discussed.",
+          "Public preview \u2260 full commercial rights; license full corpus directly.",
+          "Matched domain on India and US sides."
+        ],
+        [
+          "Axon / Kaggle preview",
+          "English call-center speech; discussion referenced 1,000+ h full commercial collection.",
+          "Sample/noncommercial/public terms may differ from paid corpus; contract required.",
+          "Domain ASR/acoustics/call-center realism."
+        ],
+        [
+          "ELRA/ELDA catalog",
+          "Accented English / Indian-English mobile speech resources discussed, incl. 1,012h/2,100-speaker listing in prior scan.",
+          "Commercial catalog; exact item/rights must be re-verified before purchase.",
+          "Curated accent/domain data if rights justify cost."
+        ]
+      ]
+    },
+    {
+      "idx": 46,
+      "rows": [
+        [
+          "Dataset",
+          "Why useful",
+          "Restriction / decision"
+        ],
+        [
+          "L2-ARCTIC",
+          "24 non-native speakers across Arabic, Mandarin/Chinese, Hindi, Korean, Spanish, Vietnamese; phonetic/pronunciation annotations; used by many FAC papers.",
+          "CC BY-NC 4.0 in discussed HF release. Research/evaluation only for a commercial product unless separately licensed."
+        ],
+        [
+          "Speech Accent Archive (GMU)",
+          "Large cross-accent comparison where speakers read the same paragraph; excellent benchmark concept.",
+          "Current site states CC BY-NC-SA 4.0. Keep out of commercial training lineage."
+        ],
+        [
+          "Whissle Indian-English assets",
+          "Indian-accent-optimized STT / tech-interview assets could be useful diagnostically.",
+          "Inference-only license explicitly prohibits training, fine-tuning, distillation, compression, and reverse engineering. Do not use as teacher/student training material."
+        ],
+        [
+          "Random HF/Kaggle YouTube-derived sets",
+          "May add speaker/accent variety.",
+          "A dataset card claiming CC-BY/CC0 cannot magically grant rights the uploader did not possess. Reject unclear provenance from production lineage."
+        ]
+      ]
+    },
+    {
+      "idx": 47,
+      "rows": [
+        [
+          "RECONCILIATION WITH TGFP v2\nThe earlier business/data discussion proposed 30\u201350 speakers and later 200. The current source-of-truth changes the order: first recruit only 1\u20133 speakers / ~30 utterances to prove target validity and 5\u201310 natural switchers for calibration. Large proprietary collection starts only after the transformation contract survives those gates."
+        ]
+      ]
+    },
+    {
+      "idx": 48,
+      "rows": [
+        [
+          "Stage",
+          "Illustrative scale",
+          "Audio math",
+          "Purpose"
+        ],
+        [
+          "Initial proprietary scale-up",
+          "30\u201350 speakers \u00d7 20\u201330 min per condition",
+          "Example 50 \u00d7 30 min =25h source +25h target =50h total paired audio.",
+          "Enough diversity to train/calibrate a first serious same-speaker model."
+        ],
+        [
+          "Larger corpus",
+          "~200 speakers \u00d745 min per condition",
+          "~75h source +75h target =150h total.",
+          "Regional/L1 diversity and better generalization."
+        ],
+        [
+          "Domain expansion",
+          "Add BPO scripts, spontaneous turns, noise/telephony re-recordings",
+          "Depends on validated collection protocol.",
+          "Call-center robustness and business vocabulary."
+        ]
+      ]
+    },
+    {
+      "idx": 49,
+      "rows": [
+        [
+          "Metric/goal",
+          "Value discussed",
+          "Status in master"
+        ],
+        [
+          "Pilot P95 added latency",
+          "\u2264250\u2013300 ms",
+          "Current source-of-truth provisional engineering objective after quality."
+        ],
+        [
+          "Stronger commercial P95",
+          "\u2264200 ms",
+          "Current later objective."
+        ],
+        [
+          "Earlier \u201chard ceiling\u201d",
+          "~250 ms",
+          "Exploratory architecture target; subordinate to measured product acceptance."
+        ],
+        [
+          "RTF pilot",
+          "\u22640.6",
+          "Current source-of-truth provisional."
+        ],
+        [
+          "Earlier launch RTF",
+          "\u22640.25",
+          "Aspirational optimization target from architecture discussion, not current gate."
+        ],
+        [
+          "Ideal RTF",
+          "\u22640.10",
+          "Aspirational."
+        ],
+        [
+          "Soak",
+          "30\u201360 min \u2192 2h MVP; earlier 8/24/72h ideas",
+          "Scale duration as product matures; no fake \u201cpassed\u201d claim until run."
+        ],
+        [
+          "WER regression",
+          "Earlier <2 absolute points idea",
+          "Exploratory; TGFP prefers direct critical-content safety and gold-derived thresholds."
+        ],
+        [
+          "Model package",
+          "Earlier <1GB target",
+          "Product-design aspiration for ordinary endpoint."
+        ],
+        [
+          "Runtime RAM",
+          "Earlier <2GB",
+          "Aspiration; must benchmark actual student."
+        ],
+        [
+          "Average CPU",
+          "Earlier <30\u201335%",
+          "Aspiration; actual BPO device acceptance decides."
+        ]
+      ]
+    },
+    {
+      "idx": 50,
+      "rows": [
+        [
+          "Positioning",
+          "Value",
+          "Tradeoff"
+        ],
+        [
+          "Per-seat on-device accent intelligence",
+          "Privacy + predictable subscription + low central compute.",
+          "Hard endpoint optimization R&D."
+        ],
+        [
+          "On-prem GPU gateway",
+          "Fastest route from high-quality GPU student to real BPO pilot.",
+          "Server deployment/concurrency/support."
+        ],
+        [
+          "Managed appliance",
+          "Simple enterprise support/procurement boundary.",
+          "Hardware operations and capital cost."
+        ],
+        [
+          "Cloud API/OEM",
+          "Easy integration for software partners.",
+          "Network/privacy/GPU economics; per-minute price pressure."
+        ],
+        [
+          "Custom accent/data/model service",
+          "High-value enterprise projects and proprietary corpus expansion.",
+          "Services-heavy; must avoid fragmenting core model."
+        ]
+      ]
+    },
+    {
+      "idx": 51,
+      "rows": [
+        [
+          "Risk / unknown",
+          "Impact",
+          "Current mitigation / next evidence"
+        ],
+        [
+          "Valid target cannot preserve identity",
+          "Fatal to current supervision thesis.",
+          "Gate 0 one-speaker/one-sentence; human same-person judgment."
+        ],
+        [
+          "Accent and identity are entangled",
+          "Major.",
+          "Natural cross-accent gold, multi-encoder identity calibration, human panel."
+        ],
+        [
+          "Teacher reintroduces source accent or target voice",
+          "Major.",
+          "Measure accent after identity transfer; compare Strategy A/B/C."
+        ],
+        [
+          "Existing realtime VC changes timbre, not pronunciation",
+          "Major.",
+          "Same-speaker paired fine-tune experiment; abort engine if wrong transformation."
+        ],
+        [
+          "Content corruption: numbers/names/dates",
+          "Catastrophic in BPO.",
+          "Human critical-entity gate + WER/CER."
+        ],
+        [
+          "Already-correct speech damaged",
+          "High adoption/safety risk.",
+          "Per-token ALREADY-TARGET labels, damage curve, conservative strength."
+        ],
+        [
+          "Natural cross-accent change requires rhythm/intonation changes",
+          "Could invalidate v1 linguistic contract.",
+          "Gate-2 code-switcher timing/rhythm/F0 measurements."
+        ],
+        [
+          "Offline quality needs too much lookahead",
+          "Can kill live product.",
+          "Quality/lookahead frontier only after offline quality works."
+        ],
+        [
+          "Endpoint CPU too slow",
+          "Commercial risk.",
+          "Existing realtime engines first; distill/quantize; temporary on-prem GPU gateway."
+        ],
+        [
+          "Server GPU concurrency too low",
+          "Unit economics risk.",
+          "Single-L4 benchmark before capacity purchase."
+        ],
+        [
+          "Licenses block target generation/distillation",
+          "Legal/commercial risk.",
+          "Dataset/model provenance manifests; replace NC/inference-only assets."
+        ],
+        [
+          "Agent dislikes transformed identity",
+          "Commercial/adoption risk.",
+          "Agent acceptance is a pilot metric, not an afterthought."
+        ],
+        [
+          "BPO rejects price",
+          "Business risk.",
+          "Per-seat pilot with ROI metrics; benchmark against public market pricing."
+        ],
+        [
+          "Cross-platform complexity distracts Phase 0",
+          "Schedule risk.",
+          "Design interfaces now; implement OS adapters only when endpoint phase demands."
+        ],
+        [
+          "Infrastructure creates false progress",
+          "Execution risk.",
+          "Every sprint maps to one evidence milestone; no portal/backend during Phase 0."
+        ],
+        [
+          "Random public dataset rights are invalid",
+          "Legal/data risk.",
+          "Original-source provenance, consent and license snapshots."
+        ],
+        [
+          "Speaker embeddings leak accent",
+          "Model-design risk.",
+          "Do not assume speaker embedding is accent-invariant; test against gold condition D."
+        ],
+        [
+          "Synthetic paired corpus amplifies teacher defects",
+          "Data-quality risk.",
+          "Teacher headroom; human validation; fine-tune on real paired set."
+        ]
+      ]
+    },
+    {
+      "idx": 52,
+      "rows": [
+        [
+          "IMMEDIATE ACTION \u2014 DO NOT SKIP\nResolve provenance of existing source/target pairs and produce one valid same-speaker offline target that you genuinely want a future AccentEdge model to imitate. Do not build the admin portal, billing, C++ runtime, ONNX optimization, or multi-platform product before this evidence exists."
+        ]
+      ]
+    },
+    {
+      "idx": 53,
+      "rows": [
+        [
+          "Milestone",
+          "Direct evidence required"
+        ],
+        [
+          "1 \u2014 Valid Target",
+          "Same person, correct words, intended pronunciation shift in target audio."
+        ],
+        [
+          "2 \u2014 Learned Transformation",
+          "Neural model reproduces direction on held-out speech."
+        ],
+        [
+          "3 \u2014 Generalization",
+          "Unseen speakers improve without unacceptable content/identity damage."
+        ],
+        [
+          "4 \u2014 Streaming",
+          "Incremental conversion while speaker is still talking."
+        ],
+        [
+          "5 \u2014 Real-Time CPU",
+          "Runs fast enough on ordinary endpoint-class hardware."
+        ],
+        [
+          "6 \u2014 Endpoint",
+          "Virtual microphone works in real calling application."
+        ],
+        [
+          "7 \u2014 Pilot",
+          "Real agents can use it and BPO wants to continue/pay/test further."
+        ]
+      ]
+    },
+    {
+      "idx": 54,
+      "rows": [
+        [
+          "When / branch",
+          "Decision or finding"
+        ],
+        [
+          "Earlier project",
+          "AccentEdge began as an on-device/direct S2S call-centre accent/pronunciation idea. Multiple candidate architectures and test infrastructure were built."
+        ],
+        [
+          "Legacy bake-off",
+          "Hundreds of tests and architecture scaffolding produced a \u201cPhase 2 complete / Candidate D\u201d narrative, later found scientifically premature."
+        ],
+        [
+          "Stage-A audit",
+          "Source/target provenance and evaluation were questioned; possible different-speaker targets invalidate same-speaker proof."
+        ],
+        [
+          "Seed-VC branch",
+          "A real offline Seed-VC integration produced WAV outputs after many debugging runs; streaming, identity, accent shift, and realtime were not validated."
+        ],
+        [
+          "FACodec branch",
+          "Factorized architecture investigated. Critical timbre-conditioning and reconstruction issues surfaced; frame rate/adapter/phoneme pipeline were corrected, but real end-to-end integration remains unproven."
+        ],
+        [
+          "Fresh-start source of truth",
+          "Project reset to \u201cone valid same-speaker target first,\u201d followed by learned baseline, generalization, streaming, CPU endpoint, MVP, BPO pilot."
+        ],
+        [
+          "Local model scan",
+          "CosyAccent, TokAN, FACodec, seq2seq-vc, PPG2PPG, CosyVoice, SpeechT5 VC, RVC, OpenVoice, Seed-VC, Vevo and others were compared for local/commercial/fine-tuning suitability."
+        ],
+        [
+          "On-prem sizing discussion",
+          "L4/L40S/RTX PRO tiers and RTF/latency concepts were mapped; exact concurrency intentionally left unclaimed."
+        ],
+        [
+          "Business concern",
+          "$1/min cloud service appeared difficult; Sanas proof showed realtime category exists. Pricing benchmark made $1/min the bigger issue."
+        ],
+        [
+          "Business pivot",
+          "Per-seat/local-first enterprise model preferred; cloud per-minute remains secondary option."
+        ],
+        [
+          "Production stack",
+          "Python/PyTorch training; later C++/ONNX native runtime, bounded audio rings, virtual mic, control plane, observability, model signing."
+        ],
+        [
+          "Cross-platform correction",
+          "Windows remains first BPO target, but architecture should support macOS CoreAudio/CoreML and Linux PipeWire/ONNX backends; Flutter UI proposed."
+        ],
+        [
+          "Realtime shortcut",
+          "Before custom FACodec/Conformer, test RVC/Beatrice/Seed-VC-style realtime engines on same-speaker paired accent supervision."
+        ],
+        [
+          "Dataset scan",
+          "Large public source/target speech is available; commercially safe paired same-speaker Indian\u2194US data remains scarce, motivating AccentEdge-PAIR."
+        ],
+        [
+          "Master consolidation",
+          "All branches reconciled into this dossier with status labels so exploratory architecture does not override Phase-0 evidence gates."
+        ]
+      ]
+    },
+    {
+      "idx": 55,
+      "rows": [
+        [
+          "1 \u2014 SCIENCE FIRST\nImmediately: prove one valid same-speaker target under TGFP v2. Do not let hardware, dashboards, C++ runtime, or test counts substitute for this."
+        ]
+      ]
+    },
+    {
+      "idx": 56,
+      "rows": [
+        [
+          "2 \u2014 USE EXISTING REALTIME ENGINES BEFORE INVENTING ONE\nAfter valid paired targets exist: benchmark RVC and Beatrice first, with Seed-VC as a technical reference. Train them on same-speaker cross-accent supervision. If one reaches the quality/identity/latency bar, use it."
+        ]
+      ]
+    },
+    {
+      "idx": 57,
+      "rows": [
+        [
+          "3 \u2014 KEEP THE RUNTIME MODEL-AGNOSTIC\nA shared IVoiceEngine/IAccentEngine keeps the desktop/audio product independent from whichever model wins. This avoids a rewrite if RVC/Beatrice gives way to a proprietary student."
+        ]
+      ]
+    },
+    {
+      "idx": 58,
+      "rows": [
+        [
+          "4 \u2014 WINDOWS FIRST, CROSS-PLATFORM CORE\nCommercial MVP prioritizes Windows BPO endpoints. Shared C++ inference/audio interfaces remain portable to macOS CoreAudio/CoreML and Linux PipeWire/server environments."
+        ]
+      ]
+    },
+    {
+      "idx": 59,
+      "rows": [
+        [
+          "5 \u2014 ON-PREM IS THE BRIDGE, ON-DEVICE IS THE DESTINATION\nIf CPU optimization is not ready, run the selected model on a local L4-class gateway over encrypted LAN. Do not abandon the business because the first production model needs a GPU. Distill/quantize toward ordinary endpoint hardware later."
+        ]
+      ]
+    },
+    {
+      "idx": 60,
+      "rows": [
+        [
+          "6 \u2014 PRICE PER SEAT FIRST\nThe $1/minute idea is preserved as an initial hypothesis, but public market pricing makes a per-seat enterprise subscription/on-prem contract the stronger BPO packaging direction."
+        ]
+      ]
+    },
+    {
+      "idx": 61,
+      "rows": [
+        [
+          "7 \u2014 OWN THE DATA AND EVALUATION\nThe long-term moat is a commercially clean same-speaker Indian-English\u2194US-oriented paired corpus, the target-generation methodology, correction/damage evaluation, critical-content safety, model optimization, deployment and customer integration."
+        ]
+      ]
+    }
+  ],
+  "styles": {}
+}

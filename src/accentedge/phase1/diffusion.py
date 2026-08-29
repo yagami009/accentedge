@@ -46,3 +46,4 @@ def strength_to_t_start(strength: float, num_steps: int = 100) -> int:
 
 def t_start_to_strength(t_start: int, num_steps: int = 100) -> float:
     return t_start / max(1, num_steps)
+

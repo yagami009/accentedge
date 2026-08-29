@@ -388,3 +388,4 @@ class ZC2Recomputer:
             Combined latent  [B, C, T].
         """
         return z_p + (zc1 + zc2) + z_r
+

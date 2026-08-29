@@ -1,0 +1,47 @@
+# Degradation pipeline configuration
+
+conditions:
+  - name: clean
+    description: "Canonical 16 kHz mono PCM, no degradation"
+    apply: false
+
+  - name: nb
+    description: "Narrowband telephony simulation"
+    apply: true
+    target_sr: 8000
+    ulaw: true
+    resample_back: true
+
+  - name: noisy
+    description: "Controlled BPO-like babble/noise"
+    apply: true
+    snr_db: 15
+    noise_types:
+      - babble
+      - office
+      - street
+    noise_duration_s: 60
+    clip_noise: true
+
+  - name: nb_noisy
+    description: "Combined telephony and floor noise"
+    apply: true
+    target_sr: 8000
+    ulaw: true
+    resample_back: true
+    snr_db: 15
+    noise_types:
+      - babble
+      - office
+      - street
+
+deterministic:
+  seed: 42
+  # Same source + same config + same seed = byte-identical output
+
+audio:
+  canonical_sr: 16000
+  canonical_channels: 1
+  canonical_dtype: float32
+  peak_normalize: true
+  peak_target: 0.95

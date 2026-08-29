@@ -367,3 +367,4 @@ def _load_config(path: Path) -> Dict[str, Any]:
         raise ValueError(f"Config file {path} must contain a YAML mapping.")
 
     return cfg
+

@@ -36,3 +36,4 @@ class StrengthScheduler:
 
     def available_strengths(self) -> list:
         return [0.0, 0.25, 0.50, 0.75, 1.0]
+

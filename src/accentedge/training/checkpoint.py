@@ -130,3 +130,4 @@ def load_checkpoint(path: str, map_location: str = "cpu") -> dict:
         )
 
     return data
+

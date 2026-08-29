@@ -258,3 +258,4 @@ class Phase1AccentNormalizer(nn.Module):
     def forward(self, zc1: torch.Tensor, phone_ids: torch.Tensor, t: torch.Tensor,
                 padding_mask: Optional[torch.BoolTensor] = None):
         return self.denoiser(zc1, phone_ids, t, padding_mask)
+

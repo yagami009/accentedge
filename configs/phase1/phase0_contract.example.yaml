@@ -1,0 +1,68 @@
+# Phase-0 Contract — example configuration
+# This file defines the linguistic and acoustic contract that Phase 1 inherits.
+# DO NOT populate with fake data — use example values only.
+
+branch: full_s2s  # or sparse_repair
+
+target_accent: en-US-neutral
+
+features:
+  - RHO
+  - TH
+  - ASP
+  - RET
+  - VW
+  - FLAP
+  - RED
+  - STR
+
+timing:
+  word_bounds_source: phase0_gold
+  phrase_bounds_source: phase0_gold
+  duration_tolerance_ms: 50
+
+identity:
+  calibration_path: data/calibration/identity.parquet
+  same_session_range: [0.85, 1.0]
+  different_session_range: [0.60, 0.85]
+  cross_accent_range: [0.40, 0.70]
+
+conversion_strength:
+  enabled: true
+  evaluation_points:
+    - 0.25
+    - 0.50
+    - 0.75
+    - 1.00
+
+pronunciation:
+  probe_config_version: "1.0.0"
+  embedding_model: "microsoft/wavlm-base-plus-sv"
+  centroid_version: "phase0_v1"
+
+degradation:
+  nb:
+    target_sr: 8000
+    ulaw: true
+  noisy:
+    snr_db: 15
+    noise_types:
+      - babble
+      - office
+      - street
+  nb_noisy:
+    snr_db: 15
+
+metrics:
+  content:
+    asr_backend: faster-whisper
+    asr_model: small.en
+  critical_entities:
+    semantic_equivalence: true
+  pronunciation:
+    correction_denominator: DEVIANT
+    damage_denominator: ALREADY_TARGET
+    ambiguous_excluded: true
+  naturalness:
+    auto_evaluator: distill-mos
+    human_mos_required: true

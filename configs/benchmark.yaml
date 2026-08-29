@@ -1,0 +1,95 @@
+# AccentEdge BPO Benchmark v1 — Main benchmark configuration
+
+benchmark:
+  name: "AccentEdge BPO Benchmark"
+  version: "1.0.0"
+  canonical_sample_rate: 16000
+  canonical_format: "wav"
+  canonical_bit_depth: 16
+  master_sample_rate: 48000
+  master_bit_depth: 24
+
+dataset:
+  manifest_path: "data/manifests/benchmark.parquet"
+  raw_dir: "data/raw/"
+  derived_dir: "data/derived/"
+  min_speakers: 30
+  preferred_speakers: 48
+  utterances_per_speaker: 28
+
+splits:
+  dev_speakers: 24
+  locked_test_speakers: 24
+  stratification:
+    - "l1_category"
+    - "accent_strength"
+    - "bpo_experience"
+  seed: 42
+  locked_test_acknowledgement_flag: "--acknowledge-sealed-test"
+
+degradations:
+  conditions:
+    - "clean"
+    - "nb"
+    - "noisy"
+    - "nb_noisy"
+  nb:
+    target_sr: 8000
+    ulaw: true
+    resample_back_to_canonical: true
+  noisy:
+    snr_db: 15
+    noise_types:
+      - "babble"
+      - "office"
+      - "street"
+    deterministic_seed: 42
+
+evaluation:
+  content:
+    asr_backend: "faster-whisper"
+    asr_model: "small.en"
+    compute_wer: true
+    compute_cer: true
+  identity:
+    evaluators:
+      - "wavlm"
+      - "ecapa"
+    calibration_path: "data/calibration/identity.parquet"
+  pronunciation:
+    probe_config: "configs/phase0_contract.yaml"
+  naturalness:
+    auto_evaluator: "distill-mos"
+    human_mos_required: true
+  timing:
+    word_bounds_source: "phase0_gold"
+    phrase_bounds_source: "phase0_gold"
+  statistics:
+    bootstrap_replicates: 10000
+    confidence_level: 0.95
+    paired_comparison: true
+
+candidate:
+  adapter_registry: "accentedge_benchmark.candidates"
+  baseline_adapters:
+    - "passthrough"
+    - "file_output"
+  supports_conversion_strength: true
+  evaluation_strengths: [0.0, 0.25, 0.5, 0.75, 1.0]
+
+runner:
+  output_dir: "runs/"
+  run_id_format: "YYYYMMDD-HHMMSS_{candidate}_{gitshort}"
+  max_parallel: 4
+  resume_enabled: true
+  failure_isolation: true
+  locked_test_registry: "runs/locked_test_registry.jsonl"
+
+reporting:
+  formats:
+    - "html"
+    - "json"
+  html_template_dir: "src/accentedge_benchmark/reporting/templates/"
+  include_charts: true
+  include_speaker_distributions: true
+  include_robustness_slices: true

@@ -1,0 +1,38 @@
+# ============================================================================
+# AccentEdge Phase 1 — Gate 2 config
+#
+# Purpose: Speaker-identity preservation check.
+#   Encode source audio and a target-reference audio through FACodec.
+#   Extract ECAPA-TDNN embeddings from both originals and from a
+#   reconstruction.  Verify that identity drop stays within bounds.
+#
+# Corpus:
+#   - Native (source): CMU ARCTIC speakers bdl (M, US) and clb (F, US)
+#   - Non-native (target): L2-ARCTIC Hindi speakers RRBI (M) and MBMPS (F)
+#     These are Indian English speakers — a key Phase-1 target accent.
+#
+# Usage:
+#   python scripts/verify_identity.py --config configs/phase1/gate2.yaml
+# ============================================================================
+
+sample_rate: 24000
+codec_hop: 300
+codec_fps: 80
+
+identity:
+  ecapa_model: "speechbrain/spkrec-ecapa-voxceleb"
+  native_corpus: "cmu_arctic"
+  native_speakers:
+    - "bdl"
+    - "clb"
+  indian_corpus: "l2_arctic"
+  indian_speakers:
+    - "RRBI"
+    - "MBMPS"
+  # Identity drop threshold: max allowed cosine-similarity decrease
+  max_identity_drop: 0.15
+
+paths:
+  facodec_checkpoint: "Plachta/FAcodec"
+  output_dir: "output/gate2"
+  cache_dir: "cache/gate2"

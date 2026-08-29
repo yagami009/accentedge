@@ -60,3 +60,4 @@ class FactorizedSpeechCodec:
     def parameters(self):
         """Yield all parameters."""
         ...
+

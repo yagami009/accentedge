@@ -697,3 +697,4 @@ class PhonemePipeline:
     def frame_rate_hz(self) -> float:
         """FACodec frame rate in Hz (80fps)."""
         return float(self.frame_rate)
+

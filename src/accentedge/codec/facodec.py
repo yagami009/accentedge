@@ -41,7 +41,7 @@ class FACodecAdapter(FactorizedSpeechCodec):
         self.facodec_ckpt = facodec_ckpt
 
         # Setup FAcodec path so `from modules.commons import ...` resolves
-        _facodec_path = Path(__file__).resolve().parents[4] / "FAcodec"
+        _facodec_path = "FAcodec" / "FAcodec"
         for _path in [_facodec_path, _facodec_path / "modules"]:
             if _path.exists() and str(_path) not in sys.path:
                 sys.path.insert(0, str(_path))
@@ -219,3 +219,4 @@ class FACodecAdapter(FactorizedSpeechCodec):
         """Encode then decode for round-trip reconstruction."""
         latents = self.encode(waveform)
         return self.decode(latents)
+
