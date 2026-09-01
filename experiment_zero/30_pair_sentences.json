@@ -1,0 +1,1215 @@
+{
+  "experiment": "Experiment Zero - 30 Pair Diagnostic Matrix",
+  "version": "2.0",
+  "speaker_profile": "One bilingual speaker, native Indian English, fluent in neutral US English. Same speaker for all 60 recordings.",
+  "recording_requirements": {
+    "same_microphone": true,
+    "same_room": true,
+    "same_settings": true,
+    "same_communicative_intent": true,
+    "same_emotion_and_pace": "roughly comparable pace, same communicative intent \u2014 not forced identical rate"
+  },
+  "annotation_schema": {
+    "primary_transformation_target": "What SHOULD change in the accent transformation",
+    "preservation_target": "What MUST NOT change under any circumstances"
+  },
+  "emotion_distribution": {
+    "neutral_professional": 24,
+    "mildly_emphatic": 3,
+    "conversational_casual": 3
+  },
+  "category_breakdown": {
+    "control": 5,
+    "accent_diagnostic": 9,
+    "bpo_critical": 7,
+    "connected_speech": 2,
+    "hinglish_preservation": 4,
+    "proper_noun_preservation": 2,
+    "do_not_touch_control": 1
+  },
+  "minimal_pairs_included": {
+    "fifteen_fifty": "S007",
+    "thirteen_thirty": "S008",
+    "thirty_three_vs_thirteen": "S010",
+    "forty_seven_vs_fourteen": "S012",
+    "three_thirty": "S015",
+    "thirty_two": "S016",
+    "can_cant": "S002, S029"
+  },
+  "critical_entity_types": {
+    "money_amounts": "S007 ($15.50), S010 ($33), S016 (32 Mbps), S026 (20% discount)",
+    "dates": "S008 (March 13), S011 (March 13), S015 (3 years), S030 (tomorrow)",
+    "account_numbers": "S006 (last 4 digits), S017 (7892), S018 (DOB)",
+    "indian_names": "S014 (Rahul), S024 (spelling request)",
+    "indian_cities": "S023 (Mumbai)",
+    "technical_terms": "S009 (technical support), S016 (megabits), S028 (troubleshooting)",
+    "hinglish": "S025 (full Hindi code-switch)"
+  },
+  "diagnostic_coverage": {
+    "rhoticity": "S015 (three years), S030 (tomorrow)",
+    "th_sounds": "S007 (fifteen), S008 (thirteen/Thursday), S010 (thirty), S027 (thought/three/thirty)",
+    "v_w_confusion": "S007 (five/seventy implicit), S011 (value/feedback)",
+    "aspiration": "S014 (Actually), S026 (automatically)",
+    "vowel_quality_reduction": "S001 (schwa), S011 (value), S012 (red), S015 (expired), S022 (problem)",
+    "consonant_clusters": "S009 (transfer), S012 (arrow/forty), S024 (spell), S028 (headset/connected/troubleshooting)",
+    "lexical_stress": "S009 (transfer/technical), S011 (value/feedback/service), S015 (warranty), S026 (automatically)",
+    "schwa_reduction": "S001 (for/may), S011 (value), S013 (feedback), S022 (problem), S029 (microphone)",
+    "can_cant_pair": "S002, S029",
+    "connected_speech": "S019, S020, S021, S022",
+    "hinglish_proper_nouns": "S014 (Rahul), S023 (Mumbai), S024 (spelling), S025 (full Hinglish)",
+    "code_switching": "S025 (English-to-Hindi mid-sentence)"
+  },
+  "sentences": [
+    {
+      "id": "S001",
+      "text": "Thank you for calling Acme Support. How may I help you today?",
+      "category": "control",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Schwa reduction in unstressed syllables, weak forms (for, may)",
+      "preservation_target": "Word sequence, politeness markers, speaker identity",
+      "critical_entity": false,
+      "expected_duration_seconds": 4.5,
+      "diagnostic_tags": [
+        "schwa_reduction",
+        "weak_forms"
+      ],
+      "desired_change_strength": "none",
+      "acoustic_change_expected": true,
+      "timing_change_expected": false,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S002",
+      "text": "I can help you with that account issue right away.",
+      "category": "control",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Can/cant distinction, content word clarity",
+      "preservation_target": "Word sequence, account/issue semantics, speaker identity",
+      "critical_entity": false,
+      "expected_duration_seconds": 3.5,
+      "diagnostic_tags": [
+        "can_cant_pair",
+        "content_words"
+      ],
+      "desired_change_strength": "none",
+      "acoustic_change_expected": true,
+      "timing_change_expected": false,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S003",
+      "text": "Please confirm your billing address on file.",
+      "category": "control",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Simple consonant clarity, stress pattern confirmation",
+      "preservation_target": "Billing address semantics, word sequence, speaker identity",
+      "critical_entity": true,
+      "expected_duration_seconds": 3.0,
+      "diagnostic_tags": [
+        "simple_verification",
+        "address_protection"
+      ],
+      "desired_change_strength": "none",
+      "acoustic_change_expected": true,
+      "timing_change_expected": false,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S004",
+      "text": "Let me look that up for you in our system.",
+      "category": "control",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Phrasal verb clarity (look up), preposition stress",
+      "preservation_target": "Word sequence, meaning, speaker identity",
+      "critical_entity": false,
+      "expected_duration_seconds": 3.5,
+      "diagnostic_tags": [
+        "phrasal_verbs",
+        "prepositions"
+      ],
+      "desired_change_strength": "none",
+      "acoustic_change_expected": true,
+      "timing_change_expected": true,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S005",
+      "text": "Is there anything else I can assist you with?",
+      "category": "control",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "General clarity, ending phrase naturalness",
+      "preservation_target": "Question meaning, speaker identity",
+      "critical_entity": false,
+      "expected_duration_seconds": 3.5,
+      "diagnostic_tags": [
+        "general_clarity",
+        "question_form"
+      ],
+      "desired_change_strength": "none",
+      "acoustic_change_expected": true,
+      "timing_change_expected": false,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S006",
+      "text": "Could you please verify the last four digits of your account?",
+      "category": "accent_diagnostic",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Could/can contrast, please vowel quality, verify stress",
+      "preservation_target": "Four digits must remain intelligible, account semantics, speaker identity",
+      "critical_entity": true,
+      "expected_duration_seconds": 5.0,
+      "diagnostic_tags": [
+        "could_can_contrast",
+        "vowel_quality",
+        "lexical_stress"
+      ],
+      "desired_change_strength": "medium",
+      "acoustic_change_expected": true,
+      "timing_change_expected": true,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S007",
+      "text": "The total payment is fifteen dollars and fifty cents.",
+      "category": "bpo_critical",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Fifteen/fifty minimal pair, th-sound in fifteen, v in five/seventy",
+      "preservation_target": "Fifteen vs fifty must remain DISTINGUISHABLE. $15.50 semantic value. Speaker identity.",
+      "critical_entity": true,
+      "expected_duration_seconds": 5.0,
+      "diagnostic_tags": [
+        "fifteen_fifty_pair",
+        "dollar_cents",
+        "money",
+        "critical_pair",
+        "number_preservation"
+      ],
+      "desired_change_strength": "strong",
+      "acoustic_change_expected": true,
+      "timing_change_expected": true,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S008",
+      "text": "Your appointment is scheduled for Thursday, March thirteenth.",
+      "category": "bpo_critical",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Thursday th-sound, thirteen/thirty minimal pair, date format",
+      "preservation_target": "Thursday/March thirteenth must remain intelligible. Date semantics. Speaker identity.",
+      "critical_entity": true,
+      "expected_duration_seconds": 5.5,
+      "diagnostic_tags": [
+        "thursday_th",
+        "thirteen_thirty_pair",
+        "date",
+        "month_names"
+      ],
+      "desired_change_strength": "strong",
+      "acoustic_change_expected": true,
+      "timing_change_expected": true,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S009",
+      "text": "Please hold while I transfer your call to technical support.",
+      "category": "accent_diagnostic",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Hold vowel quality, transfer consonant cluster, technical stress",
+      "preservation_target": "Technical support meaning, call transfer semantics, speaker identity",
+      "critical_entity": false,
+      "expected_duration_seconds": 4.5,
+      "diagnostic_tags": [
+        "vowel_quality",
+        "consonant_clusters",
+        "technical_terms"
+      ],
+      "desired_change_strength": "medium",
+      "acoustic_change_expected": true,
+      "timing_change_expected": false,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S010",
+      "text": "The charge on your statement shows thirty three dollars.",
+      "category": "bpo_critical",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Thirty/three distinction, th in thirty, ch in charge",
+      "preservation_target": "Thirty-three must remain distinguishable from thirteen. $33 value. Speaker identity.",
+      "critical_entity": true,
+      "expected_duration_seconds": 4.5,
+      "diagnostic_tags": [
+        "thirty_three",
+        "th_sound",
+        "ch_sound",
+        "money"
+      ],
+      "desired_change_strength": "strong",
+      "acoustic_change_expected": true,
+      "timing_change_expected": true,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S011",
+      "text": "We value your feedback and it helps us improve our service.",
+      "category": "accent_diagnostic",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Value v-sound, feedback vowel reduction, service stress",
+      "preservation_target": "Feedback meaning, service meaning, speaker identity",
+      "critical_entity": false,
+      "expected_duration_seconds": 5.0,
+      "diagnostic_tags": [
+        "v_sound",
+        "vowel_reduction",
+        "lexical_stress"
+      ],
+      "desired_change_strength": "strong",
+      "acoustic_change_expected": true,
+      "timing_change_expected": false,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S012",
+      "text": "The red arrow points to the correct answer on page forty seven.",
+      "category": "accent_diagnostic",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Red vowel quality, forty-four/fourteen minimal pair, arrow cluster",
+      "preservation_target": "Forty-seven must remain distinguishable from fourteen. Page number. Speaker identity.",
+      "critical_entity": false,
+      "expected_duration_seconds": 5.0,
+      "diagnostic_tags": [
+        "vowel_quality",
+        "forty_fourteen_pair",
+        "consonant_clusters"
+      ],
+      "desired_change_strength": "medium",
+      "acoustic_change_expected": true,
+      "timing_change_expected": false,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S013",
+      "text": "Your card has been declined. Would you like to try another payment method?",
+      "category": "bpo_critical",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Declined schwa reduction, would modal clarity, payment stress",
+      "preservation_target": "Card declined meaning, payment method semantics, speaker identity",
+      "critical_entity": true,
+      "expected_duration_seconds": 5.0,
+      "diagnostic_tags": [
+        "schwa_reduction",
+        "modal_verbs",
+        "payment_terms"
+      ],
+      "desired_change_strength": "light",
+      "acoustic_change_expected": true,
+      "timing_change_expected": false,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S014",
+      "text": "Actually, Rahul needs to call back on Friday morning around ten thirty.",
+      "category": "hinglish_preservation",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Actually aspiration, Friday stress, around vowel quality",
+      "preservation_target": "Rahul MUST NOT be altered. Friday/time must remain clear. Speaker identity.",
+      "critical_entity": true,
+      "expected_duration_seconds": 5.5,
+      "diagnostic_tags": [
+        "proper_noun_protection",
+        "aspiration",
+        "time",
+        "indian_name"
+      ],
+      "desired_change_strength": "medium",
+      "acoustic_change_expected": true,
+      "timing_change_expected": true,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S015",
+      "text": "The warranty on that device expired three years ago last January.",
+      "category": "accent_diagnostic",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Warranty stress pattern, expired past-tense clarity, three rhoticity",
+      "preservation_target": "Three years / thirty years distinction. Date semantics. Speaker identity.",
+      "critical_entity": false,
+      "expected_duration_seconds": 5.5,
+      "diagnostic_tags": [
+        "lexical_stress",
+        "rhoticity",
+        "three_thirty_pair",
+        "dates"
+      ],
+      "desired_change_strength": "medium",
+      "acoustic_change_expected": true,
+      "timing_change_expected": true,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S016",
+      "text": "Your internet speed test shows thirty two megabits per second.",
+      "category": "bpo_critical",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Thirty-two distinction, technical unit clarity, speed stress",
+      "preservation_target": "32 Mbps value must remain intelligible. Technical terms. Speaker identity.",
+      "critical_entity": true,
+      "expected_duration_seconds": 5.0,
+      "diagnostic_tags": [
+        "thirty_two",
+        "technical_terms",
+        "numbers",
+        "speed"
+      ],
+      "desired_change_strength": "strong",
+      "acoustic_change_expected": true,
+      "timing_change_expected": true,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S017",
+      "text": "The verification code was sent to the email ending in seven eight nine two.",
+      "category": "bpo_critical",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Verification stress, code number clarity, email ending sequence",
+      "preservation_target": "7892 must remain digit-perfect. Email semantics. Speaker identity.",
+      "critical_entity": true,
+      "expected_duration_seconds": 6.0,
+      "diagnostic_tags": [
+        "verification_code",
+        "number_sequence",
+        "digit_preservation",
+        "email"
+      ],
+      "desired_change_strength": "medium",
+      "acoustic_change_expected": true,
+      "timing_change_expected": true,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S018",
+      "text": "Before we proceed, I'll need you to confirm your date of birth.",
+      "category": "bpo_critical",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Proceed stress, Ill contraction, confirm clarity",
+      "preservation_target": "Date of birth request meaning, personal information semantics, speaker identity",
+      "critical_entity": true,
+      "expected_duration_seconds": 4.5,
+      "diagnostic_tags": [
+        "contractions",
+        "date_request",
+        "personal_info"
+      ],
+      "desired_change_strength": "medium",
+      "acoustic_change_expected": true,
+      "timing_change_expected": false,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S019",
+      "text": "I'm sorry, I didn't catch that. Could you say it again, please?",
+      "category": "connected_speech",
+      "emotion": "conversational_casual",
+      "primary_transformation_target": "I'm contraction, didn't reduction, could you linking",
+      "preservation_target": "Sorry/catch/again meaning, request for repetition, speaker identity",
+      "critical_entity": false,
+      "expected_duration_seconds": 4.5,
+      "diagnostic_tags": [
+        "contractions",
+        "linking",
+        "connected_speech"
+      ],
+      "desired_change_strength": "strong",
+      "acoustic_change_expected": true,
+      "timing_change_expected": false,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S020",
+      "text": "I don't think we have that model in stock anymore, but I can check our warehouse.",
+      "category": "connected_speech",
+      "emotion": "conversational_casual",
+      "primary_transformation_target": "Don't reduction, have-that linking, anymore stress",
+      "preservation_target": "Stock/warehouse meaning, model reference, speaker identity",
+      "critical_entity": false,
+      "expected_duration_seconds": 6.0,
+      "diagnostic_tags": [
+        "contractions",
+        "linking",
+        "reduced_forms"
+      ],
+      "desired_change_strength": "light",
+      "acoustic_change_expected": true,
+      "timing_change_expected": false,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S021",
+      "text": "Your confirmation number is seven, seven, four, three, two, nine, eight, one, five, six.",
+      "category": "do_not_touch_control",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Number sequence clarity, digit-by-digit stress pattern",
+      "preservation_target": "Exact digit sequence (7743298156), speaker identity, word sequence",
+      "desired_change_strength": "light",
+      "acoustic_change_expected": true,
+      "timing_change_expected": true,
+      "critical_entity": true,
+      "critical_entity_type": "long_numeric",
+      "critical_entity_value": "7743298156",
+      "expected_duration_seconds": 6.0,
+      "diagnostic_tags": [
+        "long_numeric",
+        "account_number",
+        "digit_sequence"
+      ],
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S022",
+      "text": "No problem at all. Just give me a moment to pull up your account details.",
+      "category": "proper_noun_preservation",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Problem schwa, pull up phrasal verb, account stress",
+      "preservation_target": "Rahul (Indian name), word sequence, speaker identity",
+      "critical_entity": false,
+      "expected_duration_seconds": 5.5,
+      "diagnostic_tags": [
+        "indian_name",
+        "proper_noun"
+      ],
+      "desired_change_strength": "light",
+      "acoustic_change_expected": true,
+      "timing_change_expected": false,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S023",
+      "text": "Mumbai traffic can be really bad during monsoon season, so plan accordingly.",
+      "category": "proper_noun_preservation",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Can be reduction, really stress, monsoon vowel quality",
+      "preservation_target": "Mumbai (Indian city), word sequence, speaker identity",
+      "critical_entity": true,
+      "expected_duration_seconds": 5.5,
+      "diagnostic_tags": [
+        "indian_city",
+        "proper_noun"
+      ],
+      "desired_change_strength": "light",
+      "acoustic_change_expected": true,
+      "timing_change_expected": false,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S024",
+      "text": "Could you spell that name for me, please? I want to make sure I have it right.",
+      "category": "hinglish_preservation",
+      "emotion": "mildly_emphatic",
+      "primary_transformation_target": "Spell consonant clusters, name vowel quality, make sure linking",
+      "preservation_target": "Spelling sequence MUST be preserved letter-by-letter. Name integrity. Speaker identity.",
+      "critical_entity": true,
+      "expected_duration_seconds": 5.5,
+      "diagnostic_tags": [
+        "acronym",
+        "spelling_verification",
+        "do_not_touch"
+      ],
+      "desired_change_strength": "medium",
+      "acoustic_change_expected": true,
+      "timing_change_expected": false,
+      "critical_entity_type": "acronym",
+      "critical_entity_value": "BPO",
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S025",
+      "text": "Aap ke account mein pichle mahine ke charge dikh rahe hain.",
+      "category": "hinglish_preservation",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Code-switching boundary handling, Hindi phoneme preservation",
+      "preservation_target": "Hindi portion MUST NOT be transformed. Account/charge meaning. Speaker identity.",
+      "critical_entity": true,
+      "expected_duration_seconds": 5.0,
+      "diagnostic_tags": [
+        "code_switching",
+        "hindi_preservation",
+        "mixed_language",
+        "account_terms"
+      ],
+      "desired_change_strength": "medium",
+      "acoustic_change_expected": true,
+      "timing_change_expected": true,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S026",
+      "text": "Your account has been credited with the refund that Ms. Johnson processed yesterday.",
+      "category": "bpo_critical",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Johnson pronunciation, vowel quality in unstressed syllables, liaison between words",
+      "preservation_target": "Ms. Johnson (US name), refund semantics, date reference, speaker identity",
+      "critical_entity": true,
+      "expected_duration_seconds": 4.5,
+      "diagnostic_tags": [
+        "us_name",
+        "proper_noun",
+        "vowel_reduction",
+        "liaison"
+      ],
+      "desired_change_strength": "medium",
+      "acoustic_change_expected": true,
+      "timing_change_expected": false,
+      "critical_entity_type": "us_name",
+      "critical_entity_value": "Johnson",
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S027",
+      "text": "She thought the three tickets were worth thirty pounds, but they cost thirty three.",
+      "category": "accent_diagnostic",
+      "emotion": "mildly_emphatic",
+      "primary_transformation_target": "Three vs thirty minimal pair, thought th-sound, worth vowel quality",
+      "preservation_target": "Three tickets / thirty pounds must remain distinguishable. Cost thirty-three. Speaker identity.",
+      "critical_entity": true,
+      "expected_duration_seconds": 6.5,
+      "diagnostic_tags": [
+        "three_thirty_pair",
+        "th_sound",
+        "vowel_quality",
+        "emphatic"
+      ],
+      "desired_change_strength": "medium",
+      "acoustic_change_expected": true,
+      "timing_change_expected": true,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S028",
+      "text": "Please make sure your headset is connected before the next troubleshooting step.",
+      "category": "accent_diagnostic",
+      "emotion": "neutral_professional",
+      "primary_transformation_target": "Headset cluster, connected ed-ending, troubleshooting stress",
+      "preservation_target": "Headset/troubleshooting meaning, technical terms, speaker identity",
+      "critical_entity": false,
+      "expected_duration_seconds": 5.0,
+      "diagnostic_tags": [
+        "consonant_clusters",
+        "ed_endings",
+        "technical_terms"
+      ],
+      "desired_change_strength": "light",
+      "acoustic_change_expected": true,
+      "timing_change_expected": false,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S029",
+      "text": "Can you hear me clearly? If not, try adjusting your microphone settings.",
+      "category": "accent_diagnostic",
+      "emotion": "mildly_emphatic",
+      "primary_transformation_target": "Can/cant minimal pair, hear vowel quality, clearly stress",
+      "preservation_target": "Microphone meaning, settings meaning, speaker identity",
+      "critical_entity": false,
+      "expected_duration_seconds": 4.5,
+      "diagnostic_tags": [
+        "can_cant_pair",
+        "vowel_quality",
+        "lexical_stress",
+        "emphatic"
+      ],
+      "desired_change_strength": "medium",
+      "acoustic_change_expected": true,
+      "timing_change_expected": true,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    },
+    {
+      "id": "S030",
+      "text": "Main aapko kal tak ka response bhej dunga, please check your email.",
+      "category": "hinglish_preservation",
+      "emotion": "conversational_casual",
+      "primary_transformation_target": "English portions should move toward US pronunciation; Hindi portions must be preserved",
+      "preservation_target": "Hindi words (Main, aapko, kal tak, bhej dunga), word sequence, speaker identity",
+      "desired_change_strength": "medium",
+      "acoustic_change_expected": true,
+      "timing_change_expected": true,
+      "critical_entity": false,
+      "critical_entity_type": null,
+      "critical_entity_value": null,
+      "expected_duration_seconds": 5.5,
+      "diagnostic_tags": [
+        "code_switching",
+        "hinglish",
+        "mid_utterance_switch"
+      ],
+      "source_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      },
+      "target_recording": {
+        "speaker_id": null,
+        "take_id": null,
+        "mic": null,
+        "sample_rate": null,
+        "duration_ms": null,
+        "rms": null,
+        "pair_quality": null
+      }
+    }
+  ],
+  "strength_breakdown": {
+    "none": 6,
+    "light": 5,
+    "medium": 12,
+    "strong": 7
+  }
+}

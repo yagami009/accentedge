@@ -1,0 +1,52 @@
+{
+  "ssd_root": "/Volumes/AYUSH_SSD",
+  "mount_point": "/dev/disk5s2",
+  "total_bytes": "1.8Ti",
+  "free_bytes": "214Gi",
+  "use_percent": "89%",
+  "out_dir": "/Users/ayushmh/accentedge/experiment_zero/mining",
+  "audio_extensions": [
+    ".wav",
+    ".flac",
+    ".mp3",
+    ".m4a",
+    ".ogg",
+    ".opus",
+    ".aac",
+    ".webm",
+    ".mp4",
+    ".mkv"
+  ],
+  "metadata_extensions": [
+    ".json",
+    ".jsonl",
+    ".csv",
+    ".tsv",
+    ".parquet",
+    ".arrow",
+    ".txt",
+    ".lab",
+    ".trn",
+    ".trans",
+    ".TextGrid",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "archive_extensions": [
+    ".zip",
+    ".tar",
+    ".tar.gz",
+    ".tgz",
+    ".7z",
+    ".rar"
+  ],
+  "min_duration_seconds": 1.0,
+  "max_duration_seconds": 20.0,
+  "candidate_duration_min": 2.0,
+  "candidate_duration_max": 10.0,
+  "text_exact_matching": true,
+  "fuzzy_matching": true,
+  "external_downloads_enabled": false,
+  "commercial_pool_requires_verified_license": true
+}

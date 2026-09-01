@@ -1,0 +1,79 @@
+{
+  "experiment": "E0-A",
+  "speaker_id": "SID_Bangalore844425030184676",
+  "total_sources": 5,
+  "sources": [
+    {
+      "clip_id": 1,
+      "speaker_id": "SID_Bangalore844425030184676",
+      "shard_id": "train-00000-of-00069",
+      "audio_file": "/Users/ayushmh/accentedge/experiment_zero/e0a_vaani/source_candidates/vaani_src_001.wav",
+      "duration": 7.26,
+      "transcript": "<noise> this image shows a colourful playground with multiple slides [breathing] <pause> climbing structures and other play equipments. </noise>",
+      "diag_score": 5,
+      "diag_tags": [
+        "rhoticity",
+        "th_sounds",
+        "vw_confusion",
+        "vowel_reduction",
+        "consonant_clusters"
+      ]
+    },
+    {
+      "clip_id": 2,
+      "speaker_id": "SID_Bangalore844425030184676",
+      "shard_id": "train-00000-of-00069",
+      "audio_file": "/Users/ayushmh/accentedge/experiment_zero/e0a_vaani/source_candidates/vaani_src_002.wav",
+      "duration": 6.84,
+      "transcript": "<noise> The equipments are design for children <pause> encouraging physical activity and <pause> out to play. </noise>",
+      "diag_score": 4,
+      "diag_tags": [
+        "th_sounds",
+        "vw_confusion",
+        "consonant_clusters",
+        "lexical_stress"
+      ]
+    },
+    {
+      "clip_id": 3,
+      "speaker_id": "SID_Bangalore844425030184676",
+      "shard_id": "train-00000-of-00069",
+      "audio_file": "/Users/ayushmh/accentedge/experiment_zero/e0a_vaani/source_candidates/vaani_src_003.wav",
+      "duration": 6.1,
+      "transcript": "<noise> this physical activity is called as kho kho <pause> [inhaling] and the ground is surrounded by trees. </noise>",
+      "diag_score": 4,
+      "diag_tags": [
+        "th_sounds",
+        "lexical_stress",
+        "hinglish",
+        "connected_speech"
+      ]
+    },
+    {
+      "clip_id": 4,
+      "speaker_id": "SID_Bangalore844425030184676",
+      "shard_id": "train-00000-of-00069",
+      "audio_file": "/Users/ayushmh/accentedge/experiment_zero/e0a_vaani/source_candidates/vaani_src_004.wav",
+      "duration": 5.81,
+      "transcript": "<noise> the store [unintelligible] sign board <pause> [breathing] and has a option of bajaj finance. </noise>",
+      "diag_score": 2,
+      "diag_tags": [
+        "hinglish",
+        "proper_nouns"
+      ]
+    },
+    {
+      "clip_id": 5,
+      "speaker_id": "SID_Bangalore844425030184676",
+      "shard_id": "train-00000-of-00069",
+      "audio_file": "/Users/ayushmh/accentedge/experiment_zero/e0a_vaani/source_candidates/vaani_src_005.wav",
+      "duration": 8.36,
+      "transcript": "<static> the image shows an open courtyard with a well maintained been lawn surrounded by trees <pause> and palm trees in the background. </static>",
+      "diag_score": 2,
+      "diag_tags": [
+        "vowel_reduction",
+        "hinglish"
+      ]
+    }
+  ]
+}
